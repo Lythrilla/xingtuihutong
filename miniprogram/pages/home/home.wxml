@@ -1,10 +1,13 @@
 <view class="page-shell home-page">
-  <page-header title="早上好，星光音乐" subtitle="{{headerSubtitle}}"></page-header>
+  <page-header title="{{greeting}}，星光音乐" subtitle="{{headerSubtitle}}"></page-header>
 
+  <data-state loading="{{loading}}" error="{{error}}" bind:action="loadHome"></data-state>
+
+  <block wx:if="{{!loading && !error}}">
   <view class="summary card">
     <view class="summary-head">
       <text>今日概览</text>
-      <text class="summary-date">7月10日 · 周五</text>
+      <text class="summary-date">{{todayLabel}}</text>
     </view>
     <view class="metric-row">
       <view class="metric" wx:for="{{metrics}}" wx:key="label">
@@ -14,7 +17,7 @@
     </view>
   </view>
 
-  <view class="ai-banner" bindtap="openAI">
+  <view class="ai-banner" bindtap="openAI" hover-class="pressable">
     <view class="ai-copy">
       <view class="ai-label">AI 智能经纪</view>
       <view class="ai-title">发现更适合你的合作伙伴</view>
@@ -34,8 +37,8 @@
       <text class="section-title">为你推荐</text>
       <text class="section-action" bindtap="openAI">查看全部</text>
     </view>
-    <view class="recommend-list card">
-      <view class="recommend-item" wx:for="{{recommendations}}" wx:key="title">
+    <view class="recommend-list card" wx:if="{{recommendations.length}}">
+      <view class="recommend-item" wx:for="{{recommendations}}" wx:key="id">
         <view class="avatar {{item.avatarClass}}">{{item.avatar}}</view>
         <view class="recommend-main">
           <view class="recommend-line">
@@ -45,11 +48,18 @@
           <view class="recommend-subtitle">{{item.subtitle}}</view>
           <view class="recommend-foot">
             <text class="price">{{item.price}}</text>
-            <text class="cooperate">查看合作</text>
+            <button
+              class="cooperate"
+              data-id="{{item.id}}"
+              disabled="{{connectingId !== ''}}"
+              loading="{{connectingId === item.id}}"
+              bindtap="contactPartner"
+            >{{connectingId === item.id ? '正在进入' : '沟通合作'}}</button>
           </view>
         </view>
       </view>
     </view>
+    <view wx:else class="card inline-empty">暂无伙伴推荐，可前往合作广场主动发现。</view>
   </view>
 
   <view class="section">
@@ -57,23 +67,24 @@
       <text class="section-title">常用功能</text>
     </view>
     <view class="quick-grid">
-      <view class="quick-card" bindtap="openMatch">
+      <view class="quick-card" bindtap="openMatch" hover-class="pressable">
         <view class="quick-icon mint-bg"><view class="ui-icon icon-target"></view></view>
         <text>推广匹配</text>
       </view>
-      <view class="quick-card" bindtap="openPlaza">
+      <view class="quick-card" bindtap="openPlaza" hover-class="pressable">
         <view class="quick-icon blue-bg"><view class="ui-icon icon-briefcase"></view></view>
-        <text>合作管理</text>
+        <text>合作广场</text>
       </view>
-      <view class="quick-card" bindtap="openAI">
+      <view class="quick-card" bindtap="openAI" hover-class="pressable">
         <view class="quick-icon lilac-bg"><view class="ui-icon icon-chart"></view></view>
-        <text>数据中心</text>
+        <text>推广方案</text>
       </view>
-      <view class="quick-card">
+      <view class="quick-card" bindtap="openProfile" hover-class="pressable">
         <view class="quick-icon gold-bg"><view class="ui-icon icon-wallet"></view></view>
         <text>收益结算</text>
       </view>
     </view>
   </view>
+  </block>
 </view>
 <tab-bar active="home"></tab-bar>

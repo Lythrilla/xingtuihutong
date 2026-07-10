@@ -65,6 +65,7 @@
   background: #ffffff;
   border: 1rpx solid #e9edf0;
   border-radius: 14rpx;
+  transition: transform 120ms ease, opacity 120ms ease;
 }
 
 .ai-copy {
@@ -240,8 +241,12 @@
 }
 
 .cooperate {
+  height: 50rpx;
+  padding: 0 14rpx;
   color: #5d6b76;
   font-size: 22rpx;
+  background: #f1f4f6;
+  border-radius: 8rpx;
 }
 
 .quick-grid {
@@ -262,6 +267,7 @@
   background: #ffffff;
   border: 1rpx solid #e9edf0;
   border-radius: 14rpx;
+  transition: transform 120ms ease, opacity 120ms ease;
 }
 
 .quick-icon {

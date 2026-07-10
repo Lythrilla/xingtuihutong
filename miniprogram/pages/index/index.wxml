@@ -50,9 +50,9 @@
     </view>
   </view>
 
-  <button class="enter-button" bindtap="enterApp">
-    <text>进入星推互通</text>
+  <button class="enter-button" disabled="{{entering}}" loading="{{entering}}" bindtap="enterApp">
+    <text>{{entering ? '正在连接服务' : '进入星推互通'}}</text>
     <view class="button-arrow"></view>
   </button>
-  <view class="agreement">进入即表示同意《平台服务协议》与《隐私政策》</view>
+  <view class="agreement">继续即表示你已阅读并同意平台服务协议与隐私政策</view>
 </view>

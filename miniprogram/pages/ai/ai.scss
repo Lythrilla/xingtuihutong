@@ -261,6 +261,11 @@
   border-radius: 9rpx;
 }
 
+.plan-button.saved {
+  color: #17877b;
+  background: #ecf5f3;
+}
+
 .refresh {
   height: 64rpx;
   display: flex;
@@ -270,6 +275,11 @@
   margin-top: 32rpx;
   color: #5d6b76;
   font-size: 24rpx;
+}
+
+.refresh[disabled] {
+  color: #88949a;
+  background: transparent;
 }
 
 .refresh .ui-icon {

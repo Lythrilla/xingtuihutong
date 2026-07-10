@@ -75,6 +75,11 @@
   border-radius: 9rpx;
 }
 
+.edit-button[disabled] {
+  color: rgba(255, 255, 255, 0.56);
+  background: rgba(255, 255, 255, 0.1);
+}
+
 .profile-desc {
   position: relative;
   z-index: 2;
@@ -326,4 +331,154 @@
 
 .role-switch::after {
   border: 0;
+}
+
+.sheet-layer {
+  position: fixed;
+  z-index: 60;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  background: rgba(20, 35, 41, 0.36);
+}
+
+.sheet-card {
+  width: 100%;
+  max-height: 88vh;
+  overflow-y: auto;
+  padding: 30rpx 28rpx calc(32rpx + env(safe-area-inset-bottom));
+  background: #ffffff;
+  border-radius: 22rpx 22rpx 0 0;
+}
+
+.sheet-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24rpx;
+}
+
+.sheet-title {
+  font-size: 32rpx;
+  font-weight: 600;
+}
+
+.sheet-description {
+  margin-top: 8rpx;
+  color: #7c8990;
+  font-size: 22rpx;
+}
+
+.sheet-close {
+  width: 54rpx;
+  height: 54rpx;
+  color: #6d7a81;
+  font-size: 38rpx;
+  background: #f0f3f4;
+  border-radius: 50%;
+}
+
+.field {
+  display: block;
+  margin-top: 26rpx;
+}
+
+.field > text {
+  color: #4f5e65;
+  font-size: 24rpx;
+  font-weight: 600;
+}
+
+.field input,
+.field textarea,
+.amount-input {
+  width: 100%;
+  margin-top: 12rpx;
+  font-size: 26rpx;
+  background: #f5f7f8;
+  border: 1rpx solid #e0e6e8;
+  border-radius: 10rpx;
+}
+
+.field input {
+  height: 76rpx;
+  padding: 0 22rpx;
+}
+
+.field textarea {
+  min-height: 168rpx;
+  padding: 20rpx 22rpx;
+  line-height: 1.55;
+}
+
+.field-hint {
+  margin-top: 8rpx;
+  color: #96a0a5;
+  font-size: 20rpx;
+  text-align: right;
+}
+
+.sheet-primary {
+  width: 100%;
+  height: 78rpx;
+  margin-top: 30rpx;
+  color: #ffffff;
+  font-size: 26rpx;
+  font-weight: 600;
+  background: #17877b;
+  border-radius: 10rpx;
+}
+
+.balance-summary {
+  margin-top: 26rpx;
+  padding: 24rpx;
+  background: #ecf5f3;
+  border-radius: 12rpx;
+}
+
+.balance-summary view {
+  color: #6d7b81;
+  font-size: 22rpx;
+}
+
+.balance-summary text {
+  display: block;
+  margin-top: 6rpx;
+  color: #17877b;
+  font-size: 38rpx;
+  font-weight: 600;
+}
+
+.amount-input {
+  height: 82rpx;
+  display: flex;
+  align-items: center;
+  padding-left: 22rpx;
+}
+
+.amount-input > text {
+  color: #35454c;
+  font-size: 32rpx;
+  font-weight: 600;
+}
+
+.amount-input input {
+  min-width: 0;
+  height: 80rpx;
+  flex: 1;
+  margin: 0;
+  padding: 0 14rpx;
+  font-size: 34rpx;
+  background: transparent;
+  border: 0;
+}
+
+.amount-input button {
+  height: 52rpx;
+  margin-right: 12rpx;
+  padding: 0 18rpx;
+  color: #17877b;
+  font-size: 23rpx;
+  background: #ffffff;
+  border-radius: 8rpx;
 }

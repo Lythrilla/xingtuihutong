@@ -1,9 +1,19 @@
 <view class="page-shell plaza-page">
   <page-header title="合作广场" subtitle="发现值得合作的服务方与版权伙伴"></page-header>
 
+  <data-state loading="{{loading}}" error="{{error}}" bind:action="retry"></data-state>
+
+  <block wx:if="{{!loading && !error}}">
   <view class="search">
     <view class="ui-icon icon-search search-icon"></view>
-    <input placeholder="搜索服务方、被服务方或能力标签" placeholder-class="placeholder"></input>
+    <input
+      value="{{query}}"
+      placeholder="搜索名称、身份或能力标签"
+      placeholder-class="placeholder"
+      confirm-type="search"
+      bindinput="updateSearch"
+    ></input>
+    <button wx:if="{{query}}" class="search-clear" bindtap="clearSearch" aria-label="清空搜索">×</button>
   </view>
 
   <scroll-view class="filter-scroll" scroll-x enhanced show-scrollbar="{{false}}">
@@ -17,7 +27,6 @@
       >
         {{item.label}}
       </view>
-      <view class="filter filter-more">筛选<view class="filter-chevron"></view></view>
     </view>
   </scroll-view>
 
@@ -29,8 +38,8 @@
     </view>
   </view>
 
-  <view class="entry-list">
-    <view class="entry-card card" wx:for="{{visibleEntries}}" wx:key="name">
+  <view class="entry-list" wx:if="{{!listLoading && visibleEntries.length}}">
+    <view class="entry-card card" wx:for="{{visibleEntries}}" wx:key="id">
       <view class="entry-head">
         <view class="avatar {{item.avatarClass}}">{{item.avatar}}</view>
         <view class="entry-identity">
@@ -45,9 +54,25 @@
       </view>
       <view class="entry-foot">
         <text class="entry-result">{{item.resultText}}</text>
-        <button class="connect-button" data-id="{{item.id}}" bindtap="connect">沟通合作</button>
+        <button
+          class="connect-button"
+          data-id="{{item.id}}"
+          disabled="{{connectingId !== ''}}"
+          loading="{{connectingId === item.id}}"
+          bindtap="connect"
+        >{{connectingId === item.id ? '正在进入' : '沟通合作'}}</button>
       </view>
     </view>
   </view>
+  <data-state wx:elif="{{listLoading}}" loading="{{true}}"></data-state>
+  <data-state
+    wx:else
+    empty="{{true}}"
+    empty-title="{{query ? '没有匹配结果' : '暂无合作伙伴'}}"
+    empty-description="{{query ? '换个名称或标签试试' : '内容上线后会在这里展示'}}"
+    action-text="{{query ? '清空搜索' : '重新加载'}}"
+    bind:action="handleEmptyAction"
+  ></data-state>
+  </block>
 </view>
 <tab-bar active="plaza"></tab-bar>

@@ -216,6 +216,15 @@ page {
   border-radius: 10rpx;
 }
 
+.enter-button[disabled] {
+  color: #ffffff;
+  background: #6ca9a2;
+}
+
+.enter-button[disabled] .button-arrow {
+  display: none;
+}
+
 .button-arrow {
   position: relative;
   width: 24rpx;

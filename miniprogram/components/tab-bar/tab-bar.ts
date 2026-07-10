@@ -8,6 +8,7 @@ Component({
     },
   },
   data: {
+    navigating: false,
     items: [
       { key: 'home', label: '首页', iconClass: 'home', url: '/pages/home/home' },
       { key: 'plaza', label: '广场', iconClass: 'plaza', url: '/pages/plaza/plaza' },
@@ -19,9 +20,12 @@ Component({
   methods: {
     navigate(event: WechatMiniprogram.TouchEvent) {
       const item = event.currentTarget.dataset.item as { key: string; url: string }
-      if (item.key !== this.data.active) {
-        wx.redirectTo({ url: item.url })
-      }
+      if (item.key === this.data.active || this.data.navigating) return
+      this.setData({ navigating: true })
+      wx.redirectTo({
+        url: item.url,
+        fail: () => this.setData({ navigating: false }),
+      })
     },
   },
 })

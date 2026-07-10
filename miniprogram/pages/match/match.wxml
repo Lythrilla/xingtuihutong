@@ -1,18 +1,31 @@
 <view class="page-shell match-page">
   <page-header title="推广匹配" subtitle="选择歌曲与推广对象，AI 为你智能组局"></page-header>
 
+  <data-state loading="{{loading}}" error="{{error}}" bind:action="loadOptions"></data-state>
+
+  <block wx:if="{{!loading && !error}}">
+  <data-state
+    wx:if="{{!songs.length || !targets.length || !budgets.length}}"
+    empty="{{true}}"
+    empty-title="匹配资料还未准备好"
+    empty-description="曲库、推广对象或预算配置暂不可用"
+    action-text="重新加载"
+    bind:action="loadOptions"
+  ></data-state>
+
+  <block wx:else>
   <view class="steps">
-    <view class="step active">
+    <view class="step {{selectedSongId ? 'active done' : 'active'}}">
       <view class="step-number">1</view>
       <text>选择歌曲</text>
     </view>
-    <view class="step-line active"></view>
-    <view class="step active">
+    <view class="step-line {{selectedSongId ? 'active' : ''}}"></view>
+    <view class="step {{selectedSongId ? 'active' : ''}} {{selectedTargets.length ? 'done' : ''}}">
       <view class="step-number">2</view>
       <text>推广对象</text>
     </view>
-    <view class="step-line"></view>
-    <view class="step">
+    <view class="step-line {{selectedTargets.length ? 'active' : ''}}"></view>
+    <view class="step {{canSubmit ? 'active' : ''}}">
       <view class="step-number">3</view>
       <text>智能匹配</text>
     </view>
@@ -76,9 +89,17 @@
     </view>
   </view>
 
-  <button class="primary-button match-button" bindtap="startMatching">
-    <text>开始 AI 智能匹配</text>
+  <view class="selection-summary">{{selectionSummary}}</view>
+  <button
+    class="primary-button match-button"
+    disabled="{{!canSubmit || isSubmitting}}"
+    loading="{{isSubmitting}}"
+    bindtap="startMatching"
+  >
+    <text>{{isSubmitting ? '正在生成推荐' : '开始 AI 智能匹配'}}</text>
     <view class="ui-icon icon-spark button-icon"></view>
   </button>
+  </block>
+  </block>
 </view>
 <tab-bar active="match"></tab-bar>

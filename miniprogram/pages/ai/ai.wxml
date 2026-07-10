@@ -1,18 +1,21 @@
 <view class="page-shell ai-page">
   <page-header title="AI 智能推荐" subtitle="让每次合作都有数据与灵感支撑"></page-header>
 
+  <data-state loading="{{loading}}" error="{{error}}" bind:action="retry"></data-state>
+
+  <block wx:if="{{!loading && !error}}">
   <view class="hero">
     <view class="hero-copy">
       <view class="hero-kicker">STARCONNECT AI</view>
       <view class="hero-title">找到此刻最值得合作的人</view>
-      <view class="hero-desc">已分析 2,380 个服务档案与 12,600 次合作表现</view>
+      <view class="hero-desc">根据当前在架方案与真实合作数据动态推荐</view>
     </view>
     <view class="hero-visual">
       <image class="hero-image" src="/assets/images/ai-orb.png" mode="aspectFit"></image>
     </view>
   </view>
 
-  <view class="tabs">
+  <view class="tabs" wx:if="{{tabs.length > 1}}">
     <view
       wx:for="{{tabs}}"
       wx:key="key"
@@ -24,7 +27,7 @@
     </view>
   </view>
 
-  <view class="ai-insight">
+  <view class="ai-insight" wx:if="{{plans.length}}">
     <view class="insight-icon"><view class="ui-icon icon-spark"></view></view>
     <view class="insight-copy">
       <view class="insight-title">{{insightTitle}}</view>
@@ -32,8 +35,8 @@
     </view>
   </view>
 
-  <view class="plan-list">
-    <view class="plan card" wx:for="{{plans}}" wx:key="title">
+  <view class="plan-list" wx:if="{{plans.length}}">
+    <view class="plan card" wx:for="{{plans}}" wx:key="id">
       <view class="plan-head">
         <view class="plan-icon {{item.colorClass}}">
           <view class="ui-icon icon-{{item.iconClass}}"></view>
@@ -56,14 +59,30 @@
           <view class="budget-label">建议预算</view>
           <view class="budget-value">{{item.budget}}</view>
         </view>
-        <button class="plan-button" data-id="{{item.id}}" bindtap="viewPlan">收藏方案</button>
+        <button
+          class="plan-button {{item.saved ? 'saved' : ''}}"
+          data-id="{{item.id}}"
+          disabled="{{item.saved || savingId !== ''}}"
+          loading="{{savingId === item.id}}"
+          bindtap="viewPlan"
+        >{{item.saved ? '已收藏' : (savingId === item.id ? '收藏中' : '收藏方案')}}</button>
       </view>
     </view>
   </view>
 
-  <button class="refresh" bindtap="refresh">
+  <data-state
+    wx:else
+    empty="{{true}}"
+    empty-title="暂无可用推荐"
+    empty-description="完成一次推广匹配，或稍后等待新方案上线"
+    action-text="去推广匹配"
+    bind:action="openMatch"
+  ></data-state>
+
+  <button class="refresh" wx:if="{{plans.length}}" disabled="{{refreshing}}" bindtap="refresh">
     <view class="ui-icon icon-refresh"></view>
-    <text>{{refreshText}}</text>
+    <text>{{refreshing ? '正在更新' : refreshText}}</text>
   </button>
+  </block>
 </view>
-<tab-bar active="ai"></tab-bar>
+<tab-bar active="match"></tab-bar>
