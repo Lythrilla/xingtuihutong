@@ -82,6 +82,21 @@
   </view>
 
   <view class="section">
+    <view class="section-head">
+      <text class="section-title">结算信息</text>
+      <text class="section-action">查看明细</text>
+    </view>
+    <view class="wallet card">
+      <view class="wallet-icon">￥</view>
+      <view class="wallet-main">
+        <view class="wallet-label">钱包余额</view>
+        <view class="wallet-value">¥24,850.00</view>
+      </view>
+      <button class="wallet-button">提现</button>
+    </view>
+  </view>
+
+  <view class="section">
     <view class="menu card">
       <view class="menu-item"><text>合作订单</text><text>›</text></view>
       <view class="menu-item"><text>收益与结算</text><text>›</text></view>
