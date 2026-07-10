@@ -3,14 +3,17 @@
 
   <view class="profile-card">
     <view class="profile-head">
-      <view class="profile-avatar">鲸</view>
+      <view class="profile-avatar">{{user.avatar}}</view>
       <view class="profile-main">
-        <view class="profile-name">鲸浪音乐营销</view>
-        <view class="profile-role"><view class="role-check">✓</view>已认证{{roleLabel}}</view>
+        <view class="profile-name">{{user.organization}}</view>
+        <view class="profile-role">
+          <view class="role-check" wx:if="{{user.verified}}">✓</view>
+          {{user.verified ? '已认证' : '未认证'}}{{roleLabel}}
+        </view>
       </view>
-      <button class="edit-button" bindtap="edit">编辑</button>
+      <button class="edit-button" bindtap="editProfile">编辑</button>
     </view>
-    <view class="profile-desc">用有审美的内容策略，让好音乐被更多人听见。</view>
+    <view class="profile-desc">{{user.description}}</view>
     <view class="profile-stats">
       <view class="profile-stat" wx:for="{{stats}}" wx:key="label">
         <text>{{item.value}}</text>
@@ -22,23 +25,12 @@
   <view class="section">
     <view class="section-head">
       <text class="section-title">资质认证</text>
-      <text class="section-action">查看全部</text>
     </view>
     <view class="certs card">
-      <view class="cert">
-        <view class="cert-icon mint"><view class="ui-icon icon-shield"></view></view>
-        <text>企业认证</text>
-        <view>已认证</view>
-      </view>
-      <view class="cert">
-        <view class="cert-icon blue"><view class="ui-icon icon-shield"></view></view>
-        <text>版权资质</text>
-        <view>已认证</view>
-      </view>
-      <view class="cert">
-        <view class="cert-icon gold"><view class="ui-icon icon-shield"></view></view>
-        <text>行业资质</text>
-        <view>已认证</view>
+      <view class="cert" wx:for="{{certifications}}" wx:key="id">
+        <view class="cert-icon {{item.colorClass}}"><view class="ui-icon icon-{{item.iconClass}}"></view></view>
+        <text>{{item.title}}</text>
+        <view>{{item.status}}</view>
       </view>
     </view>
   </view>
@@ -46,7 +38,6 @@
   <view class="section">
     <view class="section-head">
       <text class="section-title">能力标签</text>
-      <text class="section-action">编辑</text>
     </view>
     <view class="skill-card card">
       <text wx:for="{{tags}}" wx:key="*this">{{item}}</text>
@@ -56,24 +47,13 @@
   <view class="section">
     <view class="section-head">
       <text class="section-title">精选案例</text>
-      <text class="section-action">查看全部</text>
     </view>
     <scroll-view class="case-scroll" scroll-x enhanced show-scrollbar="{{false}}">
       <view class="cases">
-        <view class="case-card sunset">
-          <view class="case-type">短视频推广</view>
-          <view class="case-name">《微醺日落》</view>
-          <view class="case-result">播放量 860w+</view>
-        </view>
-        <view class="case-card ocean">
-          <view class="case-type">校园共创</view>
-          <view class="case-name">《海风来信》</view>
-          <view class="case-result">覆盖 18 所高校</view>
-        </view>
-        <view class="case-card violet">
-          <view class="case-type">品牌联名</view>
-          <view class="case-name">城市夜游计划</view>
-          <view class="case-result">曝光 1200w+</view>
+        <view class="case-card {{item.colorClass}}" wx:for="{{cases}}" wx:key="id">
+          <view class="case-type">{{item.caseType}}</view>
+          <view class="case-name">{{item.name}}</view>
+          <view class="case-result">{{item.resultText}}</view>
         </view>
       </view>
     </scroll-view>
@@ -82,24 +62,19 @@
   <view class="section">
     <view class="section-head">
       <text class="section-title">结算信息</text>
-      <text class="section-action">查看明细</text>
     </view>
     <view class="wallet card">
       <view class="wallet-icon"><view class="ui-icon icon-wallet"></view></view>
       <view class="wallet-main">
-        <view class="wallet-label">钱包余额</view>
-        <view class="wallet-value">¥24,850.00</view>
+        <view class="wallet-label">可提现余额</view>
+        <view class="wallet-value">{{walletBalance}}</view>
       </view>
-      <button class="wallet-button">提现</button>
+      <button class="wallet-button" bindtap="withdraw">提现</button>
     </view>
   </view>
 
-  <view class="section">
-    <view class="menu card">
-      <view class="menu-item"><text>合作订单</text><view class="menu-chevron"></view></view>
-      <view class="menu-item"><text>收益与结算</text><view class="menu-chevron"></view></view>
-      <view class="menu-item" bindtap="changeRole"><text>切换身份</text><view class="menu-chevron"></view></view>
-    </view>
-  </view>
+  <button class="role-switch" bindtap="switchRole">
+    切换为{{isProvider ? '被服务方' : '服务方'}}
+  </button>
 </view>
 <tab-bar active="profile"></tab-bar>

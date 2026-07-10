@@ -1,3 +1,5 @@
+import { apiRequest, ensureSession, SessionUser } from '../../utils/api'
+
 export {}
 
 const app = getApp<IAppOption>()
@@ -30,11 +32,21 @@ Component({
       const role = event.currentTarget.dataset.role as 'provider' | 'client'
       this.setData({ selectedRole: role })
     },
-    enterApp() {
+    async enterApp() {
       const role = this.data.selectedRole as 'provider' | 'client'
-      app.globalData.role = role
-      wx.setStorageSync('starconnect-role', role)
-      wx.redirectTo({ url: '/pages/home/home' })
+      wx.showLoading({ title: '正在进入' })
+      try {
+        await ensureSession(role)
+        const user = await apiRequest<SessionUser>('/api/me/role', 'PUT', { role })
+        app.globalData.role = user.role
+        app.globalData.apiReady = true
+        wx.setStorageSync('starconnect-role', user.role)
+        wx.redirectTo({ url: '/pages/home/home' })
+      } catch (error) {
+        wx.showToast({ title: error instanceof Error ? error.message : '服务连接失败', icon: 'none' })
+      } finally {
+        wx.hideLoading()
+      }
     },
   },
 })

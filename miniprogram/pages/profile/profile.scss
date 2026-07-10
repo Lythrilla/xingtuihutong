@@ -310,3 +310,20 @@
   border-right: 2rpx solid currentColor;
   transform: rotate(45deg);
 }
+
+.role-switch {
+  width: 100%;
+  height: 76rpx;
+  margin: 24rpx 0 0;
+  color: #17877b;
+  font-size: 25rpx;
+  font-weight: 600;
+  line-height: 76rpx;
+  background: #ffffff;
+  border: 1rpx solid #dce5e6;
+  border-radius: 12rpx;
+}
+
+.role-switch::after {
+  border: 0;
+}

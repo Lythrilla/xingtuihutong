@@ -4,7 +4,7 @@
   <view class="section">
     <view class="section-head">
       <text class="section-title">平台通知</text>
-      <text class="section-action">全部已读</text>
+      <text class="section-action" bindtap="markAllRead">全部已读</text>
     </view>
     <view class="notice-list card">
       <view class="notice" wx:for="{{notices}}" wx:key="title">
@@ -27,7 +27,7 @@
       <text class="section-title">合作会话</text>
     </view>
     <view class="chat-list card">
-      <view class="chat" wx:for="{{chats}}" wx:key="name" data-name="{{item.name}}" bindtap="openChat">
+      <view class="chat" wx:for="{{chats}}" wx:key="id" data-id="{{item.id}}" data-name="{{item.name}}" bindtap="openChat">
         <view class="chat-avatar {{item.avatarClass}}">{{item.avatar}}</view>
         <view class="chat-main">
           <view class="chat-line">
