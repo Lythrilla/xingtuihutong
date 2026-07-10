@@ -1,12 +1,12 @@
 .profile-card {
   position: relative;
   overflow: hidden;
-  margin-top: 28rpx;
-  padding: 32rpx;
+  margin-top: 18rpx;
+  padding: 25rpx;
   color: #ffffff;
   background: linear-gradient(135deg, #42bdac, #6a72d5);
-  border-radius: 34rpx;
-  box-shadow: 0 20rpx 50rpx rgba(74, 111, 171, 0.2);
+  border-radius: 26rpx;
+  box-shadow: 0 14rpx 36rpx rgba(74, 111, 171, 0.17);
 }
 
 .profile-shape {
@@ -37,8 +37,8 @@
 }
 
 .profile-avatar {
-  width: 100rpx;
-  height: 100rpx;
+  width: 84rpx;
+  height: 84rpx;
   flex: none;
   display: flex;
   align-items: center;
@@ -49,7 +49,7 @@
   font-weight: 700;
   background: rgba(255, 255, 255, 0.94);
   border: 5rpx solid rgba(255, 255, 255, 0.3);
-  border-radius: 32rpx;
+  border-radius: 26rpx;
 }
 
 .profile-main {
@@ -58,7 +58,7 @@
 }
 
 .profile-name {
-  font-size: 29rpx;
+  font-size: 26rpx;
   font-weight: 700;
 }
 
@@ -83,7 +83,7 @@
 .profile-desc {
   position: relative;
   z-index: 2;
-  margin-top: 24rpx;
+  margin-top: 18rpx;
   color: rgba(255, 255, 255, 0.82);
   font-size: 21rpx;
 }
@@ -92,8 +92,8 @@
   position: relative;
   z-index: 2;
   display: flex;
-  margin-top: 28rpx;
-  padding-top: 25rpx;
+  margin-top: 20rpx;
+  padding-top: 18rpx;
   border-top: 1rpx solid rgba(255, 255, 255, 0.18);
 }
 
@@ -115,7 +115,7 @@
 
 .certs {
   display: flex;
-  padding: 27rpx 12rpx;
+  padding: 21rpx 10rpx;
 }
 
 .cert {
@@ -163,7 +163,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 12rpx;
-  padding: 26rpx;
+  padding: 20rpx;
 }
 
 .skill-card text {
@@ -186,14 +186,14 @@
 .case-card {
   position: relative;
   width: 260rpx;
-  height: 190rpx;
+  height: 166rpx;
   display: inline-flex;
   flex-direction: column;
   justify-content: flex-end;
   overflow: hidden;
-  padding: 22rpx;
+  padding: 18rpx;
   color: #ffffff;
-  border-radius: 27rpx;
+  border-radius: 22rpx;
 }
 
 .case-card::before,
@@ -261,7 +261,7 @@
 }
 
 .menu-item {
-  height: 88rpx;
+  height: 76rpx;
   display: flex;
   align-items: center;
   justify-content: space-between;

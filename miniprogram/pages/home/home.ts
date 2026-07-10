@@ -4,7 +4,7 @@ const app = getApp<IAppOption>()
 
 Component({
   data: {
-    roleLabel: '服务方',
+    headerSubtitle: '服务方 · 今日合作概览',
     metrics: [
       { value: '12', label: '进行中项目' },
       { value: '8', label: '待处理需求' },
@@ -41,7 +41,7 @@ Component({
     attached() {
       const isProvider = app.globalData.role === 'provider'
       this.setData({
-        roleLabel: isProvider ? '服务方' : '被服务方',
+        headerSubtitle: isProvider ? '服务方 · 今日合作概览' : '被服务方 · 今日推广概览',
         metrics: isProvider
           ? this.data.metrics
           : [

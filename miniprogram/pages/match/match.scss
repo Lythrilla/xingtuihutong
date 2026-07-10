@@ -1,7 +1,7 @@
 .steps {
   display: flex;
   align-items: flex-start;
-  margin: 28rpx 14rpx 30rpx;
+  margin: 18rpx 14rpx 22rpx;
 }
 
 .step {
@@ -46,12 +46,12 @@
 }
 
 .form-section {
-  margin-bottom: 22rpx;
-  padding: 28rpx;
+  margin-bottom: 16rpx;
+  padding: 22rpx;
 }
 
 .form-title {
-  font-size: 27rpx;
+  font-size: 25rpx;
   font-weight: 670;
 }
 
@@ -62,7 +62,7 @@
 }
 
 .song-scroll {
-  margin-top: 24rpx;
+  margin-top: 18rpx;
   white-space: nowrap;
 }
 
@@ -73,7 +73,7 @@
 
 .song-card {
   position: relative;
-  width: 192rpx;
+  width: 174rpx;
   display: inline-flex;
   flex-direction: column;
   padding: 12rpx 12rpx 18rpx;
@@ -89,7 +89,7 @@
 
 .song-cover {
   position: relative;
-  height: 142rpx;
+  height: 122rpx;
   overflow: hidden;
   border-radius: 17rpx;
 }
@@ -132,8 +132,8 @@
 .disc {
   position: absolute;
   z-index: 2;
-  top: 36rpx;
-  left: 48rpx;
+  top: 29rpx;
+  left: 42rpx;
   width: 66rpx;
   height: 66rpx;
   display: flex;
@@ -184,12 +184,12 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16rpx;
-  margin-top: 24rpx;
+  margin-top: 18rpx;
 }
 
 .target-card {
-  min-height: 166rpx;
-  padding: 20rpx;
+  min-height: 145rpx;
+  padding: 17rpx;
   background: #f7f9fb;
   border: 2rpx solid transparent;
   border-radius: 22rpx;
@@ -213,7 +213,7 @@
 }
 
 .target-title {
-  margin-top: 14rpx;
+  margin-top: 10rpx;
   font-size: 21rpx;
   font-weight: 650;
 }
@@ -228,12 +228,12 @@
   display: flex;
   flex-wrap: wrap;
   gap: 12rpx;
-  margin-top: 22rpx;
+  margin-top: 17rpx;
 }
 
 .budget {
   width: calc(50% - 6rpx);
-  min-height: 66rpx;
+  min-height: 58rpx;
   display: flex;
   align-items: center;
   gap: 12rpx;
@@ -267,5 +267,5 @@
 
 .match-button {
   gap: 14rpx;
-  margin: 28rpx 0 12rpx;
+  margin: 20rpx 0 8rpx;
 }

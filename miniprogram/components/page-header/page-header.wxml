@@ -1,0 +1,8 @@
+<view class="header-shell" style="padding-top: {{statusBarHeight}}px;">
+  <view class="header-inner" style="height: {{navigationHeight}}px; padding-right: {{rightInset}}px;">
+    <view class="header-copy">
+      <view class="header-title">{{title}}</view>
+      <view wx:if="{{subtitle}}" class="header-subtitle">{{subtitle}}</view>
+    </view>
+  </view>
+</view>

@@ -28,76 +28,38 @@ button::after {
 
 .page-shell {
   min-height: 100vh;
-  padding: 0 28rpx calc(148rpx + env(safe-area-inset-bottom));
+  padding: 0 24rpx calc(136rpx + env(safe-area-inset-bottom));
   background:
     radial-gradient(circle at 92% 5%, rgba(112, 224, 211, 0.16), transparent 27%),
     linear-gradient(180deg, #fbfcfe 0%, #f5f8fb 100%);
 }
 
-.safe-top {
-  height: calc(env(safe-area-inset-top) + 20rpx);
-}
-
-.topbar {
-  height: 84rpx;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.topbar-title {
-  font-size: 36rpx;
-  line-height: 1.2;
-  font-weight: 700;
-  letter-spacing: -1rpx;
-}
-
-.topbar-subtitle {
-  margin-top: 8rpx;
-  color: #8a97a6;
-  font-size: 22rpx;
-}
-
-.icon-button {
-  width: 64rpx;
-  height: 64rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #4a5968;
-  font-size: 28rpx;
-  background: rgba(255, 255, 255, 0.9);
-  border: 1rpx solid rgba(23, 47, 67, 0.06);
-  border-radius: 50%;
-  box-shadow: 0 10rpx 28rpx rgba(39, 70, 92, 0.08);
-}
-
 .section {
-  margin-top: 30rpx;
+  margin-top: 24rpx;
 }
 
 .section-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 18rpx;
+  margin-bottom: 14rpx;
 }
 
 .section-title {
-  font-size: 28rpx;
+  font-size: 26rpx;
   font-weight: 650;
 }
 
 .section-action {
   color: #8794a2;
-  font-size: 22rpx;
+  font-size: 20rpx;
 }
 
 .card {
   background: rgba(255, 255, 255, 0.94);
   border: 1rpx solid rgba(35, 59, 80, 0.06);
-  border-radius: 28rpx;
-  box-shadow: 0 16rpx 48rpx rgba(42, 72, 96, 0.07);
+  border-radius: 22rpx;
+  box-shadow: 0 10rpx 32rpx rgba(42, 72, 96, 0.06);
 }
 
 .pill {
@@ -111,16 +73,16 @@ button::after {
 }
 
 .primary-button {
-  min-height: 88rpx;
+  min-height: 80rpx;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #ffffff;
-  font-size: 27rpx;
+  font-size: 25rpx;
   font-weight: 650;
   background: linear-gradient(120deg, #64ddcb, #36bfae);
   border-radius: 999rpx;
-  box-shadow: 0 16rpx 34rpx rgba(58, 194, 174, 0.24);
+  box-shadow: 0 12rpx 28rpx rgba(58, 194, 174, 0.2);
 }
 
 .secondary-button {

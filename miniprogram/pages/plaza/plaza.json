@@ -1,5 +1,6 @@
 {
   "usingComponents": {
+    "page-header": "/components/page-header/page-header",
     "tab-bar": "/components/tab-bar/tab-bar"
   }
 }

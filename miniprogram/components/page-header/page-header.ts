@@ -1,10 +1,17 @@
 export {}
 
-const app = getApp<IAppOption>()
-
 Component({
+  properties: {
+    title: {
+      type: String,
+      value: '',
+    },
+    subtitle: {
+      type: String,
+      value: '',
+    },
+  },
   data: {
-    selectedRole: 'provider',
     statusBarHeight: 20,
     navigationHeight: 44,
     rightInset: 96,
@@ -23,18 +30,6 @@ Component({
         navigationHeight: menuHeight + gap * 2,
         rightInset,
       })
-    },
-  },
-  methods: {
-    selectRole(event: WechatMiniprogram.TouchEvent) {
-      const role = event.currentTarget.dataset.role as 'provider' | 'client'
-      this.setData({ selectedRole: role })
-    },
-    enterApp() {
-      const role = this.data.selectedRole as 'provider' | 'client'
-      app.globalData.role = role
-      wx.setStorageSync('starconnect-role', role)
-      wx.redirectTo({ url: '/pages/home/home' })
     },
   },
 })
