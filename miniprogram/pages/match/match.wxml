@@ -25,12 +25,12 @@
       <view class="song-row">
         <view
           wx:for="{{songs}}"
-          wx:key="name"
-          class="song-card {{selectedSong === index ? 'selected' : ''}}"
-          data-index="{{index}}"
+          wx:key="id"
+          class="song-card {{selectedSongId === item.id ? 'selected' : ''}}"
+          data-id="{{item.id}}"
           bindtap="chooseSong"
         >
-          <view class="song-cover {{item.cover}}">
+          <view class="song-cover {{item.coverClass}}">
             <view class="disc"><view class="disc-center"></view></view>
           </view>
           <view class="song-name">{{item.name}}</view>
@@ -54,7 +54,7 @@
       >
         <view class="target-icon"><view class="ui-icon icon-{{item.iconClass}}"></view></view>
         <view class="target-title">{{item.title}}</view>
-        <view class="target-desc">{{item.desc}}</view>
+        <view class="target-desc">{{item.description}}</view>
       </view>
     </view>
   </view>
@@ -65,13 +65,13 @@
     <view class="budget-list">
       <view
         wx:for="{{budgets}}"
-        wx:key="*this"
-        class="budget {{selectedBudget === index ? 'selected' : ''}}"
-        data-index="{{index}}"
+        wx:key="id"
+        class="budget {{selectedBudgetId === item.id ? 'selected' : ''}}"
+        data-id="{{item.id}}"
         bindtap="chooseBudget"
       >
         <view class="radio"></view>
-        <text>{{item}}</text>
+        <text>{{item.label}}</text>
       </view>
     </view>
   </view>

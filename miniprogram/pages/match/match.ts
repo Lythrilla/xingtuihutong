@@ -1,26 +1,66 @@
+import { apiRequest } from '../../utils/api'
+
 export {}
+
+interface Song {
+  id: string
+  name: string
+  artist: string
+  coverClass: string
+}
+
+interface Target {
+  key: string
+  iconClass: string
+  title: string
+  description: string
+  selected: boolean
+}
+
+interface Budget {
+  id: string
+  label: string
+}
+
+interface MatchBootstrap {
+  songs: Song[]
+  targets: Omit<Target, 'selected'>[]
+  budgets: Budget[]
+}
 
 Component({
   data: {
-    songs: [
-      { name: '微醺日落', artist: '林屿', cover: 'sunset' },
-      { name: '海风来信', artist: '鹿野乐队', cover: 'ocean' },
-      { name: '逆光飞行', artist: 'SONA', cover: 'violet' },
-    ],
-    selectedSong: 0,
-    targets: [
-      { key: 'creator', iconClass: 'video', title: '短视频创作者', desc: '内容种草与矩阵传播', selected: true },
-      { key: 'campus', iconClass: 'campus', title: '校园音乐人', desc: '年轻圈层与线下活动', selected: false },
-      { key: 'brand', iconClass: 'briefcase', title: '品牌营销机构', desc: '商业联名与场景曝光', selected: false },
-      { key: 'media', iconClass: 'audio', title: '音乐媒体', desc: '榜单、乐评与媒体传播', selected: false },
-    ],
-    selectedTargets: ['creator'],
-    budgets: ['¥5,000 以下', '¥5,000 - 20,000', '¥20,000 - 50,000', '¥50,000 以上'],
-    selectedBudget: 1,
+    songs: [] as Song[],
+    selectedSongId: '',
+    targets: [] as Target[],
+    selectedTargets: [] as string[],
+    budgets: [] as Budget[],
+    selectedBudgetId: '',
+  },
+  lifetimes: {
+    async attached() {
+      try {
+        const response = await apiRequest<MatchBootstrap>('/api/match/bootstrap')
+        const selectedTargets = response.targets.length ? [response.targets[0].key] : []
+        this.setData({
+          songs: response.songs,
+          selectedSongId: response.songs[0]?.id || '',
+          targets: response.targets.map((target) => ({
+            ...target,
+            selected: selectedTargets.includes(target.key),
+          })),
+          selectedTargets,
+          budgets: response.budgets,
+          selectedBudgetId: response.budgets[1]?.id || response.budgets[0]?.id || '',
+        })
+      } catch (error) {
+        wx.showToast({ title: error instanceof Error ? error.message : '匹配选项加载失败', icon: 'none' })
+      }
+    },
   },
   methods: {
     chooseSong(event: WechatMiniprogram.TouchEvent) {
-      this.setData({ selectedSong: Number(event.currentTarget.dataset.index) })
+      this.setData({ selectedSongId: event.currentTarget.dataset.id as string })
     },
     toggleTarget(event: WechatMiniprogram.TouchEvent) {
       const key = event.currentTarget.dataset.key as string
@@ -34,14 +74,26 @@ Component({
       this.setData({ selectedTargets, targets })
     },
     chooseBudget(event: WechatMiniprogram.TouchEvent) {
-      this.setData({ selectedBudget: Number(event.currentTarget.dataset.index) })
+      this.setData({ selectedBudgetId: event.currentTarget.dataset.id as string })
     },
-    startMatching() {
+    async startMatching() {
+      if (!this.data.selectedSongId || !this.data.selectedBudgetId || !this.data.selectedTargets.length) {
+        wx.showToast({ title: '请完整选择歌曲、对象与预算', icon: 'none' })
+        return
+      }
       wx.showLoading({ title: 'AI 正在匹配' })
-      setTimeout(() => {
+      try {
+        await apiRequest('/api/match', 'POST', {
+          songId: this.data.selectedSongId,
+          targetKeys: this.data.selectedTargets,
+          budgetId: this.data.selectedBudgetId,
+        })
         wx.hideLoading()
         wx.redirectTo({ url: '/pages/ai/ai' })
-      }, 700)
+      } catch (error) {
+        wx.hideLoading()
+        wx.showToast({ title: error instanceof Error ? error.message : '智能匹配失败', icon: 'none' })
+      }
     },
   },
 })

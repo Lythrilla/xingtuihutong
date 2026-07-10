@@ -1,0 +1,25 @@
+<view class="page">
+  <scroll-view class="messages" scroll-y scroll-into-view="message-end">
+    <view
+      wx:for="{{messages}}"
+      wx:key="id"
+      class="message-row {{item.sender === 'user' ? 'mine' : ''}}"
+    >
+      <view class="message">
+        <text>{{item.content}}</text>
+        <text class="time">{{item.createdAt}}</text>
+      </view>
+    </view>
+    <view id="message-end"></view>
+  </scroll-view>
+  <view class="composer">
+    <input
+      value="{{draft}}"
+      placeholder="输入合作消息"
+      confirm-type="send"
+      bindinput="updateDraft"
+      bindconfirm="sendMessage"
+    />
+    <button bindtap="sendMessage">发送</button>
+  </view>
+</view>
