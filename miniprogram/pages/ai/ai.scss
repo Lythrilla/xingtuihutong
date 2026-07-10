@@ -81,7 +81,7 @@
 }
 
 .tab {
-  height: 88rpx;
+  height: 68rpx;
   flex: 1;
   display: flex;
   align-items: center;
@@ -93,7 +93,7 @@
 
 .tab.active {
   color: #293742;
-  font-weight: 650;
+  font-weight: 600;
   background: #ffffff;
   box-shadow: 0 8rpx 20rpx rgba(41, 64, 84, 0.08);
 }
@@ -121,7 +121,7 @@
 
 .insight-title {
   font-size: 26rpx;
-  font-weight: 680;
+  font-weight: 600;
 }
 
 .insight-desc {
@@ -157,7 +157,7 @@
   margin-right: 20rpx;
   color: #ffffff;
   font-size: 26rpx;
-  font-weight: 650;
+  font-weight: 600;
   border-radius: 24rpx;
 }
 
@@ -181,7 +181,7 @@
 .plan-title {
   overflow: hidden;
   font-size: 28rpx;
-  font-weight: 680;
+  font-weight: 600;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -204,7 +204,7 @@
 
 .plan-score text {
   font-size: 38rpx;
-  font-weight: 720;
+  font-weight: 700;
 }
 
 .plan-score view {
@@ -252,23 +252,23 @@
   margin-top: 4rpx;
   color: #30b29f;
   font-size: 28rpx;
-  font-weight: 680;
+  font-weight: 600;
 }
 
 .plan-button {
-  min-height: 88rpx;
+  height: 62rpx;
   display: flex;
   align-items: center;
   padding: 0 28rpx;
   color: #ffffff;
   font-size: 24rpx;
-  font-weight: 650;
+  font-weight: 600;
   background: linear-gradient(120deg, #62d8c6, #35b9a6);
   border-radius: 999rpx;
 }
 
 .refresh {
-  min-height: 88rpx;
+  height: 72rpx;
   display: flex;
   align-items: center;
   justify-content: center;
