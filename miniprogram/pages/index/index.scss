@@ -1,13 +1,14 @@
 page {
-  background: #f7f8fa;
+  background:
+    linear-gradient(180deg, rgba(214, 241, 236, 0.48), rgba(246, 247, 249, 0) 480rpx),
+    #f6f7f9;
 }
 
 .onboarding {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  padding: 0 32rpx calc(40rpx + env(safe-area-inset-bottom));
-  background: #f7f8fa;
+  padding: 0 32rpx calc(42rpx + env(safe-area-inset-bottom));
 }
 
 .brand {
@@ -25,8 +26,9 @@ page {
   height: 68rpx;
   flex: none;
   margin-right: 16rpx;
-  background: #17877b;
-  border-radius: 16rpx;
+  background: linear-gradient(135deg, #17877b, #22a390);
+  border-radius: 14rpx;
+  box-shadow: 0 8rpx 18rpx rgba(23, 135, 123, 0.18);
 }
 
 .spark {
@@ -49,65 +51,72 @@ page {
 }
 
 .brand-name {
+  color: #20333a;
   font-size: 34rpx;
-  font-weight: 600;
-  letter-spacing: 2rpx;
+  font-weight: 700;
+  letter-spacing: 1rpx;
 }
 
 .brand-subtitle {
-  margin-top: 4rpx;
-  color: #8b97a1;
+  margin-top: 5rpx;
+  color: #829196;
   font-size: 22rpx;
 }
 
 .intro {
-  margin: 48rpx 4rpx 40rpx;
+  margin: 72rpx 4rpx 40rpx;
 }
 
 .intro-kicker {
-  margin-bottom: 12rpx;
+  margin-bottom: 14rpx;
   color: #17877b;
-  font-size: 22rpx;
-  font-weight: 600;
+  font-size: 21rpx;
+  font-weight: 700;
   letter-spacing: 4rpx;
 }
 
 .intro-title {
-  font-size: 52rpx;
-  font-weight: 600;
-  letter-spacing: -1rpx;
+  color: #20333a;
+  font-size: 56rpx;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -2rpx;
 }
 
 .intro-desc {
-  margin-top: 12rpx;
-  color: #77848f;
-  font-size: 26rpx;
-  line-height: 1.5;
+  max-width: 560rpx;
+  margin-top: 16rpx;
+  color: #718187;
+  font-size: 25rpx;
+  line-height: 1.55;
 }
 
 .role-list {
   display: flex;
   flex-direction: column;
-  gap: 20rpx;
-  margin-bottom: 36rpx;
+  gap: 18rpx;
+  margin-bottom: 34rpx;
 }
 
 .role-card {
   position: relative;
-  height: 276rpx;
+  height: 258rpx;
   overflow: hidden;
-  padding: 24rpx 28rpx;
-  background: #ffffff;
-  border: 2rpx solid #e9edf0;
+  padding: 26rpx 28rpx;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1rpx solid rgba(38, 64, 71, 0.08);
   border-radius: 14rpx;
+  box-shadow:
+    0 1rpx 2rpx rgba(30, 51, 58, 0.04),
+    0 12rpx 32rpx rgba(30, 51, 58, 0.06);
 }
 
 .role-card.active.service {
-  border-color: #17877b;
+  border: 2rpx solid #17877b;
 }
 
 .role-card.active.client {
-  border-color: #b78b3d;
+  border: 2rpx solid #bd8d43;
 }
 
 .role-copy {
@@ -118,32 +127,33 @@ page {
 
 .role-badge {
   display: inline-flex;
-  padding: 8rpx 16rpx;
-  font-size: 22rpx;
-  font-weight: 600;
+  padding: 8rpx 15rpx;
+  font-size: 21rpx;
+  font-weight: 700;
   border-radius: 8rpx;
 }
 
 .mint {
   color: #17877b;
-  background: #e7f2f0;
+  background: #eaf6f3;
 }
 
 .gold {
   color: #a3782e;
-  background: #f7efe1;
+  background: #f8f0e3;
 }
 
 .role-title {
-  margin-top: 16rpx;
+  margin-top: 18rpx;
+  color: #20333a;
   font-size: 30rpx;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .role-desc {
-  margin-top: 12rpx;
-  color: #77848f;
-  font-size: 23rpx;
+  margin-top: 10rpx;
+  color: #78878c;
+  font-size: 22rpx;
   line-height: 1.5;
 }
 
@@ -152,17 +162,17 @@ page {
   align-items: center;
   gap: 10rpx;
   margin-top: 14rpx;
-  color: #5d6b76;
+  color: #617277;
   font-size: 22rpx;
 }
 
 .select-dot {
   width: 14rpx;
   height: 14rpx;
-  background: #d6dee4;
+  background: #d6dee1;
   border: 4rpx solid #ffffff;
   border-radius: 50%;
-  box-shadow: 0 0 0 2rpx #d6dee4;
+  box-shadow: 0 0 0 2rpx #d6dee1;
 }
 
 .active.service .select-dot {
@@ -177,28 +187,28 @@ page {
 
 .role-visual {
   position: absolute;
-  top: 22rpx;
+  top: 20rpx;
   right: 18rpx;
-  bottom: 22rpx;
-  width: 218rpx;
+  bottom: 20rpx;
+  width: 216rpx;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  border-radius: 12rpx;
+  border-radius: 11rpx;
 }
 
 .service-visual {
-  background: #edf5f3;
+  background: linear-gradient(135deg, #eaf7f4, #f7fbfa);
 }
 
 .client-visual {
-  background: #f8f1e6;
+  background: linear-gradient(135deg, #fbf2e5, #fdfaf5);
 }
 
 .role-image {
-  width: 206rpx;
-  height: 206rpx;
+  width: 204rpx;
+  height: 204rpx;
 }
 
 .enter-button {
@@ -211,14 +221,15 @@ page {
   margin-top: auto;
   color: #ffffff;
   font-size: 26rpx;
-  font-weight: 600;
-  background: #17877b;
-  border-radius: 10rpx;
+  font-weight: 700;
+  background: linear-gradient(135deg, #17877b, #22a390);
+  border-radius: 11rpx;
+  box-shadow: 0 10rpx 22rpx rgba(23, 135, 123, 0.18);
 }
 
 .enter-button[disabled] {
   color: #ffffff;
-  background: #6ca9a2;
+  background: #80bcb5;
 }
 
 .enter-button[disabled] .button-arrow {
@@ -257,7 +268,7 @@ page {
 
 .agreement {
   margin-top: 20rpx;
-  color: #8b97a1;
-  font-size: 22rpx;
+  color: #93a0a4;
+  font-size: 21rpx;
   text-align: center;
 }

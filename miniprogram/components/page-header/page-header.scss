@@ -5,6 +5,7 @@
 .header-inner {
   display: flex;
   align-items: center;
+  padding-top: 8rpx;
 }
 
 .header-copy {
@@ -13,20 +14,21 @@
 
 .header-title {
   overflow: hidden;
-  color: #1c2b33;
-  font-size: 36rpx;
-  font-weight: 600;
-  line-height: 1.2;
+  color: #20333a;
+  font-size: 42rpx;
+  font-weight: 700;
+  line-height: 1.12;
+  letter-spacing: -1.2rpx;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .header-subtitle {
   overflow: hidden;
-  margin-top: 4rpx;
-  color: #8b97a1;
-  font-size: 22rpx;
-  line-height: 1.3;
+  margin-top: 12rpx;
+  color: #829196;
+  font-size: 23rpx;
+  line-height: 1.35;
   text-overflow: ellipsis;
   white-space: nowrap;
 }

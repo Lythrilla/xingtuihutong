@@ -1,15 +1,15 @@
 .steps {
   display: flex;
   align-items: flex-start;
-  margin: 24rpx 16rpx 28rpx;
+  margin: 30rpx 10rpx 28rpx;
 }
 
 .step {
   display: flex;
   flex-direction: column;
   align-items: center;
-  color: #8b97a1;
-  font-size: 22rpx;
+  color: #9aa6a9;
+  font-size: 21rpx;
 }
 
 .step-number {
@@ -19,19 +19,21 @@
   align-items: center;
   justify-content: center;
   margin-bottom: 8rpx;
-  color: #8b97a1;
+  color: #88989c;
   font-size: 22rpx;
-  background: #e8ecef;
-  border-radius: 50%;
+  font-weight: 700;
+  background: #e8edef;
+  border-radius: 11rpx;
 }
 
 .step.active {
   color: #17877b;
+  font-weight: 600;
 }
 
 .step.active .step-number {
   color: #ffffff;
-  background: #17877b;
+  background: linear-gradient(135deg, #17877b, #22a390);
 }
 
 .step.done .step-number {
@@ -47,27 +49,28 @@
   height: 2rpx;
   flex: 1;
   margin: 24rpx 12rpx 0;
-  background: #e1e6e9;
+  background: #e1e7e8;
 }
 
 .step-line.active {
-  background: #17877b;
+  background: #83c6bd;
 }
 
 .form-section {
-  margin-bottom: 20rpx;
-  padding: 24rpx;
+  margin-bottom: 18rpx;
+  padding: 26rpx 24rpx;
 }
 
 .form-title {
-  font-size: 30rpx;
-  font-weight: 600;
+  color: #263b40;
+  font-size: 29rpx;
+  font-weight: 700;
 }
 
 .form-desc {
   margin-top: 8rpx;
-  color: #77848f;
-  font-size: 23rpx;
+  color: #849297;
+  font-size: 22rpx;
 }
 
 .song-scroll {
@@ -77,7 +80,7 @@
 
 .song-row {
   display: inline-flex;
-  gap: 20rpx;
+  gap: 16rpx;
 }
 
 .song-card {
@@ -86,13 +89,13 @@
   display: inline-flex;
   flex-direction: column;
   padding: 10rpx 10rpx 18rpx;
-  background: #f7f9fb;
+  background: #f7f9fa;
   border: 2rpx solid transparent;
-  border-radius: 12rpx;
+  border-radius: 11rpx;
 }
 
 .song-card.selected {
-  background: #ecf5f3;
+  background: #eaf6f3;
   border-color: #17877b;
 }
 
@@ -100,19 +103,19 @@
   position: relative;
   height: 128rpx;
   overflow: hidden;
-  border-radius: 10rpx;
+  border-radius: 9rpx;
 }
 
 .sunset {
-  background: #c98a7e;
+  background: linear-gradient(135deg, #d29a85, #b76f72);
 }
 
 .ocean {
-  background: #5f9aab;
+  background: linear-gradient(135deg, #74abb8, #4d7f9f);
 }
 
 .violet {
-  background: #8579b6;
+  background: linear-gradient(135deg, #9d91c6, #7468a1);
 }
 
 .disc {
@@ -155,15 +158,15 @@
 
 .song-name {
   margin-top: 16rpx;
-  color: #1c2b33;
-  font-size: 26rpx;
-  font-weight: 600;
+  color: #263b40;
+  font-size: 25rpx;
+  font-weight: 700;
 }
 
 .song-artist {
   margin-top: 6rpx;
-  color: #8b97a1;
-  font-size: 22rpx;
+  color: #8b999d;
+  font-size: 21rpx;
 }
 
 .song-check {
@@ -179,7 +182,7 @@
   font-size: 18rpx;
   background: #17877b;
   border: 4rpx solid #ffffff;
-  border-radius: 50%;
+  border-radius: 9rpx;
 }
 
 .song-card.selected .song-check {
@@ -189,20 +192,20 @@
 .target-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16rpx;
+  gap: 14rpx;
   margin-top: 24rpx;
 }
 
 .target-card {
   min-height: 160rpx;
   padding: 20rpx;
-  background: #f7f9fb;
+  background: #f7f9fa;
   border: 2rpx solid transparent;
-  border-radius: 12rpx;
+  border-radius: 11rpx;
 }
 
 .target-card.selected {
-  background: #ecf5f3;
+  background: #eaf6f3;
   border-color: #17877b;
 }
 
@@ -213,7 +216,7 @@
   align-items: center;
   justify-content: center;
   color: #17877b;
-  background: #e7f2f0;
+  background: #e2f2ee;
   border-radius: 10rpx;
 }
 
@@ -224,51 +227,52 @@
 
 .target-title {
   margin-top: 14rpx;
-  font-size: 26rpx;
-  font-weight: 600;
+  color: #263b40;
+  font-size: 25rpx;
+  font-weight: 700;
 }
 
 .target-desc {
   margin-top: 8rpx;
-  color: #77848f;
-  font-size: 22rpx;
+  color: #849297;
+  font-size: 21rpx;
   line-height: 1.45;
 }
 
 .budget-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 16rpx;
+  gap: 14rpx;
   margin-top: 24rpx;
 }
 
 .budget {
-  width: calc(50% - 8rpx);
+  width: calc(50% - 7rpx);
   height: 68rpx;
   display: flex;
   align-items: center;
   gap: 16rpx;
-  padding: 0 20rpx;
-  color: #5d6b76;
-  font-size: 24rpx;
-  background: #f7f9fb;
+  padding: 0 18rpx;
+  color: #627478;
+  font-size: 23rpx;
+  background: #f7f9fa;
   border: 1rpx solid transparent;
-  border-radius: 12rpx;
+  border-radius: 10rpx;
 }
 
 .radio {
   width: 20rpx;
   height: 20rpx;
-  background: #d9e0e4;
+  background: #d9e1e3;
   border: 4rpx solid #ffffff;
   border-radius: 50%;
-  box-shadow: 0 0 0 2rpx #d9e0e4;
+  box-shadow: 0 0 0 2rpx #d9e1e3;
 }
 
 .budget.selected {
   color: #17877b;
-  background: #ecf5f3;
-  border-color: #17877b;
+  background: #eaf6f3;
+  border-color: rgba(23, 135, 123, 0.2);
 }
 
 .budget.selected .radio {
@@ -278,14 +282,14 @@
 
 .match-button {
   gap: 12rpx;
-  margin: 24rpx 0 8rpx;
+  margin: 26rpx 0 8rpx;
 }
 
 .selection-summary {
   margin: 28rpx 0 12rpx;
   overflow: hidden;
-  color: #6f7d84;
-  font-size: 23rpx;
+  color: #75858a;
+  font-size: 22rpx;
   text-align: center;
   text-overflow: ellipsis;
   white-space: nowrap;
