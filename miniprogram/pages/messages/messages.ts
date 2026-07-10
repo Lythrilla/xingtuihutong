@@ -4,14 +4,14 @@ Component({
   data: {
     notices: [
       {
-        icon: '✦',
+        icon: 'spark',
         iconClass: 'mint',
         title: 'AI 匹配成功',
         desc: '为《晴朗以后》找到 3 位高匹配推广伙伴',
         time: '刚刚',
       },
       {
-        icon: '￥',
+        icon: 'wallet',
         iconClass: 'gold',
         title: '结算到账',
         desc: '《微醺日落》推广合作款 ¥6,800 已入账',

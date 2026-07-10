@@ -1,37 +1,19 @@
 .hero {
   position: relative;
-  height: 320rpx;
+  height: 246rpx;
+  display: flex;
+  align-items: center;
   overflow: hidden;
   margin-top: 24rpx;
+  padding: 26rpx 24rpx;
   background: #ffffff;
   border: 1rpx solid #e9edf0;
-  border-radius: 16rpx;
-}
-
-.hero-image {
-  position: absolute;
-  top: -56rpx;
-  left: 50%;
-  width: 352rpx;
-  height: 352rpx;
-  border-radius: 50%;
-  transform: translateX(-50%);
-  opacity: 0.9;
-  mix-blend-mode: multiply;
+  border-radius: 14rpx;
 }
 
 .hero-copy {
-  position: absolute;
-  z-index: 3;
-  right: 24rpx;
-  bottom: 20rpx;
-  left: 24rpx;
-  padding: 20rpx 24rpx;
-  text-align: center;
-  background: rgba(255, 255, 255, 0.9);
-  border: 1rpx solid #e9edf0;
-  border-radius: 12rpx;
-  backdrop-filter: blur(16rpx);
+  width: 58%;
+  min-width: 0;
 }
 
 .hero-kicker {
@@ -42,15 +24,36 @@
 }
 
 .hero-title {
-  margin-top: 8rpx;
+  margin-top: 12rpx;
   font-size: 30rpx;
   font-weight: 600;
+  line-height: 1.4;
 }
 
 .hero-desc {
-  margin-top: 8rpx;
+  margin-top: 10rpx;
   color: #77848f;
   font-size: 22rpx;
+  line-height: 1.5;
+}
+
+.hero-visual {
+  position: absolute;
+  top: 22rpx;
+  right: 22rpx;
+  bottom: 22rpx;
+  width: 224rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #edf5f3;
+  border-radius: 12rpx;
+}
+
+.hero-image {
+  width: 210rpx;
+  height: 210rpx;
 }
 
 .tabs {
@@ -58,11 +61,11 @@
   margin-top: 24rpx;
   padding: 6rpx;
   background: #eceff2;
-  border-radius: 12rpx;
+  border-radius: 10rpx;
 }
 
 .tab {
-  height: 68rpx;
+  height: 62rpx;
   flex: 1;
   display: flex;
   align-items: center;
@@ -82,21 +85,26 @@
   display: flex;
   gap: 20rpx;
   margin-top: 24rpx;
-  padding: 24rpx;
+  padding: 20rpx 22rpx;
   background: #ecf5f3;
-  border-radius: 16rpx;
+  border-radius: 14rpx;
 }
 
 .insight-icon {
-  width: 64rpx;
-  height: 64rpx;
+  width: 56rpx;
+  height: 56rpx;
   flex: none;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #ffffff;
   background: #17877b;
-  border-radius: 12rpx;
+  border-radius: 10rpx;
+}
+
+.insight-icon .ui-icon {
+  width: 28rpx;
+  height: 28rpx;
 }
 
 .insight-title {
@@ -119,7 +127,7 @@
 }
 
 .plan {
-  padding: 28rpx;
+  padding: 24rpx;
 }
 
 .plan-head {
@@ -128,16 +136,19 @@
 }
 
 .plan-icon {
-  width: 76rpx;
-  height: 76rpx;
+  width: 66rpx;
+  height: 66rpx;
   flex: none;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-right: 20rpx;
-  font-size: 26rpx;
-  font-weight: 600;
-  border-radius: 12rpx;
+  border-radius: 10rpx;
+}
+
+.plan-icon .ui-icon {
+  width: 31rpx;
+  height: 31rpx;
 }
 
 .aqua {
@@ -238,19 +249,20 @@
 }
 
 .plan-button {
-  height: 62rpx;
+  min-width: 128rpx;
+  height: 56rpx;
   display: flex;
   align-items: center;
-  padding: 0 28rpx;
+  padding: 0 22rpx;
   color: #ffffff;
   font-size: 24rpx;
   font-weight: 600;
   background: #17877b;
-  border-radius: 10rpx;
+  border-radius: 9rpx;
 }
 
 .refresh {
-  height: 72rpx;
+  height: 64rpx;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -258,4 +270,9 @@
   margin-top: 32rpx;
   color: #5d6b76;
   font-size: 24rpx;
+}
+
+.refresh .ui-icon {
+  width: 28rpx;
+  height: 28rpx;
 }

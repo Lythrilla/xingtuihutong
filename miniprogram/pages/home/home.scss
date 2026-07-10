@@ -4,7 +4,7 @@
 
 .summary {
   margin-top: 24rpx;
-  padding: 28rpx;
+  padding: 24rpx;
 }
 
 .summary-head {
@@ -56,19 +56,21 @@
 
 .ai-banner {
   position: relative;
-  height: 232rpx;
+  height: 220rpx;
+  display: flex;
+  align-items: center;
   overflow: hidden;
   margin-top: 24rpx;
-  padding: 28rpx;
+  padding: 24rpx;
   background: #ffffff;
   border: 1rpx solid #e9edf0;
-  border-radius: 16rpx;
+  border-radius: 14rpx;
 }
 
 .ai-copy {
   position: relative;
   z-index: 2;
-  width: 60%;
+  width: 62%;
 }
 
 .ai-label {
@@ -79,8 +81,8 @@
 }
 
 .ai-title {
-  margin-top: 12rpx;
-  font-size: 30rpx;
+  margin-top: 10rpx;
+  font-size: 28rpx;
   font-weight: 600;
   line-height: 1.35;
 }
@@ -93,26 +95,67 @@
 }
 
 .ai-link {
-  margin-top: 16rpx;
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  margin-top: 14rpx;
   color: #17877b;
   font-size: 22rpx;
   font-weight: 600;
 }
 
-.ai-image {
+.link-arrow {
+  position: relative;
+  width: 22rpx;
+  height: 22rpx;
+}
+
+.link-arrow::before,
+.link-arrow::after {
   position: absolute;
-  top: -8rpx;
-  right: -20rpx;
-  width: 252rpx;
-  height: 252rpx;
-  border-radius: 16rpx;
-  opacity: 0.9;
-  mix-blend-mode: multiply;
+  content: "";
+}
+
+.link-arrow::before {
+  top: 10rpx;
+  left: 1rpx;
+  width: 18rpx;
+  height: 2rpx;
+  background: currentColor;
+}
+
+.link-arrow::after {
+  top: 6rpx;
+  right: 2rpx;
+  width: 8rpx;
+  height: 8rpx;
+  border-top: 2rpx solid currentColor;
+  border-right: 2rpx solid currentColor;
+  transform: rotate(45deg);
+}
+
+.ai-visual {
+  position: absolute;
+  top: 20rpx;
+  right: 20rpx;
+  bottom: 20rpx;
+  width: 190rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #edf5f3;
+  border-radius: 12rpx;
+}
+
+.ai-image {
+  width: 176rpx;
+  height: 176rpx;
 }
 
 .recommend-list {
   overflow: hidden;
-  padding: 0 28rpx;
+  padding: 0 24rpx;
 }
 
 .recommend-item {
@@ -208,27 +251,31 @@
 }
 
 .quick-card {
-  height: 136rpx;
+  height: 124rpx;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 12rpx;
+  gap: 10rpx;
   color: #5d6b76;
   font-size: 22rpx;
   background: #ffffff;
   border: 1rpx solid #e9edf0;
-  border-radius: 16rpx;
+  border-radius: 14rpx;
 }
 
 .quick-icon {
-  width: 56rpx;
-  height: 56rpx;
+  width: 52rpx;
+  height: 52rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 28rpx;
-  border-radius: 12rpx;
+  border-radius: 10rpx;
+}
+
+.quick-icon .ui-icon {
+  width: 28rpx;
+  height: 28rpx;
 }
 
 .mint-bg {

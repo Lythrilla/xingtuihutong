@@ -2,8 +2,8 @@
   <view class="brand-shell" style="padding-top: {{statusBarHeight}}px;">
     <view class="brand" style="height: {{navigationHeight}}px; padding-right: {{rightInset}}px;">
       <view class="brand-mark">
-        <view class="spark spark-one">✦</view>
-        <view class="spark spark-two">✦</view>
+        <view class="ui-icon icon-spark spark spark-one"></view>
+        <view class="ui-icon icon-spark spark spark-two"></view>
       </view>
       <view class="brand-copy">
         <view class="brand-name">星推互通</view>
@@ -29,7 +29,9 @@
           <text>{{selectedRole === 'provider' ? '已选择' : '选择此角色'}}</text>
         </view>
       </view>
-      <image class="role-image" src="/assets/images/role-service.png" mode="aspectFill"></image>
+      <view class="role-visual service-visual">
+        <image class="role-image" src="/assets/images/role-service.png" mode="aspectFit"></image>
+      </view>
     </view>
 
     <view class="role-card client {{selectedRole === 'client' ? 'active' : ''}}" data-role="client" bindtap="selectRole">
@@ -42,13 +44,15 @@
           <text>{{selectedRole === 'client' ? '已选择' : '选择此角色'}}</text>
         </view>
       </view>
-      <image class="role-image" src="/assets/images/role-client.png" mode="aspectFill"></image>
+      <view class="role-visual client-visual">
+        <image class="role-image" src="/assets/images/role-client.png" mode="aspectFit"></image>
+      </view>
     </view>
   </view>
 
   <button class="enter-button" bindtap="enterApp">
     <text>进入星推互通</text>
-    <text class="arrow">→</text>
+    <view class="button-arrow"></view>
   </button>
   <view class="agreement">进入即表示同意《平台服务协议》与《隐私政策》</view>
 </view>
