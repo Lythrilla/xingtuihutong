@@ -1,6 +1,8 @@
 page {
   height: 100%;
-  background: #f4f7f7;
+  background:
+    linear-gradient(180deg, rgba(214, 241, 236, 0.32), rgba(246, 247, 249, 0) 340rpx),
+    #f6f7f9;
 }
 
 .page {
@@ -11,19 +13,19 @@ page {
 
 .conversation-status {
   flex: none;
-  padding: 12rpx 24rpx;
-  color: #78868d;
+  padding: 13rpx 24rpx;
+  color: #718287;
   font-size: 21rpx;
   text-align: center;
-  background: #edf3f2;
-  border-top: 1rpx solid #e3e9e9;
-  border-bottom: 1rpx solid #dce5e4;
+  background: rgba(234, 246, 243, 0.82);
+  border-top: 1rpx solid rgba(23, 135, 123, 0.06);
+  border-bottom: 1rpx solid rgba(23, 135, 123, 0.1);
 }
 
 .messages {
   flex: 1;
   box-sizing: border-box;
-  padding: 28rpx;
+  padding: 28rpx 24rpx;
 }
 
 .conversation-empty {
@@ -31,27 +33,28 @@ page {
   margin: 120rpx auto 0;
   padding: 38rpx 32rpx;
   text-align: center;
-  background: #ffffff;
-  border: 1rpx solid #e1e8e9;
-  border-radius: 16rpx;
+  background: rgba(255, 255, 255, 0.88);
+  border: 1rpx solid rgba(38, 64, 71, 0.08);
+  border-radius: 14rpx;
+  box-shadow: 0 12rpx 32rpx rgba(30, 51, 58, 0.06);
 }
 
 .empty-title {
-  color: #29393e;
+  color: #293d42;
   font-size: 28rpx;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .empty-description {
   margin-top: 12rpx;
-  color: #839096;
+  color: #839297;
   font-size: 23rpx;
   line-height: 1.55;
 }
 
 .message-row {
   display: flex;
-  margin-bottom: 20rpx;
+  margin-bottom: 18rpx;
 }
 
 .message-row.mine {
@@ -61,18 +64,21 @@ page {
 .message {
   max-width: 74%;
   padding: 18rpx 22rpx 14rpx;
-  color: #29393e;
-  font-size: 28rpx;
+  color: #293d42;
+  font-size: 27rpx;
   line-height: 1.5;
   background: #ffffff;
-  border: 1rpx solid #e1e8e9;
-  border-radius: 18rpx;
+  border: 1rpx solid rgba(38, 64, 71, 0.08);
+  border-radius: 12rpx 12rpx 12rpx 4rpx;
+  box-shadow: 0 5rpx 16rpx rgba(30, 51, 58, 0.045);
 }
 
 .mine .message {
   color: #ffffff;
-  background: #167f74;
-  border-color: #167f74;
+  background: linear-gradient(135deg, #17877b, #22a390);
+  border-color: transparent;
+  border-radius: 12rpx 12rpx 4rpx 12rpx;
+  box-shadow: 0 7rpx 18rpx rgba(23, 135, 123, 0.14);
 }
 
 .time {
@@ -88,19 +94,22 @@ page {
 
 .composer {
   display: flex;
-  gap: 16rpx;
-  padding: 20rpx 24rpx calc(20rpx + env(safe-area-inset-bottom));
-  background: #ffffff;
-  border-top: 1rpx solid #dfe7e8;
+  gap: 14rpx;
+  padding: 18rpx 24rpx calc(18rpx + env(safe-area-inset-bottom));
+  background: rgba(255, 255, 255, 0.96);
+  border-top: 1rpx solid rgba(38, 64, 71, 0.08);
 }
 
 .composer input {
+  min-width: 0;
   flex: 1;
   height: 76rpx;
-  padding: 0 24rpx;
-  font-size: 28rpx;
-  background: #f1f5f5;
-  border-radius: 14rpx;
+  padding: 0 22rpx;
+  color: #293d42;
+  font-size: 27rpx;
+  background: #f2f6f5;
+  border: 1rpx solid #e2eaea;
+  border-radius: 11rpx;
 }
 
 .composer button {
@@ -108,10 +117,11 @@ page {
   height: 76rpx;
   margin: 0;
   color: #ffffff;
-  font-size: 27rpx;
+  font-size: 26rpx;
+  font-weight: 700;
   line-height: 76rpx;
-  background: #167f74;
-  border-radius: 14rpx;
+  background: linear-gradient(135deg, #17877b, #22a390);
+  border-radius: 11rpx;
 }
 
 .composer button[disabled] {

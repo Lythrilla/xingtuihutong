@@ -1,11 +1,25 @@
 .profile-card {
   position: relative;
   overflow: hidden;
-  margin-top: 24rpx;
+  margin-top: 30rpx;
   padding: 28rpx;
   color: #ffffff;
-  background: #17877b;
+  background: linear-gradient(135deg, #167f74, #22a390);
   border-radius: 14rpx;
+  box-shadow:
+    0 1rpx 2rpx rgba(30, 51, 58, 0.06),
+    0 14rpx 30rpx rgba(23, 135, 123, 0.16);
+}
+
+.profile-card::after {
+  position: absolute;
+  right: -50rpx;
+  bottom: -90rpx;
+  width: 260rpx;
+  height: 260rpx;
+  content: "";
+  border: 1rpx solid rgba(255, 255, 255, 0.16);
+  border-radius: 50%;
 }
 
 .profile-head {
@@ -22,10 +36,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: 24rpx;
+  margin-right: 22rpx;
   color: #17877b;
   font-size: 38rpx;
-  font-weight: 600;
+  font-weight: 700;
   background: #ffffff;
   border-radius: 12rpx;
 }
@@ -36,8 +50,11 @@
 }
 
 .profile-name {
+  overflow: hidden;
   font-size: 32rpx;
-  font-weight: 600;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .profile-role {
@@ -46,7 +63,7 @@
   gap: 8rpx;
   margin-top: 8rpx;
   color: rgba(255, 255, 255, 0.82);
-  font-size: 23rpx;
+  font-size: 22rpx;
 }
 
 .role-check {
@@ -59,7 +76,7 @@
   font-size: 16rpx;
   line-height: 1;
   background: rgba(255, 255, 255, 0.9);
-  border-radius: 50%;
+  border-radius: 7rpx;
 }
 
 .edit-button {
@@ -67,11 +84,11 @@
   height: 52rpx;
   display: flex;
   align-items: center;
-  padding: 0 20rpx;
+  padding: 0 18rpx;
   color: #ffffff;
-  font-size: 23rpx;
+  font-size: 22rpx;
   background: rgba(255, 255, 255, 0.14);
-  border: 1rpx solid rgba(255, 255, 255, 0.25);
+  border: 1rpx solid rgba(255, 255, 255, 0.28);
   border-radius: 9rpx;
 }
 
@@ -85,7 +102,7 @@
   z-index: 2;
   margin-top: 24rpx;
   color: rgba(255, 255, 255, 0.86);
-  font-size: 24rpx;
+  font-size: 23rpx;
   line-height: 1.5;
 }
 
@@ -104,14 +121,15 @@
 }
 
 .profile-stat text {
-  font-size: 34rpx;
-  font-weight: 600;
+  font-size: 36rpx;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
 }
 
 .profile-stat view {
   margin-top: 8rpx;
   color: rgba(255, 255, 255, 0.72);
-  font-size: 22rpx;
+  font-size: 21rpx;
 }
 
 .certs {
@@ -124,8 +142,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  color: #5d6b76;
-  font-size: 23rpx;
+  color: #617478;
+  font-size: 22rpx;
 }
 
 .cert-icon {
@@ -146,36 +164,36 @@
 .cert view:last-child {
   margin-top: 8rpx;
   color: #17877b;
-  font-size: 22rpx;
+  font-size: 21rpx;
 }
 
 .mint {
   color: #17877b;
-  background: #e7f2f0;
+  background: #eaf6f3;
 }
 
 .blue {
   color: #3d6ea8;
-  background: #e9f0f8;
+  background: #e9f1f9;
 }
 
 .gold {
   color: #a3782e;
-  background: #f7efe1;
+  background: #f8f0e3;
 }
 
 .skill-card {
   display: flex;
   flex-wrap: wrap;
-  gap: 16rpx;
+  gap: 12rpx;
   padding: 24rpx;
 }
 
 .skill-card text {
-  padding: 12rpx 20rpx;
-  color: #5d6b76;
-  font-size: 23rpx;
-  background: #f1f4f6;
+  padding: 10rpx 16rpx;
+  color: #617478;
+  font-size: 22rpx;
+  background: #f1f4f4;
   border-radius: 8rpx;
 }
 
@@ -185,7 +203,7 @@
 
 .cases {
   display: inline-flex;
-  gap: 20rpx;
+  gap: 16rpx;
 }
 
 .case-card {
@@ -198,19 +216,30 @@
   overflow: hidden;
   padding: 24rpx;
   color: #ffffff;
-  border-radius: 16rpx;
+  border-radius: 13rpx;
+}
+
+.case-card::after {
+  position: absolute;
+  right: -30rpx;
+  bottom: -50rpx;
+  width: 150rpx;
+  height: 150rpx;
+  content: "";
+  border: 1rpx solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
 }
 
 .sunset {
-  background: #c98a7e;
+  background: linear-gradient(135deg, #d29a85, #b76f72);
 }
 
 .ocean {
-  background: #5f9aab;
+  background: linear-gradient(135deg, #74abb8, #4d7f9f);
 }
 
 .violet {
-  background: #8579b6;
+  background: linear-gradient(135deg, #9d91c6, #7468a1);
 }
 
 .case-type,
@@ -222,13 +251,13 @@
 
 .case-type {
   color: rgba(255, 255, 255, 0.72);
-  font-size: 22rpx;
+  font-size: 21rpx;
 }
 
 .case-name {
   margin-top: 8rpx;
   font-size: 28rpx;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .case-result {
@@ -239,7 +268,7 @@
 .wallet {
   display: flex;
   align-items: center;
-  gap: 20rpx;
+  gap: 18rpx;
   padding: 24rpx;
 }
 
@@ -251,7 +280,7 @@
   align-items: center;
   justify-content: center;
   color: #17877b;
-  background: #e7f2f0;
+  background: #eaf6f3;
   border-radius: 10rpx;
 }
 
@@ -266,14 +295,16 @@
 }
 
 .wallet-label {
-  color: #8b97a1;
-  font-size: 23rpx;
+  color: #8b999d;
+  font-size: 22rpx;
 }
 
 .wallet-value {
   margin-top: 6rpx;
+  color: #263b40;
   font-size: 34rpx;
-  font-weight: 600;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
 }
 
 .wallet-button {
@@ -281,12 +312,12 @@
   height: 56rpx;
   display: flex;
   align-items: center;
-  padding: 0 24rpx;
+  padding: 0 22rpx;
   color: #ffffff;
-  font-size: 24rpx;
-  font-weight: 600;
-  background: #17877b;
-  border-radius: 9rpx;
+  font-size: 23rpx;
+  font-weight: 700;
+  background: linear-gradient(135deg, #17877b, #22a390);
+  border-radius: 10rpx;
 }
 
 .menu {
@@ -299,18 +330,18 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  color: #5d6b76;
-  font-size: 26rpx;
+  color: #617478;
+  font-size: 25rpx;
 }
 
 .menu-item + .menu-item {
-  border-top: 1rpx solid #edf1f3;
+  border-top: 1rpx solid #edf1f2;
 }
 
 .menu-chevron {
   width: 14rpx;
   height: 14rpx;
-  color: #8b97a1;
+  color: #8b999d;
   border-top: 2rpx solid currentColor;
   border-right: 2rpx solid currentColor;
   transform: rotate(45deg);
@@ -321,12 +352,13 @@
   height: 76rpx;
   margin: 24rpx 0 0;
   color: #17877b;
-  font-size: 25rpx;
-  font-weight: 600;
+  font-size: 24rpx;
+  font-weight: 700;
   line-height: 76rpx;
   background: #ffffff;
-  border: 1rpx solid #dce5e6;
-  border-radius: 12rpx;
+  border: 1rpx solid rgba(23, 135, 123, 0.18);
+  border-radius: 11rpx;
+  box-shadow: 0 6rpx 20rpx rgba(30, 51, 58, 0.04);
 }
 
 .role-switch::after {
@@ -339,7 +371,7 @@
   inset: 0;
   display: flex;
   align-items: flex-end;
-  background: rgba(20, 35, 41, 0.36);
+  background: rgba(20, 35, 41, 0.34);
 }
 
 .sheet-card {
@@ -348,7 +380,8 @@
   overflow-y: auto;
   padding: 30rpx 28rpx calc(32rpx + env(safe-area-inset-bottom));
   background: #ffffff;
-  border-radius: 22rpx 22rpx 0 0;
+  border-radius: 16rpx 16rpx 0 0;
+  box-shadow: 0 -8rpx 30rpx rgba(30, 51, 58, 0.1);
 }
 
 .sheet-head {
@@ -359,23 +392,24 @@
 }
 
 .sheet-title {
+  color: #263b40;
   font-size: 32rpx;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .sheet-description {
   margin-top: 8rpx;
-  color: #7c8990;
+  color: #829196;
   font-size: 22rpx;
 }
 
 .sheet-close {
   width: 54rpx;
   height: 54rpx;
-  color: #6d7a81;
+  color: #6d7d81;
   font-size: 38rpx;
-  background: #f0f3f4;
-  border-radius: 50%;
+  background: #f0f4f4;
+  border-radius: 10rpx;
 }
 
 .field {
@@ -384,9 +418,9 @@
 }
 
 .field > text {
-  color: #4f5e65;
-  font-size: 24rpx;
-  font-weight: 600;
+  color: #52666b;
+  font-size: 23rpx;
+  font-weight: 700;
 }
 
 .field input,
@@ -394,9 +428,10 @@
 .amount-input {
   width: 100%;
   margin-top: 12rpx;
+  color: #263b40;
   font-size: 26rpx;
-  background: #f5f7f8;
-  border: 1rpx solid #e0e6e8;
+  background: #f5f7f7;
+  border: 1rpx solid #e0e7e8;
   border-radius: 10rpx;
 }
 
@@ -413,7 +448,7 @@
 
 .field-hint {
   margin-top: 8rpx;
-  color: #96a0a5;
+  color: #96a3a6;
   font-size: 20rpx;
   text-align: right;
 }
@@ -424,16 +459,16 @@
   margin-top: 30rpx;
   color: #ffffff;
   font-size: 26rpx;
-  font-weight: 600;
-  background: #17877b;
-  border-radius: 10rpx;
+  font-weight: 700;
+  background: linear-gradient(135deg, #17877b, #22a390);
+  border-radius: 11rpx;
 }
 
 .balance-summary {
   margin-top: 26rpx;
   padding: 24rpx;
-  background: #ecf5f3;
-  border-radius: 12rpx;
+  background: #eaf6f3;
+  border-radius: 11rpx;
 }
 
 .balance-summary view {
@@ -446,7 +481,7 @@
   margin-top: 6rpx;
   color: #17877b;
   font-size: 38rpx;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .amount-input {
@@ -459,7 +494,7 @@
 .amount-input > text {
   color: #35454c;
   font-size: 32rpx;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .amount-input input {
