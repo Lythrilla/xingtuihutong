@@ -4,29 +4,8 @@
   margin-top: 24rpx;
   padding: 32rpx;
   color: #ffffff;
-  background: linear-gradient(135deg, #3fcbb5 0%, #28b0a0 52%, #2f93a2 100%);
-  border-radius: 28rpx;
-  box-shadow: 0 14rpx 34rpx rgba(40, 176, 160, 0.22);
-}
-
-.profile-shape {
-  position: absolute;
-  border: 1rpx solid rgba(255, 255, 255, 0.18);
-  border-radius: 50%;
-}
-
-.shape-one {
-  top: -100rpx;
-  right: -50rpx;
-  width: 300rpx;
-  height: 300rpx;
-}
-
-.shape-two {
-  right: 76rpx;
-  bottom: -130rpx;
-  width: 250rpx;
-  height: 250rpx;
+  background: #17877b;
+  border-radius: 16rpx;
 }
 
 .profile-head {
@@ -44,12 +23,11 @@
   align-items: center;
   justify-content: center;
   margin-right: 24rpx;
-  color: #42b9aa;
+  color: #17877b;
   font-size: 38rpx;
-  font-weight: 700;
-  background: rgba(255, 255, 255, 0.94);
-  border: 5rpx solid rgba(255, 255, 255, 0.3);
-  border-radius: 30rpx;
+  font-weight: 600;
+  background: #ffffff;
+  border-radius: 12rpx;
 }
 
 .profile-main {
@@ -59,7 +37,7 @@
 
 .profile-name {
   font-size: 32rpx;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .profile-role {
@@ -75,9 +53,9 @@
   padding: 0 24rpx;
   color: #ffffff;
   font-size: 23rpx;
-  background: rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.14);
   border: 1rpx solid rgba(255, 255, 255, 0.25);
-  border-radius: 999rpx;
+  border-radius: 10rpx;
 }
 
 .profile-desc {
@@ -105,7 +83,7 @@
 
 .profile-stat text {
   font-size: 34rpx;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .profile-stat view {
@@ -124,7 +102,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  color: #4e5e6b;
+  color: #5d6b76;
   font-size: 23rpx;
 }
 
@@ -136,28 +114,28 @@
   justify-content: center;
   margin-bottom: 12rpx;
   font-size: 24rpx;
-  border-radius: 20rpx;
+  border-radius: 12rpx;
 }
 
 .cert view:last-child {
   margin-top: 8rpx;
-  color: #36b4a1;
+  color: #17877b;
   font-size: 22rpx;
 }
 
 .mint {
-  color: #2daf9d;
-  background: #e6faf6;
+  color: #17877b;
+  background: #e7f2f0;
 }
 
 .blue {
-  color: #5d8fd4;
-  background: #ebf3ff;
+  color: #3d6ea8;
+  background: #e9f0f8;
 }
 
 .gold {
-  color: #bc8b35;
-  background: #fff4df;
+  color: #a3782e;
+  background: #f7efe1;
 }
 
 .skill-card {
@@ -169,10 +147,10 @@
 
 .skill-card text {
   padding: 12rpx 20rpx;
-  color: #52766f;
+  color: #5d6b76;
   font-size: 23rpx;
-  background: #edf8f6;
-  border-radius: 999rpx;
+  background: #f1f4f6;
+  border-radius: 8rpx;
 }
 
 .case-scroll {
@@ -194,43 +172,19 @@
   overflow: hidden;
   padding: 24rpx;
   color: #ffffff;
-  border-radius: 28rpx;
-}
-
-.case-card::before,
-.case-card::after {
-  position: absolute;
-  content: "";
-  background: rgba(255, 255, 255, 0.13);
-  border-radius: 50%;
-}
-
-.case-card::before {
-  top: -50rpx;
-  right: -30rpx;
-  width: 170rpx;
-  height: 170rpx;
-}
-
-.case-card::after {
-  top: 35rpx;
-  right: 40rpx;
-  width: 70rpx;
-  height: 70rpx;
-  border: 12rpx solid rgba(255, 255, 255, 0.12);
-  background: transparent;
+  border-radius: 16rpx;
 }
 
 .sunset {
-  background: linear-gradient(145deg, #efb183, #ce6f86 65%, #6669ad);
+  background: #c98a7e;
 }
 
 .ocean {
-  background: linear-gradient(145deg, #70d2c7, #4b9eb6 65%, #4469a3);
+  background: #5f9aab;
 }
 
 .violet {
-  background: linear-gradient(145deg, #b294e7, #7861c8 65%, #45498e);
+  background: #8579b6;
 }
 
 .case-type,
@@ -270,10 +224,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #ffffff;
+  color: #17877b;
   font-size: 30rpx;
-  background: linear-gradient(135deg, #68e0ce, #37bea9);
-  border-radius: 24rpx;
+  background: #e7f2f0;
+  border-radius: 12rpx;
 }
 
 .wallet-main {
@@ -282,14 +236,14 @@
 }
 
 .wallet-label {
-  color: #73818e;
+  color: #8b97a1;
   font-size: 23rpx;
 }
 
 .wallet-value {
   margin-top: 6rpx;
   font-size: 34rpx;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .wallet-button {
@@ -300,8 +254,8 @@
   color: #ffffff;
   font-size: 24rpx;
   font-weight: 600;
-  background: linear-gradient(120deg, #63dac8, #35bca8);
-  border-radius: 999rpx;
+  background: #17877b;
+  border-radius: 10rpx;
 }
 
 .menu {
@@ -314,7 +268,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  color: #52616e;
+  color: #5d6b76;
   font-size: 26rpx;
 }
 
@@ -323,6 +277,6 @@
 }
 
 .menu-item text:last-child {
-  color: #82909c;
+  color: #8b97a1;
   font-size: 31rpx;
 }

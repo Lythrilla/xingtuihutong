@@ -1,7 +1,7 @@
 page {
   min-height: 100%;
-  color: #182330;
-  background: #f6f8fb;
+  color: #1c2b33;
+  background: #f7f8fa;
   font-size: 28rpx;
   line-height: 1.5;
   font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", sans-serif;
@@ -37,9 +37,7 @@ button::after {
 .page-shell {
   min-height: 100vh;
   padding: 0 32rpx calc(220rpx + env(safe-area-inset-bottom));
-  background:
-    radial-gradient(circle at 92% 5%, rgba(112, 224, 211, 0.16), transparent 27%),
-    linear-gradient(180deg, #fbfcfe 0%, #f5f8fb 100%);
+  background: #f7f8fa;
 }
 
 .section {
@@ -55,29 +53,28 @@ button::after {
 
 .section-title {
   font-size: 30rpx;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .section-action {
-  color: #73818e;
+  color: #8b97a1;
   font-size: 24rpx;
 }
 
 .card {
   background: #ffffff;
-  border: 1rpx solid rgba(35, 59, 80, 0.05);
-  border-radius: 24rpx;
-  box-shadow: 0 8rpx 24rpx rgba(42, 72, 96, 0.05);
+  border: 1rpx solid #e9edf0;
+  border-radius: 16rpx;
 }
 
 .pill {
   display: inline-flex;
   align-items: center;
   padding: 10rpx 20rpx;
-  color: #526270;
+  color: #5d6b76;
   font-size: 24rpx;
-  background: #f0f4f6;
-  border-radius: 999rpx;
+  background: #f1f4f6;
+  border-radius: 8rpx;
 }
 
 .primary-button {
@@ -87,10 +84,9 @@ button::after {
   justify-content: center;
   color: #ffffff;
   font-size: 28rpx;
-  font-weight: 700;
-  background: linear-gradient(120deg, #64ddcb, #36bfae);
-  border-radius: 999rpx;
-  box-shadow: 0 14rpx 32rpx rgba(58, 194, 174, 0.22);
+  font-weight: 600;
+  background: #17877b;
+  border-radius: 12rpx;
 }
 
 .secondary-button {
@@ -98,9 +94,9 @@ button::after {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #27ad9c;
+  color: #17877b;
   font-size: 26rpx;
   font-weight: 600;
-  background: #e9faf6;
-  border-radius: 999rpx;
+  background: #ecf5f3;
+  border-radius: 12rpx;
 }

@@ -6,13 +6,12 @@
   margin-top: 24rpx;
   padding: 0 24rpx;
   background: #ffffff;
-  border: 1rpx solid #edf0f2;
-  border-radius: 24rpx;
-  box-shadow: 0 10rpx 30rpx rgba(41, 69, 90, 0.05);
+  border: 1rpx solid #e9edf0;
+  border-radius: 12rpx;
 }
 
 .search-icon {
-  color: #8a97a3;
+  color: #8b97a1;
   font-size: 30rpx;
 }
 
@@ -22,7 +21,7 @@
 }
 
 .placeholder {
-  color: #7d8994;
+  color: #8b97a1;
 }
 
 .filter-scroll {
@@ -41,18 +40,18 @@
   justify-content: center;
   height: 60rpx;
   padding: 0 26rpx;
-  color: #667582;
+  color: #5d6b76;
   font-size: 24rpx;
   background: #ffffff;
-  border: 1rpx solid #edf0f2;
-  border-radius: 999rpx;
+  border: 1rpx solid #e9edf0;
+  border-radius: 10rpx;
 }
 
 .filter.active {
-  color: #199e8d;
+  color: #17877b;
   font-weight: 600;
-  background: #e6faf6;
-  border-color: #c5f0e8;
+  background: #ecf5f3;
+  border-color: #17877b;
 }
 
 .plaza-tip {
@@ -61,8 +60,8 @@
   gap: 20rpx;
   margin-top: 24rpx;
   padding: 24rpx;
-  background: linear-gradient(120deg, #edf9f7, #f2f3ff);
-  border-radius: 24rpx;
+  background: #ecf5f3;
+  border-radius: 16rpx;
 }
 
 .tip-icon {
@@ -73,8 +72,8 @@
   justify-content: center;
   color: #ffffff;
   font-size: 30rpx;
-  background: linear-gradient(135deg, #6ddecf, #7b79df);
-  border-radius: 20rpx;
+  background: #17877b;
+  border-radius: 12rpx;
 }
 
 .tip-title {
@@ -84,7 +83,7 @@
 
 .tip-desc {
   margin-top: 6rpx;
-  color: #71808d;
+  color: #5d6b76;
   font-size: 22rpx;
 }
 
@@ -112,26 +111,29 @@
   align-items: center;
   justify-content: center;
   margin-right: 20rpx;
-  color: #ffffff;
   font-size: 28rpx;
   font-weight: 600;
-  border-radius: 28rpx;
+  border-radius: 12rpx;
 }
 
 .aqua {
-  background: linear-gradient(135deg, #72dfcf, #37bca9);
+  color: #17877b;
+  background: #e7f2f0;
 }
 
 .gold {
-  background: linear-gradient(135deg, #f0cb83, #cc9740);
+  color: #a3782e;
+  background: #f7efe1;
 }
 
 .blue {
-  background: linear-gradient(135deg, #91c9f3, #5d8edb);
+  color: #3d6ea8;
+  background: #e9f0f8;
 }
 
 .violet {
-  background: linear-gradient(135deg, #bba9f2, #7966d7);
+  color: #665ea8;
+  background: #eeecf7;
 }
 
 .entry-identity {
@@ -149,14 +151,14 @@
 
 .verified {
   margin-top: 8rpx;
-  color: #30b3a1;
+  color: #17877b;
   font-size: 22rpx;
 }
 
 .match-score {
-  color: #35b6a3;
+  color: #17877b;
   font-size: 38rpx;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .match-score text {
@@ -165,7 +167,7 @@
 
 .entry-description {
   margin-top: 20rpx;
-  color: #596976;
+  color: #5d6b76;
   font-size: 24rpx;
   line-height: 1.55;
 }
@@ -179,10 +181,10 @@
 
 .tag {
   padding: 8rpx 16rpx;
-  color: #668078;
+  color: #5d6b76;
   font-size: 22rpx;
-  background: #eff7f5;
-  border-radius: 999rpx;
+  background: #f1f4f6;
+  border-radius: 8rpx;
 }
 
 .entry-foot {
@@ -195,7 +197,7 @@
 }
 
 .entry-result {
-  color: #667582;
+  color: #5d6b76;
   font-size: 23rpx;
 }
 
@@ -207,6 +209,6 @@
   color: #ffffff;
   font-size: 24rpx;
   font-weight: 600;
-  background: linear-gradient(120deg, #63dac8, #35bca8);
-  border-radius: 999rpx;
+  background: #17877b;
+  border-radius: 10rpx;
 }

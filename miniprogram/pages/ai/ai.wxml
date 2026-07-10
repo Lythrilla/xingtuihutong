@@ -2,8 +2,6 @@
   <page-header title="AI 智能推荐" subtitle="让每次合作都有数据与灵感支撑"></page-header>
 
   <view class="hero">
-    <view class="hero-ring ring-one"></view>
-    <view class="hero-ring ring-two"></view>
     <image class="hero-image" src="/assets/images/ai-orb.png" mode="aspectFill"></image>
     <view class="hero-copy">
       <view class="hero-kicker">STARCONNECT AI</view>

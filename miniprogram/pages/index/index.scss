@@ -1,5 +1,5 @@
 page {
-  background: #fbfcfd;
+  background: #f7f8fa;
 }
 
 .onboarding {
@@ -7,10 +7,7 @@ page {
   display: flex;
   flex-direction: column;
   padding: 0 32rpx calc(40rpx + env(safe-area-inset-bottom));
-  background:
-    radial-gradient(circle at 88% 4%, rgba(103, 224, 211, 0.2), transparent 28%),
-    radial-gradient(circle at 4% 93%, rgba(105, 139, 244, 0.1), transparent 26%),
-    #fbfcfd;
+  background: #f7f8fa;
 }
 
 .brand {
@@ -28,21 +25,18 @@ page {
   height: 68rpx;
   flex: none;
   margin-right: 16rpx;
-  background: linear-gradient(140deg, #73e6d4, #42c6b2);
-  border-radius: 20rpx 10rpx 20rpx 10rpx;
-  transform: rotate(8deg);
-  box-shadow: 0 14rpx 26rpx rgba(50, 190, 171, 0.22);
+  background: #17877b;
+  border-radius: 16rpx;
 }
 
 .spark {
   position: absolute;
   color: #ffffff;
-  transform: rotate(-8deg);
 }
 
 .spark-one {
   top: 8rpx;
-  left: 24rpx;
+  left: 22rpx;
   font-size: 32rpx;
 }
 
@@ -54,13 +48,13 @@ page {
 
 .brand-name {
   font-size: 34rpx;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 2rpx;
 }
 
 .brand-subtitle {
   margin-top: 4rpx;
-  color: #74828f;
+  color: #8b97a1;
   font-size: 22rpx;
 }
 
@@ -70,21 +64,21 @@ page {
 
 .intro-kicker {
   margin-bottom: 12rpx;
-  color: #35b9a6;
+  color: #17877b;
   font-size: 22rpx;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 4rpx;
 }
 
 .intro-title {
-  font-size: 54rpx;
-  font-weight: 700;
-  letter-spacing: -2rpx;
+  font-size: 52rpx;
+  font-weight: 600;
+  letter-spacing: -1rpx;
 }
 
 .intro-desc {
   margin-top: 12rpx;
-  color: #73818e;
+  color: #77848f;
   font-size: 26rpx;
   line-height: 1.5;
 }
@@ -92,7 +86,7 @@ page {
 .role-list {
   display: flex;
   flex-direction: column;
-  gap: 28rpx;
+  gap: 24rpx;
   margin-bottom: 48rpx;
 }
 
@@ -101,23 +95,17 @@ page {
   height: 304rpx;
   overflow: hidden;
   padding: 28rpx 32rpx;
-  background: rgba(255, 255, 255, 0.88);
-  border: 2rpx solid transparent;
-  border-radius: 32rpx;
-  box-shadow: 0 14rpx 40rpx rgba(35, 63, 82, 0.08);
-  transition: transform 0.2s ease;
+  background: #ffffff;
+  border: 2rpx solid #e9edf0;
+  border-radius: 16rpx;
 }
 
 .role-card.active.service {
-  background: linear-gradient(135deg, #ffffff 10%, #ecfbf8);
-  border-color: rgba(65, 198, 178, 0.42);
-  box-shadow: 0 12rpx 36rpx rgba(48, 191, 170, 0.12);
+  border-color: #17877b;
 }
 
 .role-card.active.client {
-  background: linear-gradient(135deg, #ffffff 10%, #fff8ea);
-  border-color: rgba(225, 177, 85, 0.42);
-  box-shadow: 0 12rpx 36rpx rgba(202, 155, 68, 0.1);
+  border-color: #b78b3d;
 }
 
 .role-copy {
@@ -131,28 +119,28 @@ page {
   padding: 8rpx 16rpx;
   font-size: 22rpx;
   font-weight: 600;
-  border-radius: 999rpx;
+  border-radius: 8rpx;
 }
 
 .mint {
-  color: #1dad98;
-  background: #e5f9f5;
+  color: #17877b;
+  background: #e7f2f0;
 }
 
 .gold {
-  color: #b58229;
-  background: #fff2d8;
+  color: #a3782e;
+  background: #f7efe1;
 }
 
 .role-title {
   margin-top: 20rpx;
   font-size: 32rpx;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .role-desc {
   margin-top: 12rpx;
-  color: #6f7e8b;
+  color: #77848f;
   font-size: 23rpx;
   line-height: 1.5;
 }
@@ -162,7 +150,7 @@ page {
   align-items: center;
   gap: 10rpx;
   margin-top: 16rpx;
-  color: #61717f;
+  color: #5d6b76;
   font-size: 22rpx;
 }
 
@@ -176,13 +164,13 @@ page {
 }
 
 .active.service .select-dot {
-  background: #45cbb7;
-  box-shadow: 0 0 0 2rpx #45cbb7;
+  background: #17877b;
+  box-shadow: 0 0 0 2rpx #17877b;
 }
 
 .active.client .select-dot {
-  background: #e1af50;
-  box-shadow: 0 0 0 2rpx #e1af50;
+  background: #b78b3d;
+  box-shadow: 0 0 0 2rpx #b78b3d;
 }
 
 .role-image {
@@ -191,7 +179,8 @@ page {
   right: -16rpx;
   width: 264rpx;
   height: 264rpx;
-  border-radius: 40rpx;
+  border-radius: 16rpx;
+  opacity: 0.9;
   mix-blend-mode: multiply;
 }
 
@@ -205,10 +194,9 @@ page {
   margin-top: auto;
   color: #ffffff;
   font-size: 28rpx;
-  font-weight: 700;
-  background: linear-gradient(120deg, #62decc, #32bca9);
-  border-radius: 999rpx;
-  box-shadow: 0 14rpx 34rpx rgba(48, 190, 170, 0.22);
+  font-weight: 600;
+  background: #17877b;
+  border-radius: 12rpx;
 }
 
 .arrow {
@@ -217,7 +205,7 @@ page {
 
 .agreement {
   margin-top: 20rpx;
-  color: #667582;
+  color: #8b97a1;
   font-size: 22rpx;
   text-align: center;
 }

@@ -2,8 +2,6 @@
   <page-header title="我的主页" subtitle="完善档案，让优质合作主动找到你"></page-header>
 
   <view class="profile-card">
-    <view class="profile-shape shape-one"></view>
-    <view class="profile-shape shape-two"></view>
     <view class="profile-head">
       <view class="profile-avatar">鲸</view>
       <view class="profile-main">
