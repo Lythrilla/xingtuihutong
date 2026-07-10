@@ -3,13 +3,14 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
+    "typecheck": "tsc --noEmit",
+    "check": "npm run typecheck"
   },
   "keywords": [],
   "author": "",
   "license": "",
-  "dependencies": {
-  },
   "devDependencies": {
-    "miniprogram-api-typings": "^2.8.3-1"
+    "miniprogram-api-typings": "^2.8.3-1",
+    "typescript": "5.9.2"
   }
 }

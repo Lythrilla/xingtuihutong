@@ -1,0 +1,60 @@
+<view class="page-shell plaza-page">
+  <view class="safe-top"></view>
+  <view class="topbar">
+    <view>
+      <view class="topbar-title">合作广场</view>
+      <view class="topbar-subtitle">发现值得合作的服务方与版权伙伴</view>
+    </view>
+    <view class="icon-button">•••</view>
+  </view>
+
+  <view class="search">
+    <text class="search-icon">⌕</text>
+    <input placeholder="搜索服务方、被服务方或能力标签" placeholder-class="placeholder"></input>
+  </view>
+
+  <scroll-view class="filter-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+    <view class="filters">
+      <view
+        wx:for="{{types}}"
+        wx:key="key"
+        class="filter {{activeType === item.key ? 'active' : ''}}"
+        data-key="{{item.key}}"
+        bindtap="changeType"
+      >
+        {{item.label}}
+      </view>
+      <view class="filter">筛选⌄</view>
+    </view>
+  </scroll-view>
+
+  <view class="plaza-tip">
+    <view class="tip-icon">✦</view>
+    <view>
+      <view class="tip-title">AI 已为你筛选优质伙伴</view>
+      <view class="tip-desc">根据合作偏好、预算和历史交付综合排序</view>
+    </view>
+  </view>
+
+  <view class="entry-list">
+    <view class="entry-card card" wx:for="{{visibleEntries}}" wx:key="name">
+      <view class="entry-head">
+        <view class="avatar {{item.avatarClass}}">{{item.avatar}}</view>
+        <view class="entry-identity">
+          <view class="entry-name">{{item.name}}</view>
+          <view class="verified">✓ {{item.identity}}</view>
+        </view>
+        <view class="match-score">{{item.match}}<text>%</text></view>
+      </view>
+      <view class="entry-description">{{item.description}}</view>
+      <view class="tag-row">
+        <text class="tag" wx:for="{{item.tags}}" wx:key="*this" wx:for-item="tag">{{tag}}</text>
+      </view>
+      <view class="entry-foot">
+        <text class="entry-result">{{item.result}}</text>
+        <button class="connect-button" data-name="{{item.name}}" bindtap="connect">沟通合作</button>
+      </view>
+    </view>
+  </view>
+</view>
+<tab-bar active="plaza"></tab-bar>

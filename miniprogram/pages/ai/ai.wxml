@@ -1,0 +1,74 @@
+<view class="page-shell ai-page">
+  <view class="safe-top"></view>
+  <view class="topbar ai-topbar">
+    <view>
+      <view class="topbar-title">AI 智能推荐</view>
+      <view class="topbar-subtitle">让每次合作都有数据与灵感支撑</view>
+    </view>
+    <view class="icon-button">•••</view>
+  </view>
+
+  <view class="hero">
+    <view class="hero-ring ring-one"></view>
+    <view class="hero-ring ring-two"></view>
+    <image class="hero-image" src="/assets/images/ai-orb.png" mode="aspectFill"></image>
+    <view class="hero-copy">
+      <view class="hero-kicker">STARCONNECT AI</view>
+      <view class="hero-title">找到此刻最值得合作的人</view>
+      <view class="hero-desc">已分析 2,380 个服务档案与 12,600 次合作表现</view>
+    </view>
+  </view>
+
+  <view class="tabs">
+    <view
+      wx:for="{{tabs}}"
+      wx:key="key"
+      class="tab {{activeTab === item.key ? 'active' : ''}}"
+      data-key="{{item.key}}"
+      bindtap="changeTab"
+    >
+      {{item.label}}
+    </view>
+  </view>
+
+  <view class="ai-insight">
+    <view class="insight-icon">✦</view>
+    <view class="insight-copy">
+      <view class="insight-title">今日策略洞察</view>
+      <view class="insight-desc">城市轻电子内容热度上升 27%，建议优先布局短视频与校园场景。</view>
+    </view>
+  </view>
+
+  <view class="plan-list">
+    <view class="plan card" wx:for="{{plans}}" wx:key="title">
+      <view class="plan-head">
+        <view class="plan-icon {{item.iconClass}}">{{item.icon}}</view>
+        <view class="plan-name">
+          <view class="plan-title">{{item.title}}</view>
+          <view class="plan-type">{{item.type}}</view>
+        </view>
+        <view class="plan-score">
+          <text>{{item.score}}</text>
+          <view>匹配度</view>
+        </view>
+      </view>
+      <view class="plan-desc">{{item.desc}}</view>
+      <view class="plan-tags">
+        <text wx:for="{{item.tags}}" wx:key="*this" wx:for-item="tag">{{tag}}</text>
+      </view>
+      <view class="plan-foot">
+        <view>
+          <view class="budget-label">建议预算</view>
+          <view class="budget-value">{{item.budget}}</view>
+        </view>
+        <button class="plan-button" data-title="{{item.title}}" bindtap="viewPlan">查看方案</button>
+      </view>
+    </view>
+  </view>
+
+  <button class="refresh" bindtap="refresh">
+    <text>⟳</text>
+    <text>{{refreshText}}</text>
+  </button>
+</view>
+<tab-bar active="ai"></tab-bar>

@@ -1,0 +1,271 @@
+.steps {
+  display: flex;
+  align-items: flex-start;
+  margin: 28rpx 14rpx 30rpx;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #a0aab3;
+  font-size: 17rpx;
+}
+
+.step-number {
+  width: 42rpx;
+  height: 42rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8rpx;
+  color: #9ca6af;
+  font-size: 18rpx;
+  background: #e8ecef;
+  border-radius: 50%;
+}
+
+.step.active {
+  color: #31b6a4;
+}
+
+.step.active .step-number {
+  color: #ffffff;
+  background: #4bc7b4;
+}
+
+.step-line {
+  height: 2rpx;
+  flex: 1;
+  margin: 20rpx 10rpx 0;
+  background: #e1e6e9;
+}
+
+.step-line.active {
+  background: #6bd5c5;
+}
+
+.form-section {
+  margin-bottom: 22rpx;
+  padding: 28rpx;
+}
+
+.form-title {
+  font-size: 27rpx;
+  font-weight: 670;
+}
+
+.form-desc {
+  margin-top: 8rpx;
+  color: #929da7;
+  font-size: 19rpx;
+}
+
+.song-scroll {
+  margin-top: 24rpx;
+  white-space: nowrap;
+}
+
+.song-row {
+  display: inline-flex;
+  gap: 18rpx;
+}
+
+.song-card {
+  position: relative;
+  width: 192rpx;
+  display: inline-flex;
+  flex-direction: column;
+  padding: 12rpx 12rpx 18rpx;
+  background: #f7f9fb;
+  border: 2rpx solid transparent;
+  border-radius: 22rpx;
+}
+
+.song-card.selected {
+  background: #effaf8;
+  border-color: #57cbb8;
+}
+
+.song-cover {
+  position: relative;
+  height: 142rpx;
+  overflow: hidden;
+  border-radius: 17rpx;
+}
+
+.song-cover::before,
+.song-cover::after {
+  position: absolute;
+  content: "";
+  border-radius: 50%;
+}
+
+.song-cover::before {
+  width: 120rpx;
+  height: 120rpx;
+  right: -28rpx;
+  bottom: -34rpx;
+  background: rgba(255, 255, 255, 0.28);
+}
+
+.song-cover::after {
+  width: 64rpx;
+  height: 64rpx;
+  top: -18rpx;
+  left: -16rpx;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.sunset {
+  background: linear-gradient(145deg, #f4bf98, #dd7d8e 60%, #6976bd);
+}
+
+.ocean {
+  background: linear-gradient(145deg, #94ded6, #53a7bf 60%, #426ba7);
+}
+
+.violet {
+  background: linear-gradient(145deg, #b8a2ef, #8067ce 60%, #444b9e);
+}
+
+.disc {
+  position: absolute;
+  z-index: 2;
+  top: 36rpx;
+  left: 48rpx;
+  width: 66rpx;
+  height: 66rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 29rpx;
+  background: rgba(255, 255, 255, 0.22);
+  border: 1rpx solid rgba(255, 255, 255, 0.55);
+  border-radius: 50%;
+  backdrop-filter: blur(8rpx);
+}
+
+.song-name {
+  margin-top: 14rpx;
+  color: #24313d;
+  font-size: 22rpx;
+  font-weight: 650;
+}
+
+.song-artist {
+  margin-top: 6rpx;
+  color: #919ba4;
+  font-size: 17rpx;
+}
+
+.song-check {
+  position: absolute;
+  top: 18rpx;
+  right: 18rpx;
+  width: 34rpx;
+  height: 34rpx;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 18rpx;
+  background: #3cbca8;
+  border: 4rpx solid #ffffff;
+  border-radius: 50%;
+}
+
+.song-card.selected .song-check {
+  display: flex;
+}
+
+.target-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16rpx;
+  margin-top: 24rpx;
+}
+
+.target-card {
+  min-height: 166rpx;
+  padding: 20rpx;
+  background: #f7f9fb;
+  border: 2rpx solid transparent;
+  border-radius: 22rpx;
+}
+
+.target-card.selected {
+  background: #edfaf7;
+  border-color: #5acbb8;
+}
+
+.target-icon {
+  width: 48rpx;
+  height: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #3bb8a5;
+  font-size: 22rpx;
+  background: #ddf7f2;
+  border-radius: 16rpx;
+}
+
+.target-title {
+  margin-top: 14rpx;
+  font-size: 21rpx;
+  font-weight: 650;
+}
+
+.target-desc {
+  margin-top: 7rpx;
+  color: #929ca5;
+  font-size: 17rpx;
+}
+
+.budget-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  margin-top: 22rpx;
+}
+
+.budget {
+  width: calc(50% - 6rpx);
+  min-height: 66rpx;
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  padding: 0 16rpx;
+  color: #697784;
+  font-size: 19rpx;
+  background: #f7f9fb;
+  border: 1rpx solid transparent;
+  border-radius: 18rpx;
+}
+
+.radio {
+  width: 18rpx;
+  height: 18rpx;
+  background: #d9e0e4;
+  border: 4rpx solid #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2rpx #d9e0e4;
+}
+
+.budget.selected {
+  color: #299f90;
+  background: #eaf9f6;
+  border-color: #bfece4;
+}
+
+.budget.selected .radio {
+  background: #42bda9;
+  box-shadow: 0 0 0 2rpx #42bda9;
+}
+
+.match-button {
+  gap: 14rpx;
+  margin: 28rpx 0 12rpx;
+}

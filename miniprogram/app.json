@@ -1,11 +1,17 @@
 {
   "pages": [
     "pages/index/index",
-    "pages/logs/logs"
+    "pages/home/home",
+    "pages/plaza/plaza",
+    "pages/match/match",
+    "pages/ai/ai",
+    "pages/profile/profile"
   ],
   "window": {
     "navigationBarTextStyle": "black",
-    "navigationStyle": "custom"
+    "navigationStyle": "custom",
+    "backgroundColor": "#F7F9FC",
+    "backgroundTextStyle": "light"
   },
   "style": "v2",
   "rendererOptions": {
