@@ -256,6 +256,54 @@
   font-size: 22rpx;
 }
 
+.wallet {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  padding: 28rpx;
+}
+
+.wallet-icon {
+  width: 76rpx;
+  height: 76rpx;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 30rpx;
+  background: linear-gradient(135deg, #68e0ce, #37bea9);
+  border-radius: 24rpx;
+}
+
+.wallet-main {
+  min-width: 0;
+  flex: 1;
+}
+
+.wallet-label {
+  color: #73818e;
+  font-size: 23rpx;
+}
+
+.wallet-value {
+  margin-top: 6rpx;
+  font-size: 34rpx;
+  font-weight: 720;
+}
+
+.wallet-button {
+  min-height: 88rpx;
+  display: flex;
+  align-items: center;
+  padding: 0 32rpx;
+  color: #ffffff;
+  font-size: 24rpx;
+  font-weight: 650;
+  background: linear-gradient(120deg, #63dac8, #35bca8);
+  border-radius: 999rpx;
+}
+
 .menu {
   overflow: hidden;
   padding: 0 28rpx;

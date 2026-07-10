@@ -5,6 +5,7 @@
     "pages/plaza/plaza",
     "pages/match/match",
     "pages/ai/ai",
+    "pages/messages/messages",
     "pages/profile/profile"
   ],
   "window": {
