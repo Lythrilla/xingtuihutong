@@ -1,12 +1,5 @@
 <view class="page-shell ai-page">
-  <view class="safe-top"></view>
-  <view class="topbar ai-topbar">
-    <view>
-      <view class="topbar-title">AI 智能推荐</view>
-      <view class="topbar-subtitle">让每次合作都有数据与灵感支撑</view>
-    </view>
-    <view class="icon-button">•••</view>
-  </view>
+  <page-header title="AI 智能推荐" subtitle="让每次合作都有数据与灵感支撑"></page-header>
 
   <view class="hero">
     <view class="hero-ring ring-one"></view>

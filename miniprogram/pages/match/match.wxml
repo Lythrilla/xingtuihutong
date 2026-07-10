@@ -1,12 +1,5 @@
 <view class="page-shell match-page">
-  <view class="safe-top"></view>
-  <view class="topbar">
-    <view>
-      <view class="topbar-title">推广匹配</view>
-      <view class="topbar-subtitle">选择歌曲与推广对象，AI 为你智能组局</view>
-    </view>
-    <view class="icon-button">?</view>
-  </view>
+  <page-header title="推广匹配" subtitle="选择歌曲与推广对象，AI 为你智能组局"></page-header>
 
   <view class="steps">
     <view class="step active">

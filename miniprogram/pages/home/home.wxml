@@ -1,19 +1,5 @@
 <view class="page-shell home-page">
-  <view class="safe-top"></view>
-  <view class="topbar">
-    <view>
-      <view class="hello">早上好，星光音乐</view>
-      <view class="role-chip">
-        <text class="role-dot">✦</text>
-        <text>{{roleLabel}}</text>
-        <text>›</text>
-      </view>
-    </view>
-    <view class="top-actions">
-      <view class="icon-button">⌕</view>
-      <view class="icon-button">•••</view>
-    </view>
-  </view>
+  <page-header title="早上好，星光音乐" subtitle="{{headerSubtitle}}"></page-header>
 
   <view class="summary card">
     <view class="summary-head">

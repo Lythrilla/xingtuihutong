@@ -1,12 +1,5 @@
 <view class="page-shell profile-page">
-  <view class="safe-top"></view>
-  <view class="topbar">
-    <view>
-      <view class="topbar-title">我的主页</view>
-      <view class="topbar-subtitle">完善档案，让优质合作主动找到你</view>
-    </view>
-    <view class="icon-button">⚙</view>
-  </view>
+  <page-header title="我的主页" subtitle="完善档案，让优质合作主动找到你"></page-header>
 
   <view class="profile-card">
     <view class="profile-shape shape-one"></view>

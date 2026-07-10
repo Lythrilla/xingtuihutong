@@ -1,12 +1,5 @@
 <view class="page-shell plaza-page">
-  <view class="safe-top"></view>
-  <view class="topbar">
-    <view>
-      <view class="topbar-title">合作广场</view>
-      <view class="topbar-subtitle">发现值得合作的服务方与版权伙伴</view>
-    </view>
-    <view class="icon-button">•••</view>
-  </view>
+  <page-header title="合作广场" subtitle="发现值得合作的服务方与版权伙伴"></page-header>
 
   <view class="search">
     <text class="search-icon">⌕</text>

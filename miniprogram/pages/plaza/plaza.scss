@@ -1,13 +1,13 @@
 .search {
-  height: 82rpx;
+  height: 72rpx;
   display: flex;
   align-items: center;
   gap: 14rpx;
-  margin-top: 28rpx;
-  padding: 0 24rpx;
+  margin-top: 18rpx;
+  padding: 0 20rpx;
   background: #ffffff;
   border: 1rpx solid #edf0f2;
-  border-radius: 24rpx;
+  border-radius: 20rpx;
   box-shadow: 0 10rpx 30rpx rgba(41, 69, 90, 0.05);
 }
 
@@ -26,7 +26,7 @@
 }
 
 .filter-scroll {
-  margin-top: 22rpx;
+  margin-top: 16rpx;
   white-space: nowrap;
 }
 
@@ -39,8 +39,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: 62rpx;
-  padding: 0 24rpx;
+  height: 56rpx;
+  padding: 0 20rpx;
   color: #7d8994;
   font-size: 21rpx;
   background: #ffffff;
@@ -59,15 +59,15 @@
   display: flex;
   align-items: center;
   gap: 18rpx;
-  margin-top: 24rpx;
-  padding: 22rpx 24rpx;
+  margin-top: 16rpx;
+  padding: 18rpx 20rpx;
   background: linear-gradient(120deg, #edf9f7, #f2f3ff);
-  border-radius: 24rpx;
+  border-radius: 20rpx;
 }
 
 .tip-icon {
-  width: 58rpx;
-  height: 58rpx;
+  width: 50rpx;
+  height: 50rpx;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -91,12 +91,12 @@
 .entry-list {
   display: flex;
   flex-direction: column;
-  gap: 22rpx;
-  margin-top: 24rpx;
+  gap: 16rpx;
+  margin-top: 16rpx;
 }
 
 .entry-card {
-  padding: 28rpx;
+  padding: 22rpx;
 }
 
 .entry-head {
@@ -105,8 +105,8 @@
 }
 
 .avatar {
-  width: 84rpx;
-  height: 84rpx;
+  width: 72rpx;
+  height: 72rpx;
   flex: none;
   display: flex;
   align-items: center;
@@ -115,7 +115,7 @@
   color: #ffffff;
   font-size: 28rpx;
   font-weight: 650;
-  border-radius: 28rpx;
+  border-radius: 22rpx;
 }
 
 .aqua {
@@ -141,7 +141,7 @@
 
 .entry-name {
   overflow: hidden;
-  font-size: 26rpx;
+  font-size: 24rpx;
   font-weight: 680;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -164,7 +164,7 @@
 }
 
 .entry-description {
-  margin-top: 20rpx;
+  margin-top: 14rpx;
   color: #71808e;
   font-size: 21rpx;
   line-height: 1.6;
@@ -174,7 +174,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 10rpx;
-  margin-top: 18rpx;
+  margin-top: 13rpx;
 }
 
 .tag {
@@ -189,8 +189,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 24rpx;
-  padding-top: 22rpx;
+  margin-top: 16rpx;
+  padding-top: 16rpx;
   border-top: 1rpx solid #edf1f3;
 }
 

@@ -1,13 +1,14 @@
 <view class="onboarding">
-  <view class="safe-top"></view>
-  <view class="brand">
-    <view class="brand-mark">
-      <view class="spark spark-one">✦</view>
-      <view class="spark spark-two">✦</view>
-    </view>
-    <view>
-      <view class="brand-name">星推互通</view>
-      <view class="brand-subtitle">音乐版权合作与推广平台</view>
+  <view class="brand-shell" style="padding-top: {{statusBarHeight}}px;">
+    <view class="brand" style="height: {{navigationHeight}}px; padding-right: {{rightInset}}px;">
+      <view class="brand-mark">
+        <view class="spark spark-one">✦</view>
+        <view class="spark spark-two">✦</view>
+      </view>
+      <view class="brand-copy">
+        <view class="brand-name">星推互通</view>
+        <view class="brand-subtitle">音乐版权合作与推广平台</view>
+      </view>
     </view>
   </view>
 

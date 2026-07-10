@@ -1,0 +1,32 @@
+.header-shell {
+  width: 100%;
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+}
+
+.header-copy {
+  min-width: 0;
+}
+
+.header-title {
+  overflow: hidden;
+  color: #182330;
+  font-size: 32rpx;
+  font-weight: 720;
+  line-height: 1.15;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.header-subtitle {
+  overflow: hidden;
+  margin-top: 6rpx;
+  color: #8a97a6;
+  font-size: 19rpx;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
