@@ -36,7 +36,7 @@ button::after {
 
 .page-shell {
   min-height: 100vh;
-  padding: 0 32rpx calc(152rpx + env(safe-area-inset-bottom));
+  padding: 0 32rpx calc(220rpx + env(safe-area-inset-bottom));
   background:
     radial-gradient(circle at 92% 5%, rgba(112, 224, 211, 0.16), transparent 27%),
     linear-gradient(180deg, #fbfcfe 0%, #f5f8fb 100%);
@@ -64,10 +64,10 @@ button::after {
 }
 
 .card {
-  background: rgba(255, 255, 255, 0.94);
-  border: 1rpx solid rgba(35, 59, 80, 0.06);
-  border-radius: 28rpx;
-  box-shadow: 0 12rpx 36rpx rgba(42, 72, 96, 0.07);
+  background: #ffffff;
+  border: 1rpx solid rgba(35, 59, 80, 0.05);
+  border-radius: 24rpx;
+  box-shadow: 0 8rpx 24rpx rgba(42, 72, 96, 0.05);
 }
 
 .pill {
