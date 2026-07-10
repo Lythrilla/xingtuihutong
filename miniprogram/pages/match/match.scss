@@ -151,7 +151,7 @@
   margin-top: 16rpx;
   color: #24313d;
   font-size: 26rpx;
-  font-weight: 680;
+  font-weight: 600;
 }
 
 .song-artist {
@@ -215,7 +215,7 @@
 .target-title {
   margin-top: 16rpx;
   font-size: 26rpx;
-  font-weight: 680;
+  font-weight: 600;
 }
 
 .target-desc {
@@ -234,7 +234,7 @@
 
 .budget {
   width: calc(50% - 8rpx);
-  min-height: 88rpx;
+  height: 76rpx;
   display: flex;
   align-items: center;
   gap: 16rpx;

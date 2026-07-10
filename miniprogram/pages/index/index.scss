@@ -4,7 +4,9 @@ page {
 
 .onboarding {
   min-height: 100vh;
-  padding: 0 32rpx calc(32rpx + env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  padding: 0 32rpx calc(40rpx + env(safe-area-inset-bottom));
   background:
     radial-gradient(circle at 88% 4%, rgba(103, 224, 211, 0.2), transparent 28%),
     radial-gradient(circle at 4% 93%, rgba(105, 139, 244, 0.1), transparent 26%),
@@ -52,7 +54,7 @@ page {
 
 .brand-name {
   font-size: 34rpx;
-  font-weight: 750;
+  font-weight: 700;
   letter-spacing: 2rpx;
 }
 
@@ -63,7 +65,7 @@ page {
 }
 
 .intro {
-  margin: 40rpx 4rpx 32rpx;
+  margin: 56rpx 4rpx 48rpx;
 }
 
 .intro-kicker {
@@ -76,7 +78,7 @@ page {
 
 .intro-title {
   font-size: 54rpx;
-  font-weight: 750;
+  font-weight: 700;
   letter-spacing: -2rpx;
 }
 
@@ -90,12 +92,13 @@ page {
 .role-list {
   display: flex;
   flex-direction: column;
-  gap: 24rpx;
+  gap: 28rpx;
+  margin-bottom: 48rpx;
 }
 
 .role-card {
   position: relative;
-  height: 288rpx;
+  height: 304rpx;
   overflow: hidden;
   padding: 28rpx 32rpx;
   background: rgba(255, 255, 255, 0.88);
@@ -194,11 +197,12 @@ page {
 
 .enter-button {
   height: 92rpx;
+  flex: none;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 18rpx;
-  margin-top: 32rpx;
+  margin-top: auto;
   color: #ffffff;
   font-size: 28rpx;
   font-weight: 700;

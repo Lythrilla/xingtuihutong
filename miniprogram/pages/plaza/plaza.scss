@@ -1,5 +1,5 @@
 .search {
-  height: 88rpx;
+  height: 80rpx;
   display: flex;
   align-items: center;
   gap: 16rpx;
@@ -39,8 +39,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 80rpx;
-  padding: 0 24rpx;
+  height: 60rpx;
+  padding: 0 26rpx;
   color: #667582;
   font-size: 24rpx;
   background: #ffffff;
@@ -79,7 +79,7 @@
 
 .tip-title {
   font-size: 26rpx;
-  font-weight: 680;
+  font-weight: 600;
 }
 
 .tip-desc {
@@ -114,7 +114,7 @@
   margin-right: 20rpx;
   color: #ffffff;
   font-size: 28rpx;
-  font-weight: 650;
+  font-weight: 600;
   border-radius: 28rpx;
 }
 
@@ -142,7 +142,7 @@
 .entry-name {
   overflow: hidden;
   font-size: 28rpx;
-  font-weight: 680;
+  font-weight: 600;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -156,7 +156,7 @@
 .match-score {
   color: #35b6a3;
   font-size: 38rpx;
-  font-weight: 720;
+  font-weight: 700;
 }
 
 .match-score text {
@@ -200,13 +200,13 @@
 }
 
 .connect-button {
-  min-height: 88rpx;
+  height: 62rpx;
   display: flex;
   align-items: center;
   padding: 0 28rpx;
   color: #ffffff;
   font-size: 24rpx;
-  font-weight: 650;
+  font-weight: 600;
   background: linear-gradient(120deg, #63dac8, #35bca8);
   border-radius: 999rpx;
 }
