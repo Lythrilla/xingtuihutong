@@ -136,7 +136,7 @@ async fn home(State(state): State<AppState>, headers: HeaderMap) -> AppResult<Js
             .await?;
     let settled: i64 = sqlx::query_scalar(
         "SELECT COALESCE(SUM(amount), 0) FROM settlements
-         WHERE user_id = ? AND status = 'completed'",
+         WHERE user_id = ? AND status = 'completed' AND amount > 0",
     )
     .bind(&user.id)
     .fetch_one(&state.pool)
@@ -314,6 +314,7 @@ async fn connect_partner(
         .await?;
         if user.role == "provider" {
             let amount = 150_000_i64;
+            let notification_description = format!("合作服务收益 {} 已到账", format_money(amount));
             sqlx::query(
                 "INSERT INTO settlements (id, user_id, title, amount, status)
                  VALUES (?, ?, '合作服务收益', ?, 'completed')",
@@ -336,10 +337,11 @@ async fn connect_partner(
             }
             sqlx::query(
                 "INSERT INTO notifications (id, user_id, kind, title, description)
-                 VALUES (?, ?, 'wallet', '合作收益到账', '合作服务收益 ¥1,500 已到账')",
+                 VALUES (?, ?, 'wallet', '合作收益到账', ?)",
             )
             .bind(Uuid::new_v4().to_string())
             .bind(&user.id)
+            .bind(notification_description)
             .execute(&mut *tx)
             .await?;
         }
