@@ -76,12 +76,37 @@ content.addEventListener("click", async (event) => {
   const remove = event.target.closest("[data-delete]");
   const retry = event.target.closest("[data-retry]");
   const create = event.target.closest("[data-create]");
+  const settlementAction = event.target.closest("[data-settlement-action]");
   if (retry) {
     await loadView();
     return;
   }
   if (create) {
     openModal();
+    return;
+  }
+  if (settlementAction) {
+    const status = settlementAction.dataset.settlementAction;
+    const actionLabel = status === "completed" ? "批准提现" : "拒绝提现";
+    const accepted = await confirmAction(
+      `确认${actionLabel}？`,
+      status === "completed"
+        ? "批准后将标记为已完成，提现进入打款完成状态。"
+        : "拒绝后将退回提现金额至用户钱包。",
+    );
+    if (!accepted) return;
+    setButtonBusy(settlementAction, true, "处理中");
+    try {
+      await api(`/api/admin/settlements/${settlementAction.dataset.id}`, {
+        method: "PUT",
+        body: { status },
+      });
+      toast(`${actionLabel}成功`);
+      await loadView();
+    } catch (error) {
+      toast(error.message);
+      setButtonBusy(settlementAction, false);
+    }
     return;
   }
   if (edit) {
@@ -270,13 +295,14 @@ function renderTable(view, records) {
       ],
     },
     settlements: {
-      headers: ["用户", "事项", "金额", "状态", "时间"],
+      headers: ["用户", "事项", "金额", "状态", "时间", "操作"],
       row: (item) => [
         escapeHtml(item.userName),
         escapeHtml(item.title),
         money(item.amount),
         badge(settlementLabel(item.status), item.status === "completed"),
         formatDate(item.createdAt),
+        settlementActions(item),
       ],
     },
   };
@@ -576,6 +602,11 @@ function titleCell(title, subtitle = "") {
 
 function actions(id) {
   return `<div class="row-actions"><button class="text-button" data-edit="${id}">编辑</button><button class="text-button danger" data-delete="${id}">停用</button></div>`;
+}
+
+function settlementActions(item) {
+  if (item.status !== "pending" || item.amount >= 0) return "—";
+  return `<div class="row-actions"><button class="text-button" data-id="${item.id}" data-settlement-action="completed">批准</button><button class="text-button danger" data-id="${item.id}" data-settlement-action="rejected">拒绝</button></div>`;
 }
 
 function badge(text, active) {

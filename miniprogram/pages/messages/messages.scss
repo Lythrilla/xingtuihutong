@@ -5,12 +5,12 @@
 .notice {
   display: flex;
   align-items: flex-start;
-  gap: 20rpx;
+  gap: 18rpx;
   padding: 24rpx 0;
 }
 
 .notice + .notice {
-  border-top: 1rpx solid #edf1f3;
+  border-top: 1rpx solid #edf1f2;
 }
 
 .notice-icon {
@@ -30,12 +30,12 @@
 
 .notice-icon.mint {
   color: #17877b;
-  background: #e7f2f0;
+  background: #eaf6f3;
 }
 
 .notice-icon.gold {
   color: #a3782e;
-  background: #f7efe1;
+  background: #f8f0e3;
 }
 
 .notice-main {
@@ -44,7 +44,7 @@
 }
 
 .notice.read {
-  opacity: 0.72;
+  opacity: 0.62;
 }
 
 .notice-title-line {
@@ -55,10 +55,10 @@
 }
 
 .unread-dot {
-  width: 12rpx;
-  height: 12rpx;
+  width: 11rpx;
+  height: 11rpx;
   flex: none;
-  background: #d9634f;
+  background: #e16d56;
   border-radius: 50%;
 }
 
@@ -78,19 +78,20 @@
 }
 
 .notice-title {
+  color: #263b40;
   font-size: 26rpx;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .notice-time {
-  color: #8b97a1;
-  font-size: 22rpx;
+  color: #8b999d;
+  font-size: 21rpx;
 }
 
 .notice-desc {
   margin-top: 8rpx;
-  color: #5d6b76;
-  font-size: 23rpx;
+  color: #65767a;
+  font-size: 22rpx;
 }
 
 .chat-list {
@@ -100,12 +101,12 @@
 .chat {
   display: flex;
   align-items: center;
-  gap: 20rpx;
+  gap: 18rpx;
   padding: 24rpx 0;
 }
 
 .chat + .chat {
-  border-top: 1rpx solid #edf1f3;
+  border-top: 1rpx solid #edf1f2;
 }
 
 .chat-avatar {
@@ -116,28 +117,28 @@
   align-items: center;
   justify-content: center;
   font-size: 28rpx;
-  font-weight: 600;
-  border-radius: 12rpx;
+  font-weight: 700;
+  border-radius: 11rpx;
 }
 
 .chat-avatar.aqua {
   color: #17877b;
-  background: #e7f2f0;
+  background: #eaf6f3;
 }
 
 .chat-avatar.gold {
   color: #a3782e;
-  background: #f7efe1;
+  background: #f8f0e3;
 }
 
 .chat-avatar.blue {
   color: #3d6ea8;
-  background: #e9f0f8;
+  background: #e9f1f9;
 }
 
 .chat-avatar.violet {
   color: #665ea8;
-  background: #eeecf7;
+  background: #efedf8;
 }
 
 .chat-main {
@@ -158,23 +159,24 @@
 
 .chat-name {
   overflow: hidden;
+  color: #263b40;
   font-size: 27rpx;
-  font-weight: 600;
+  font-weight: 700;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .chat-time {
   flex: none;
-  color: #8b97a1;
-  font-size: 22rpx;
+  color: #8b999d;
+  font-size: 21rpx;
 }
 
 .chat-message {
   min-width: 0;
   overflow: hidden;
-  color: #5d6b76;
-  font-size: 23rpx;
+  color: #65767a;
+  font-size: 22rpx;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -189,6 +191,6 @@
   padding: 0 10rpx;
   color: #ffffff;
   font-size: 20rpx;
-  background: #d9634f;
-  border-radius: 999rpx;
+  background: #e16d56;
+  border-radius: 9rpx;
 }

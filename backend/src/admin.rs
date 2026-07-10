@@ -12,7 +12,7 @@ use axum::{
     Json, Router,
 };
 use chrono::{Duration, Utc};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use serde_json::json;
 use sqlx::FromRow;
 use uuid::Uuid;
@@ -31,6 +31,7 @@ pub fn routes() -> Router<AppState> {
         .route("/plans/{id}", put(update_plan).delete(delete_plan))
         .route("/conversations", get(conversations))
         .route("/settlements", get(settlements))
+        .route("/settlements/{id}", put(update_settlement))
 }
 
 async fn login(
@@ -431,6 +432,77 @@ async fn settlements(
         .fetch_all(&state.pool)
         .await?,
     ))
+}
+
+#[derive(Debug, Deserialize)]
+struct SettlementUpdate {
+    status: String,
+}
+
+async fn update_settlement(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    Path(id): Path<String>,
+    Json(input): Json<SettlementUpdate>,
+) -> AppResult<Json<AdminSettlement>> {
+    require_admin(&state, &headers).await?;
+    if input.status != "completed" && input.status != "rejected" {
+        return Err(AppError::BadRequest(
+            "status must be completed or rejected".into(),
+        ));
+    }
+
+    let mut tx = state.pool.begin().await?;
+    let (user_id, amount, current_status): (String, i64, String) =
+        sqlx::query_as("SELECT user_id, amount, status FROM settlements WHERE id = ?")
+            .bind(&id)
+            .fetch_optional(&mut *tx)
+            .await?
+            .ok_or_else(|| AppError::NotFound("settlement not found".into()))?;
+    if current_status != "pending" {
+        return Err(AppError::BadRequest(
+            "settlement is already processed".into(),
+        ));
+    }
+    if amount >= 0 {
+        return Err(AppError::BadRequest(
+            "only withdrawal settlements can be processed".into(),
+        ));
+    }
+
+    let result =
+        sqlx::query("UPDATE settlements SET status = ? WHERE id = ? AND status = 'pending'")
+            .bind(&input.status)
+            .bind(&id)
+            .execute(&mut *tx)
+            .await?;
+    ensure_changed(result.rows_affected(), "settlement")?;
+    if input.status == "rejected" {
+        let wallet_update = sqlx::query(
+            "UPDATE wallets SET balance = balance - ?, updated_at = CURRENT_TIMESTAMP
+             WHERE user_id = ?",
+        )
+        .bind(amount)
+        .bind(user_id)
+        .execute(&mut *tx)
+        .await?;
+        if wallet_update.rows_affected() != 1 {
+            return Err(AppError::NotFound("wallet not found".into()));
+        }
+    }
+    tx.commit().await?;
+    Ok(Json(load_settlement(&state, &id).await?))
+}
+
+async fn load_settlement(state: &AppState, id: &str) -> AppResult<AdminSettlement> {
+    Ok(sqlx::query_as::<_, AdminSettlement>(
+        "SELECT s.id, u.organization AS user_name, s.title, s.amount, s.status, s.created_at
+         FROM settlements s JOIN users u ON u.id = s.user_id
+         WHERE s.id = ?",
+    )
+    .bind(id)
+    .fetch_one(&state.pool)
+    .await?)
 }
 
 async fn require_admin(state: &AppState, headers: &HeaderMap) -> AppResult<()> {

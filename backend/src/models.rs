@@ -177,8 +177,10 @@ pub struct SendMessage {
 }
 
 #[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct UpdateProfile {
     pub organization: Option<String>,
+    pub display_name: Option<String>,
     pub description: Option<String>,
     pub tags: Option<Vec<String>>,
 }

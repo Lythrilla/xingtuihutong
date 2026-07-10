@@ -226,24 +226,36 @@ async fn plaza(
     Query(query): Query<PlazaQuery>,
 ) -> AppResult<Json<PlazaResponse>> {
     current_user(&state, &headers).await?;
-    let rows = if matches!(query.partner_type.as_deref(), Some("provider" | "client")) {
-        sqlx::query_as::<_, Partner>(
-            "SELECT id, partner_type, avatar, avatar_class, name, identity, description,
-             tags AS tags_json, match_score, result_text, active
-             FROM partners WHERE active = 1 AND partner_type = ?
-             ORDER BY match_score DESC",
-        )
-        .bind(query.partner_type)
-        .fetch_all(&state.pool)
-        .await?
-    } else {
-        sqlx::query_as::<_, Partner>(
-            "SELECT id, partner_type, avatar, avatar_class, name, identity, description,
-             tags AS tags_json, match_score, result_text, active
-             FROM partners WHERE active = 1 ORDER BY match_score DESC",
-        )
-        .fetch_all(&state.pool)
-        .await?
+    let rows = match query.partner_type.as_deref() {
+        Some("provider" | "client") => {
+            sqlx::query_as::<_, Partner>(
+                "SELECT id, partner_type, avatar, avatar_class, name, identity, description,
+                 tags AS tags_json, match_score, result_text, active
+                 FROM partners WHERE active = 1 AND partner_type = ?
+                 ORDER BY match_score DESC",
+            )
+            .bind(query.partner_type)
+            .fetch_all(&state.pool)
+            .await?
+        }
+        Some("latest") => {
+            sqlx::query_as::<_, Partner>(
+                "SELECT id, partner_type, avatar, avatar_class, name, identity, description,
+                 tags AS tags_json, match_score, result_text, active
+                 FROM partners WHERE active = 1 ORDER BY created_at DESC",
+            )
+            .fetch_all(&state.pool)
+            .await?
+        }
+        _ => {
+            sqlx::query_as::<_, Partner>(
+                "SELECT id, partner_type, avatar, avatar_class, name, identity, description,
+                 tags AS tags_json, match_score, result_text, active
+                 FROM partners WHERE active = 1 ORDER BY match_score DESC",
+            )
+            .fetch_all(&state.pool)
+            .await?
+        }
     };
     Ok(Json(PlazaResponse {
         types: vec![
@@ -269,28 +281,72 @@ async fn connect_partner(
             .await?;
     let partner_name =
         partner_name.ok_or_else(|| AppError::NotFound("partner not found".into()))?;
-    let conversation_id = Uuid::new_v4().to_string();
-    sqlx::query(
+    let welcome_message = "你好，欢迎联系我！我们可以先聊聊合作需求。";
+    let mut tx = state.pool.begin().await?;
+    let result = sqlx::query(
         "INSERT INTO conversations
          (id, user_id, partner_id, last_message, unread_count)
-         VALUES (?, ?, ?, '已发起合作沟通', 0)
-         ON CONFLICT(user_id, partner_id) DO UPDATE SET
-           last_message = excluded.last_message,
-           updated_at = CURRENT_TIMESTAMP",
+         VALUES (?, ?, ?, ?, 1)
+         ON CONFLICT(user_id, partner_id) DO NOTHING",
     )
-    .bind(&conversation_id)
+    .bind(Uuid::new_v4().to_string())
     .bind(&user.id)
     .bind(&input.partner_id)
-    .execute(&state.pool)
+    .bind(welcome_message)
+    .execute(&mut *tx)
     .await?;
-    let id: String =
+    let created = result.rows_affected() == 1;
+    let conversation_id: String =
         sqlx::query_scalar("SELECT id FROM conversations WHERE user_id = ? AND partner_id = ?")
             .bind(&user.id)
             .bind(&input.partner_id)
-            .fetch_one(&state.pool)
+            .fetch_one(&mut *tx)
             .await?;
+    if created {
+        sqlx::query(
+            "INSERT INTO conversation_messages (id, conversation_id, sender, content)
+             VALUES (?, ?, 'partner', ?)",
+        )
+        .bind(Uuid::new_v4().to_string())
+        .bind(&conversation_id)
+        .bind(welcome_message)
+        .execute(&mut *tx)
+        .await?;
+        if user.role == "provider" {
+            let amount = 150_000_i64;
+            sqlx::query(
+                "INSERT INTO settlements (id, user_id, title, amount, status)
+                 VALUES (?, ?, '合作服务收益', ?, 'completed')",
+            )
+            .bind(Uuid::new_v4().to_string())
+            .bind(&user.id)
+            .bind(amount)
+            .execute(&mut *tx)
+            .await?;
+            let wallet_update = sqlx::query(
+                "UPDATE wallets SET balance = balance + ?, updated_at = CURRENT_TIMESTAMP
+                 WHERE user_id = ?",
+            )
+            .bind(amount)
+            .bind(&user.id)
+            .execute(&mut *tx)
+            .await?;
+            if wallet_update.rows_affected() != 1 {
+                return Err(AppError::NotFound("wallet not found".into()));
+            }
+            sqlx::query(
+                "INSERT INTO notifications (id, user_id, kind, title, description)
+                 VALUES (?, ?, 'wallet', '合作收益到账', '合作服务收益 ¥1,500 已到账')",
+            )
+            .bind(Uuid::new_v4().to_string())
+            .bind(&user.id)
+            .execute(&mut *tx)
+            .await?;
+        }
+    }
+    tx.commit().await?;
     Ok(Json(
-        json!({ "conversationId": id, "partnerName": partner_name }),
+        json!({ "conversationId": conversation_id, "partnerName": partner_name }),
     ))
 }
 
@@ -712,15 +768,25 @@ async fn update_profile(
     }
     let mut tx = state.pool.begin().await?;
     sqlx::query(
-        "UPDATE users SET organization = ?, display_name = ?, description = ?,
-         updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+        "UPDATE users SET organization = ?, description = ?, updated_at = CURRENT_TIMESTAMP
+         WHERE id = ?",
     )
-    .bind(organization)
     .bind(organization)
     .bind(description)
     .bind(&user.id)
     .execute(&mut *tx)
     .await?;
+    if let Some(display_name) = input.display_name.as_deref().map(str::trim) {
+        if !display_name.is_empty() {
+            sqlx::query(
+                "UPDATE users SET display_name = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+            )
+            .bind(display_name)
+            .bind(&user.id)
+            .execute(&mut *tx)
+            .await?;
+        }
+    }
     if let Some(tags) = input.tags {
         sqlx::query("DELETE FROM user_tags WHERE user_id = ?")
             .bind(&user.id)
