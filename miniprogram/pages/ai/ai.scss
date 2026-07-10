@@ -1,19 +1,19 @@
 .hero {
   position: relative;
-  height: 318rpx;
+  height: 352rpx;
   overflow: hidden;
-  margin-top: 18rpx;
+  margin-top: 24rpx;
   background: linear-gradient(145deg, #f4f5ff, #edfafa);
   border: 1rpx solid rgba(92, 105, 212, 0.08);
-  border-radius: 28rpx;
+  border-radius: 32rpx;
 }
 
 .hero-image {
   position: absolute;
-  top: -62rpx;
+  top: -56rpx;
   left: 50%;
-  width: 320rpx;
-  height: 320rpx;
+  width: 352rpx;
+  height: 352rpx;
   border-radius: 50%;
   transform: translateX(-50%);
   mix-blend-mode: multiply;
@@ -29,65 +29,65 @@
 
 .ring-one {
   top: 38rpx;
-  width: 250rpx;
-  height: 250rpx;
+  width: 280rpx;
+  height: 280rpx;
 }
 
 .ring-two {
   top: 12rpx;
-  width: 298rpx;
-  height: 298rpx;
+  width: 328rpx;
+  height: 328rpx;
 }
 
 .hero-copy {
   position: absolute;
   z-index: 3;
-  right: 24rpx;
-  bottom: 22rpx;
-  left: 24rpx;
-  padding: 16rpx 20rpx;
+  right: 28rpx;
+  bottom: 24rpx;
+  left: 28rpx;
+  padding: 20rpx 24rpx;
   text-align: center;
   background: rgba(255, 255, 255, 0.76);
   border: 1rpx solid rgba(255, 255, 255, 0.8);
-  border-radius: 20rpx;
+  border-radius: 24rpx;
   backdrop-filter: blur(16rpx);
 }
 
 .hero-kicker {
   color: #6b6ed2;
-  font-size: 16rpx;
+  font-size: 22rpx;
   font-weight: 700;
   letter-spacing: 3rpx;
 }
 
 .hero-title {
   margin-top: 8rpx;
-  font-size: 24rpx;
+  font-size: 30rpx;
   font-weight: 700;
 }
 
 .hero-desc {
   margin-top: 8rpx;
-  color: #8793a0;
-  font-size: 17rpx;
+  color: #71808d;
+  font-size: 22rpx;
 }
 
 .tabs {
   display: flex;
-  margin-top: 18rpx;
-  padding: 7rpx;
+  margin-top: 24rpx;
+  padding: 8rpx;
   background: #e9eef2;
   border-radius: 999rpx;
 }
 
 .tab {
-  height: 56rpx;
+  height: 88rpx;
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #7d8994;
-  font-size: 21rpx;
+  color: #667582;
+  font-size: 24rpx;
   border-radius: 999rpx;
 }
 
@@ -100,46 +100,46 @@
 
 .ai-insight {
   display: flex;
-  gap: 18rpx;
-  margin-top: 16rpx;
-  padding: 19rpx;
+  gap: 20rpx;
+  margin-top: 24rpx;
+  padding: 24rpx;
   background: linear-gradient(120deg, #eaf9f6, #f0f0ff);
-  border-radius: 25rpx;
+  border-radius: 28rpx;
 }
 
 .insight-icon {
-  width: 54rpx;
-  height: 54rpx;
+  width: 64rpx;
+  height: 64rpx;
   flex: none;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #ffffff;
   background: linear-gradient(135deg, #57d0bd, #7674dc);
-  border-radius: 18rpx;
+  border-radius: 20rpx;
 }
 
 .insight-title {
-  font-size: 21rpx;
-  font-weight: 650;
+  font-size: 26rpx;
+  font-weight: 680;
 }
 
 .insight-desc {
-  margin-top: 6rpx;
-  color: #778692;
-  font-size: 18rpx;
+  margin-top: 8rpx;
+  color: #647481;
+  font-size: 22rpx;
   line-height: 1.5;
 }
 
 .plan-list {
   display: flex;
   flex-direction: column;
-  gap: 16rpx;
-  margin-top: 16rpx;
+  gap: 24rpx;
+  margin-top: 24rpx;
 }
 
 .plan {
-  padding: 22rpx;
+  padding: 28rpx;
 }
 
 .plan-head {
@@ -148,17 +148,17 @@
 }
 
 .plan-icon {
-  width: 64rpx;
-  height: 64rpx;
+  width: 76rpx;
+  height: 76rpx;
   flex: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: 17rpx;
+  margin-right: 20rpx;
   color: #ffffff;
-  font-size: 23rpx;
+  font-size: 26rpx;
   font-weight: 650;
-  border-radius: 23rpx;
+  border-radius: 24rpx;
 }
 
 .aqua {
@@ -180,7 +180,7 @@
 
 .plan-title {
   overflow: hidden;
-  font-size: 24rpx;
+  font-size: 28rpx;
   font-weight: 680;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -188,48 +188,48 @@
 
 .plan-type {
   display: inline-flex;
-  margin-top: 7rpx;
-  padding: 5rpx 10rpx;
+  margin-top: 8rpx;
+  padding: 6rpx 12rpx;
   color: #29a895;
-  font-size: 16rpx;
+  font-size: 22rpx;
   background: #e9faf6;
   border-radius: 999rpx;
 }
 
 .plan-score {
-  width: 66rpx;
+  width: 76rpx;
   color: #35b5a2;
   text-align: center;
 }
 
 .plan-score text {
-  font-size: 31rpx;
+  font-size: 38rpx;
   font-weight: 720;
 }
 
 .plan-score view {
-  margin-top: 3rpx;
-  color: #99a3ac;
-  font-size: 15rpx;
+  margin-top: 4rpx;
+  color: #7d8994;
+  font-size: 22rpx;
 }
 
 .plan-desc {
-  margin-top: 14rpx;
-  color: #6f7d89;
-  font-size: 20rpx;
-  line-height: 1.6;
+  margin-top: 20rpx;
+  color: #596976;
+  font-size: 24rpx;
+  line-height: 1.55;
 }
 
 .plan-tags {
   display: flex;
-  gap: 10rpx;
-  margin-top: 13rpx;
+  gap: 12rpx;
+  margin-top: 16rpx;
 }
 
 .plan-tags text {
-  padding: 7rpx 12rpx;
+  padding: 8rpx 16rpx;
   color: #697784;
-  font-size: 17rpx;
+  font-size: 22rpx;
   background: #f2f5f7;
   border-radius: 999rpx;
 }
@@ -238,42 +238,42 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 17rpx;
-  padding-top: 16rpx;
+  margin-top: 24rpx;
+  padding-top: 20rpx;
   border-top: 1rpx solid #edf1f3;
 }
 
 .budget-label {
-  color: #9aa4ad;
-  font-size: 16rpx;
+  color: #7d8994;
+  font-size: 22rpx;
 }
 
 .budget-value {
-  margin-top: 5rpx;
+  margin-top: 4rpx;
   color: #30b29f;
-  font-size: 25rpx;
+  font-size: 28rpx;
   font-weight: 680;
 }
 
 .plan-button {
-  height: 58rpx;
+  min-height: 88rpx;
   display: flex;
   align-items: center;
-  padding: 0 22rpx;
+  padding: 0 28rpx;
   color: #ffffff;
-  font-size: 19rpx;
-  font-weight: 600;
+  font-size: 24rpx;
+  font-weight: 650;
   background: linear-gradient(120deg, #62d8c6, #35b9a6);
   border-radius: 999rpx;
 }
 
 .refresh {
-  height: 72rpx;
+  min-height: 88rpx;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 12rpx;
-  margin-top: 24rpx;
-  color: #62717e;
-  font-size: 21rpx;
+  margin-top: 32rpx;
+  color: #596976;
+  font-size: 24rpx;
 }

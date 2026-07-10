@@ -4,7 +4,7 @@ page {
 
 .onboarding {
   min-height: 100vh;
-  padding: 0 30rpx calc(24rpx + env(safe-area-inset-bottom));
+  padding: 0 32rpx calc(32rpx + env(safe-area-inset-bottom));
   background:
     radial-gradient(circle at 88% 4%, rgba(103, 224, 211, 0.2), transparent 28%),
     radial-gradient(circle at 4% 93%, rgba(105, 139, 244, 0.1), transparent 26%),
@@ -22,12 +22,12 @@ page {
 
 .brand-mark {
   position: relative;
-  width: 62rpx;
-  height: 62rpx;
+  width: 68rpx;
+  height: 68rpx;
   flex: none;
-  margin-right: 15rpx;
+  margin-right: 16rpx;
   background: linear-gradient(140deg, #73e6d4, #42c6b2);
-  border-radius: 19rpx 9rpx 19rpx 9rpx;
+  border-radius: 20rpx 10rpx 20rpx 10rpx;
   transform: rotate(8deg);
   box-shadow: 0 14rpx 26rpx rgba(50, 190, 171, 0.22);
 }
@@ -40,8 +40,8 @@ page {
 
 .spark-one {
   top: 8rpx;
-  left: 22rpx;
-  font-size: 30rpx;
+  left: 24rpx;
+  font-size: 32rpx;
 }
 
 .spark-two {
@@ -51,56 +51,57 @@ page {
 }
 
 .brand-name {
-  font-size: 30rpx;
+  font-size: 34rpx;
   font-weight: 750;
   letter-spacing: 2rpx;
 }
 
 .brand-subtitle {
   margin-top: 4rpx;
-  color: #85919e;
-  font-size: 18rpx;
+  color: #74828f;
+  font-size: 22rpx;
 }
 
 .intro {
-  margin: 24rpx 4rpx 22rpx;
+  margin: 40rpx 4rpx 32rpx;
 }
 
 .intro-kicker {
-  margin-bottom: 10rpx;
+  margin-bottom: 12rpx;
   color: #35b9a6;
-  font-size: 18rpx;
-  font-weight: 650;
-  letter-spacing: 3rpx;
+  font-size: 22rpx;
+  font-weight: 700;
+  letter-spacing: 4rpx;
 }
 
 .intro-title {
-  font-size: 46rpx;
+  font-size: 54rpx;
   font-weight: 750;
   letter-spacing: -2rpx;
 }
 
 .intro-desc {
-  margin-top: 9rpx;
-  color: #8d98a5;
-  font-size: 21rpx;
+  margin-top: 12rpx;
+  color: #73818e;
+  font-size: 26rpx;
+  line-height: 1.5;
 }
 
 .role-list {
   display: flex;
   flex-direction: column;
-  gap: 16rpx;
+  gap: 24rpx;
 }
 
 .role-card {
   position: relative;
-  height: 258rpx;
+  height: 288rpx;
   overflow: hidden;
-  padding: 25rpx 26rpx;
+  padding: 28rpx 32rpx;
   background: rgba(255, 255, 255, 0.88);
   border: 2rpx solid transparent;
-  border-radius: 28rpx;
-  box-shadow: 0 12rpx 34rpx rgba(35, 63, 82, 0.07);
+  border-radius: 32rpx;
+  box-shadow: 0 14rpx 40rpx rgba(35, 63, 82, 0.08);
   transition: transform 0.2s ease;
 }
 
@@ -119,13 +120,13 @@ page {
 .role-copy {
   position: relative;
   z-index: 2;
-  width: 55%;
+  width: 57%;
 }
 
 .role-badge {
   display: inline-flex;
-  padding: 7rpx 14rpx;
-  font-size: 18rpx;
+  padding: 8rpx 16rpx;
+  font-size: 22rpx;
   font-weight: 600;
   border-radius: 999rpx;
 }
@@ -141,25 +142,25 @@ page {
 }
 
 .role-title {
-  margin-top: 16rpx;
-  font-size: 27rpx;
+  margin-top: 20rpx;
+  font-size: 32rpx;
   font-weight: 700;
 }
 
 .role-desc {
-  margin-top: 8rpx;
-  color: #7f8c99;
-  font-size: 19rpx;
-  line-height: 1.45;
+  margin-top: 12rpx;
+  color: #6f7e8b;
+  font-size: 23rpx;
+  line-height: 1.5;
 }
 
 .role-select {
   display: flex;
   align-items: center;
   gap: 10rpx;
-  margin-top: 14rpx;
+  margin-top: 16rpx;
   color: #61717f;
-  font-size: 18rpx;
+  font-size: 22rpx;
 }
 
 .select-dot {
@@ -183,27 +184,27 @@ page {
 
 .role-image {
   position: absolute;
-  top: 8rpx;
-  right: -18rpx;
-  width: 245rpx;
-  height: 245rpx;
-  border-radius: 38rpx;
+  top: 12rpx;
+  right: -16rpx;
+  width: 264rpx;
+  height: 264rpx;
+  border-radius: 40rpx;
   mix-blend-mode: multiply;
 }
 
 .enter-button {
-  height: 84rpx;
+  height: 92rpx;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 18rpx;
-  margin-top: 24rpx;
+  margin-top: 32rpx;
   color: #ffffff;
-  font-size: 25rpx;
-  font-weight: 650;
+  font-size: 28rpx;
+  font-weight: 700;
   background: linear-gradient(120deg, #62decc, #32bca9);
   border-radius: 999rpx;
-  box-shadow: 0 12rpx 30rpx rgba(48, 190, 170, 0.2);
+  box-shadow: 0 14rpx 34rpx rgba(48, 190, 170, 0.22);
 }
 
 .arrow {
@@ -211,8 +212,8 @@ page {
 }
 
 .agreement {
-  margin-top: 16rpx;
-  color: #a4adb6;
-  font-size: 18rpx;
+  margin-top: 20rpx;
+  color: #667582;
+  font-size: 22rpx;
   text-align: center;
 }

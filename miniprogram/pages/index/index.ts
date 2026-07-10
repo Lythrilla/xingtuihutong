@@ -20,7 +20,7 @@ Component({
         menu.left > systemInfo.windowWidth / 2 ? systemInfo.windowWidth - menu.left + 10 : 12
       this.setData({
         statusBarHeight,
-        navigationHeight: menuHeight + gap * 2,
+        navigationHeight: Math.max(menuHeight + gap * 2, 52),
         rightInset,
       })
     },
