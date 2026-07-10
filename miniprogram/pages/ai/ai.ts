@@ -10,7 +10,7 @@ Component({
     ],
     plans: [
       {
-        icon: '浪',
+        icon: 'video',
         iconClass: 'aqua',
         title: '短视频内容矩阵方案',
         type: '增长推荐',
@@ -20,7 +20,7 @@ Component({
         score: 98,
       },
       {
-        icon: '校',
+        icon: 'campus',
         iconClass: 'violet',
         title: '校园音乐人共创推广',
         type: '圈层推荐',
@@ -30,7 +30,7 @@ Component({
         score: 95,
       },
       {
-        icon: '牌',
+        icon: 'briefcase',
         iconClass: 'blue',
         title: '品牌场景合作方案',
         type: '商业推荐',

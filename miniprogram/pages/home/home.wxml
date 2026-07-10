@@ -19,9 +19,14 @@
       <view class="ai-label">AI 智能经纪</view>
       <view class="ai-title">发现更适合你的合作伙伴</view>
       <view class="ai-desc">基于作品风格与历史表现实时推荐</view>
-      <view class="ai-link">查看今日方案 →</view>
+      <view class="ai-link">
+        <text>查看今日方案</text>
+        <view class="link-arrow"></view>
+      </view>
     </view>
-    <image class="ai-image" src="/assets/images/ai-orb.png" mode="aspectFill"></image>
+    <view class="ai-visual">
+      <image class="ai-image" src="/assets/images/ai-orb.png" mode="aspectFit"></image>
+    </view>
   </view>
 
   <view class="section">
@@ -53,19 +58,19 @@
     </view>
     <view class="quick-grid">
       <view class="quick-card" bindtap="openMatch">
-        <view class="quick-icon mint-bg">⌁</view>
+        <view class="quick-icon mint-bg"><view class="ui-icon icon-target"></view></view>
         <text>推广匹配</text>
       </view>
       <view class="quick-card" bindtap="openPlaza">
-        <view class="quick-icon blue-bg">◇</view>
+        <view class="quick-icon blue-bg"><view class="ui-icon icon-briefcase"></view></view>
         <text>合作管理</text>
       </view>
       <view class="quick-card" bindtap="openAI">
-        <view class="quick-icon lilac-bg">✦</view>
+        <view class="quick-icon lilac-bg"><view class="ui-icon icon-chart"></view></view>
         <text>数据中心</text>
       </view>
       <view class="quick-card">
-        <view class="quick-icon gold-bg">￥</view>
+        <view class="quick-icon gold-bg"><view class="ui-icon icon-wallet"></view></view>
         <text>收益结算</text>
       </view>
     </view>

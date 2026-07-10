@@ -37,13 +37,15 @@ page {
 .spark-one {
   top: 8rpx;
   left: 22rpx;
-  font-size: 32rpx;
+  width: 28rpx;
+  height: 28rpx;
 }
 
 .spark-two {
   right: 10rpx;
   bottom: 10rpx;
-  font-size: 18rpx;
+  width: 16rpx;
+  height: 16rpx;
 }
 
 .brand-name {
@@ -59,7 +61,7 @@ page {
 }
 
 .intro {
-  margin: 56rpx 4rpx 48rpx;
+  margin: 48rpx 4rpx 40rpx;
 }
 
 .intro-kicker {
@@ -86,18 +88,18 @@ page {
 .role-list {
   display: flex;
   flex-direction: column;
-  gap: 24rpx;
-  margin-bottom: 48rpx;
+  gap: 20rpx;
+  margin-bottom: 36rpx;
 }
 
 .role-card {
   position: relative;
-  height: 304rpx;
+  height: 276rpx;
   overflow: hidden;
-  padding: 28rpx 32rpx;
+  padding: 24rpx 28rpx;
   background: #ffffff;
   border: 2rpx solid #e9edf0;
-  border-radius: 16rpx;
+  border-radius: 14rpx;
 }
 
 .role-card.active.service {
@@ -111,7 +113,7 @@ page {
 .role-copy {
   position: relative;
   z-index: 2;
-  width: 57%;
+  width: 60%;
 }
 
 .role-badge {
@@ -133,8 +135,8 @@ page {
 }
 
 .role-title {
-  margin-top: 20rpx;
-  font-size: 32rpx;
+  margin-top: 16rpx;
+  font-size: 30rpx;
   font-weight: 600;
 }
 
@@ -149,7 +151,7 @@ page {
   display: flex;
   align-items: center;
   gap: 10rpx;
-  margin-top: 16rpx;
+  margin-top: 14rpx;
   color: #5d6b76;
   font-size: 22rpx;
 }
@@ -173,34 +175,75 @@ page {
   box-shadow: 0 0 0 2rpx #b78b3d;
 }
 
-.role-image {
+.role-visual {
   position: absolute;
-  top: 12rpx;
-  right: -16rpx;
-  width: 264rpx;
-  height: 264rpx;
-  border-radius: 16rpx;
-  opacity: 0.9;
-  mix-blend-mode: multiply;
+  top: 22rpx;
+  right: 18rpx;
+  bottom: 22rpx;
+  width: 218rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 12rpx;
+}
+
+.service-visual {
+  background: #edf5f3;
+}
+
+.client-visual {
+  background: #f8f1e6;
+}
+
+.role-image {
+  width: 206rpx;
+  height: 206rpx;
 }
 
 .enter-button {
-  height: 92rpx;
+  height: 82rpx;
   flex: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 18rpx;
+  gap: 14rpx;
   margin-top: auto;
   color: #ffffff;
-  font-size: 28rpx;
+  font-size: 26rpx;
   font-weight: 600;
   background: #17877b;
-  border-radius: 12rpx;
+  border-radius: 10rpx;
 }
 
-.arrow {
-  font-size: 34rpx;
+.button-arrow {
+  position: relative;
+  width: 24rpx;
+  height: 24rpx;
+}
+
+.button-arrow::before,
+.button-arrow::after {
+  position: absolute;
+  content: "";
+}
+
+.button-arrow::before {
+  top: 11rpx;
+  left: 1rpx;
+  width: 19rpx;
+  height: 2rpx;
+  background: currentColor;
+}
+
+.button-arrow::after {
+  top: 7rpx;
+  right: 2rpx;
+  width: 8rpx;
+  height: 8rpx;
+  border-top: 2rpx solid currentColor;
+  border-right: 2rpx solid currentColor;
+  transform: rotate(45deg);
 }
 
 .agreement {

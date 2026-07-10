@@ -8,7 +8,9 @@
     </view>
     <view class="notice-list card">
       <view class="notice" wx:for="{{notices}}" wx:key="title">
-        <view class="notice-icon {{item.iconClass}}">{{item.icon}}</view>
+        <view class="notice-icon {{item.iconClass}}">
+          <view class="ui-icon icon-{{item.icon}}"></view>
+        </view>
         <view class="notice-main">
           <view class="notice-line">
             <text class="notice-title">{{item.title}}</text>

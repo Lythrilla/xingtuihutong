@@ -2,10 +2,10 @@
   position: relative;
   overflow: hidden;
   margin-top: 24rpx;
-  padding: 32rpx;
+  padding: 28rpx;
   color: #ffffff;
   background: #17877b;
-  border-radius: 16rpx;
+  border-radius: 14rpx;
 }
 
 .profile-head {
@@ -41,21 +41,38 @@
 }
 
 .profile-role {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
   margin-top: 8rpx;
   color: rgba(255, 255, 255, 0.82);
   font-size: 23rpx;
 }
 
-.edit-button {
-  height: 56rpx;
+.role-check {
+  width: 24rpx;
+  height: 24rpx;
   display: flex;
   align-items: center;
-  padding: 0 24rpx;
+  justify-content: center;
+  color: #17877b;
+  font-size: 16rpx;
+  line-height: 1;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+}
+
+.edit-button {
+  min-width: 88rpx;
+  height: 52rpx;
+  display: flex;
+  align-items: center;
+  padding: 0 20rpx;
   color: #ffffff;
   font-size: 23rpx;
   background: rgba(255, 255, 255, 0.14);
   border: 1rpx solid rgba(255, 255, 255, 0.25);
-  border-radius: 10rpx;
+  border-radius: 9rpx;
 }
 
 .profile-desc {
@@ -94,7 +111,7 @@
 
 .certs {
   display: flex;
-  padding: 28rpx 12rpx;
+  padding: 24rpx 12rpx;
 }
 
 .cert {
@@ -107,14 +124,18 @@
 }
 
 .cert-icon {
-  width: 64rpx;
-  height: 64rpx;
+  width: 56rpx;
+  height: 56rpx;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 12rpx;
-  font-size: 24rpx;
-  border-radius: 12rpx;
+  border-radius: 10rpx;
+}
+
+.cert-icon .ui-icon {
+  width: 28rpx;
+  height: 28rpx;
 }
 
 .cert view:last-child {
@@ -142,7 +163,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 16rpx;
-  padding: 28rpx;
+  padding: 24rpx;
 }
 
 .skill-card text {
@@ -214,20 +235,24 @@
   display: flex;
   align-items: center;
   gap: 20rpx;
-  padding: 28rpx;
+  padding: 24rpx;
 }
 
 .wallet-icon {
-  width: 76rpx;
-  height: 76rpx;
+  width: 66rpx;
+  height: 66rpx;
   flex: none;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #17877b;
-  font-size: 30rpx;
   background: #e7f2f0;
-  border-radius: 12rpx;
+  border-radius: 10rpx;
+}
+
+.wallet-icon .ui-icon {
+  width: 31rpx;
+  height: 31rpx;
 }
 
 .wallet-main {
@@ -247,20 +272,21 @@
 }
 
 .wallet-button {
-  height: 62rpx;
+  min-width: 104rpx;
+  height: 56rpx;
   display: flex;
   align-items: center;
-  padding: 0 32rpx;
+  padding: 0 24rpx;
   color: #ffffff;
   font-size: 24rpx;
   font-weight: 600;
   background: #17877b;
-  border-radius: 10rpx;
+  border-radius: 9rpx;
 }
 
 .menu {
   overflow: hidden;
-  padding: 0 28rpx;
+  padding: 0 24rpx;
 }
 
 .menu-item {
@@ -276,7 +302,11 @@
   border-top: 1rpx solid #edf1f3;
 }
 
-.menu-item text:last-child {
+.menu-chevron {
+  width: 14rpx;
+  height: 14rpx;
   color: #8b97a1;
-  font-size: 31rpx;
+  border-top: 2rpx solid currentColor;
+  border-right: 2rpx solid currentColor;
+  transform: rotate(45deg);
 }

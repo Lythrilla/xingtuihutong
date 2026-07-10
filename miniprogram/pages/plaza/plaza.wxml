@@ -2,7 +2,7 @@
   <page-header title="合作广场" subtitle="发现值得合作的服务方与版权伙伴"></page-header>
 
   <view class="search">
-    <text class="search-icon">⌕</text>
+    <view class="ui-icon icon-search search-icon"></view>
     <input placeholder="搜索服务方、被服务方或能力标签" placeholder-class="placeholder"></input>
   </view>
 
@@ -17,12 +17,12 @@
       >
         {{item.label}}
       </view>
-      <view class="filter">筛选⌄</view>
+      <view class="filter filter-more">筛选<view class="filter-chevron"></view></view>
     </view>
   </scroll-view>
 
   <view class="plaza-tip">
-    <view class="tip-icon">✦</view>
+    <view class="tip-icon"><view class="ui-icon icon-spark"></view></view>
     <view>
       <view class="tip-title">AI 已为你筛选优质伙伴</view>
       <view class="tip-desc">根据合作偏好、预算和历史交付综合排序</view>
@@ -35,7 +35,7 @@
         <view class="avatar {{item.avatarClass}}">{{item.avatar}}</view>
         <view class="entry-identity">
           <view class="entry-name">{{item.name}}</view>
-          <view class="verified">✓ {{item.identity}}</view>
+          <view class="verified"><view class="verify-dot">✓</view>{{item.identity}}</view>
         </view>
         <view class="match-score">{{item.match}}<text>%</text></view>
       </view>

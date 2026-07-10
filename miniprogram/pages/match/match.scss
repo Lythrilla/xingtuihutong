@@ -46,8 +46,8 @@
 }
 
 .form-section {
-  margin-bottom: 24rpx;
-  padding: 28rpx;
+  margin-bottom: 20rpx;
+  padding: 24rpx;
 }
 
 .form-title {
@@ -73,10 +73,10 @@
 
 .song-card {
   position: relative;
-  width: 192rpx;
+  width: 184rpx;
   display: inline-flex;
   flex-direction: column;
-  padding: 12rpx 12rpx 20rpx;
+  padding: 10rpx 10rpx 18rpx;
   background: #f7f9fb;
   border: 2rpx solid transparent;
   border-radius: 12rpx;
@@ -89,7 +89,7 @@
 
 .song-cover {
   position: relative;
-  height: 136rpx;
+  height: 128rpx;
   overflow: hidden;
   border-radius: 10rpx;
 }
@@ -109,17 +109,38 @@
 .disc {
   position: absolute;
   z-index: 2;
-  top: 32rpx;
-  left: 48rpx;
-  width: 72rpx;
-  height: 72rpx;
+  top: 28rpx;
+  left: 46rpx;
+  width: 70rpx;
+  height: 70rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #ffffff;
-  font-size: 32rpx;
   background: rgba(255, 255, 255, 0.22);
   border: 1rpx solid rgba(255, 255, 255, 0.55);
+  border-radius: 50%;
+}
+
+.disc::before,
+.disc::after {
+  position: absolute;
+  content: "";
+  border: 1rpx solid rgba(255, 255, 255, 0.45);
+  border-radius: 50%;
+}
+
+.disc::before {
+  inset: 10rpx;
+}
+
+.disc::after {
+  inset: 20rpx;
+}
+
+.disc-center {
+  width: 12rpx;
+  height: 12rpx;
+  background: #ffffff;
   border-radius: 50%;
 }
 
@@ -164,8 +185,8 @@
 }
 
 .target-card {
-  min-height: 176rpx;
-  padding: 24rpx;
+  min-height: 160rpx;
+  padding: 20rpx;
   background: #f7f9fb;
   border: 2rpx solid transparent;
   border-radius: 12rpx;
@@ -177,19 +198,23 @@
 }
 
 .target-icon {
-  width: 56rpx;
-  height: 56rpx;
+  width: 50rpx;
+  height: 50rpx;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #17877b;
-  font-size: 26rpx;
   background: #e7f2f0;
-  border-radius: 12rpx;
+  border-radius: 10rpx;
+}
+
+.target-icon .ui-icon {
+  width: 27rpx;
+  height: 27rpx;
 }
 
 .target-title {
-  margin-top: 16rpx;
+  margin-top: 14rpx;
   font-size: 26rpx;
   font-weight: 600;
 }
@@ -210,7 +235,7 @@
 
 .budget {
   width: calc(50% - 8rpx);
-  height: 76rpx;
+  height: 68rpx;
   display: flex;
   align-items: center;
   gap: 16rpx;
@@ -243,6 +268,11 @@
 }
 
 .match-button {
-  gap: 16rpx;
-  margin: 28rpx 0 8rpx;
+  gap: 12rpx;
+  margin: 24rpx 0 8rpx;
+}
+
+.button-icon {
+  width: 24rpx;
+  height: 24rpx;
 }

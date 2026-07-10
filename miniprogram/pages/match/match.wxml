@@ -31,7 +31,7 @@
           bindtap="chooseSong"
         >
           <view class="song-cover {{item.cover}}">
-            <view class="disc">♪</view>
+            <view class="disc"><view class="disc-center"></view></view>
           </view>
           <view class="song-name">{{item.name}}</view>
           <view class="song-artist">{{item.artist}}</view>
@@ -52,7 +52,7 @@
         data-key="{{item.key}}"
         bindtap="toggleTarget"
       >
-        <view class="target-icon">{{item.icon}}</view>
+        <view class="target-icon"><view class="ui-icon icon-{{item.iconClass}}"></view></view>
         <view class="target-title">{{item.title}}</view>
         <view class="target-desc">{{item.desc}}</view>
       </view>
@@ -78,7 +78,7 @@
 
   <button class="primary-button match-button" bindtap="startMatching">
     <text>开始 AI 智能匹配</text>
-    <text>✦</text>
+    <view class="ui-icon icon-spark button-icon"></view>
   </button>
 </view>
 <tab-bar active="match"></tab-bar>

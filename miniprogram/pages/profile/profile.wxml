@@ -6,7 +6,7 @@
       <view class="profile-avatar">鲸</view>
       <view class="profile-main">
         <view class="profile-name">鲸浪音乐营销</view>
-        <view class="profile-role">✓ 已认证{{roleLabel}}</view>
+        <view class="profile-role"><view class="role-check">✓</view>已认证{{roleLabel}}</view>
       </view>
       <button class="edit-button" bindtap="edit">编辑</button>
     </view>
@@ -26,17 +26,17 @@
     </view>
     <view class="certs card">
       <view class="cert">
-        <view class="cert-icon mint">✓</view>
+        <view class="cert-icon mint"><view class="ui-icon icon-shield"></view></view>
         <text>企业认证</text>
         <view>已认证</view>
       </view>
       <view class="cert">
-        <view class="cert-icon blue">盾</view>
+        <view class="cert-icon blue"><view class="ui-icon icon-shield"></view></view>
         <text>版权资质</text>
         <view>已认证</view>
       </view>
       <view class="cert">
-        <view class="cert-icon gold">信</view>
+        <view class="cert-icon gold"><view class="ui-icon icon-shield"></view></view>
         <text>行业资质</text>
         <view>已认证</view>
       </view>
@@ -85,7 +85,7 @@
       <text class="section-action">查看明细</text>
     </view>
     <view class="wallet card">
-      <view class="wallet-icon">￥</view>
+      <view class="wallet-icon"><view class="ui-icon icon-wallet"></view></view>
       <view class="wallet-main">
         <view class="wallet-label">钱包余额</view>
         <view class="wallet-value">¥24,850.00</view>
@@ -96,9 +96,9 @@
 
   <view class="section">
     <view class="menu card">
-      <view class="menu-item"><text>合作订单</text><text>›</text></view>
-      <view class="menu-item"><text>收益与结算</text><text>›</text></view>
-      <view class="menu-item" bindtap="changeRole"><text>切换身份</text><text>›</text></view>
+      <view class="menu-item"><text>合作订单</text><view class="menu-chevron"></view></view>
+      <view class="menu-item"><text>收益与结算</text><view class="menu-chevron"></view></view>
+      <view class="menu-item" bindtap="changeRole"><text>切换身份</text><view class="menu-chevron"></view></view>
     </view>
   </view>
 </view>
