@@ -34,6 +34,15 @@
   background: #17877b;
 }
 
+.step.done .step-number {
+  font-size: 0;
+}
+
+.step.done .step-number::after {
+  content: "✓";
+  font-size: 22rpx;
+}
+
 .step-line {
   height: 2rpx;
   flex: 1;
@@ -270,6 +279,20 @@
 .match-button {
   gap: 12rpx;
   margin: 24rpx 0 8rpx;
+}
+
+.selection-summary {
+  margin: 28rpx 0 12rpx;
+  overflow: hidden;
+  color: #6f7d84;
+  font-size: 23rpx;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.match-button[disabled] .button-icon {
+  display: none;
 }
 
 .button-icon {

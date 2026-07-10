@@ -7,6 +7,7 @@ const app = getApp<IAppOption>()
 Component({
   data: {
     selectedRole: 'provider',
+    entering: false,
     statusBarHeight: 20,
     navigationHeight: 44,
     rightInset: 96,
@@ -25,6 +26,9 @@ Component({
         navigationHeight: Math.max(menuHeight + gap * 2, 52),
         rightInset,
       })
+      if (wx.getStorageSync('starconnect-token')) {
+        wx.redirectTo({ url: '/pages/home/home' })
+      }
     },
   },
   methods: {
@@ -33,8 +37,9 @@ Component({
       this.setData({ selectedRole: role })
     },
     async enterApp() {
+      if (this.data.entering) return
       const role = this.data.selectedRole as 'provider' | 'client'
-      wx.showLoading({ title: '正在进入' })
+      this.setData({ entering: true })
       try {
         await ensureSession(role)
         const user = await apiRequest<SessionUser>('/api/me/role', 'PUT', { role })
@@ -45,7 +50,7 @@ Component({
       } catch (error) {
         wx.showToast({ title: error instanceof Error ? error.message : '服务连接失败', icon: 'none' })
       } finally {
-        wx.hideLoading()
+        this.setData({ entering: false })
       }
     },
   },

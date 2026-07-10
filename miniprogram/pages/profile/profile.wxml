@@ -1,6 +1,9 @@
 <view class="page-shell profile-page">
   <page-header title="我的主页" subtitle="完善档案，让优质合作主动找到你"></page-header>
 
+  <data-state loading="{{loading}}" error="{{error}}" bind:action="loadProfile"></data-state>
+
+  <block wx:if="{{!loading && !error}}">
   <view class="profile-card">
     <view class="profile-head">
       <view class="profile-avatar">{{user.avatar}}</view>
@@ -11,7 +14,7 @@
           {{user.verified ? '已认证' : '未认证'}}{{roleLabel}}
         </view>
       </view>
-      <button class="edit-button" bindtap="editProfile">编辑</button>
+      <button class="edit-button" disabled="{{actionLoading}}" bindtap="editProfile">编辑</button>
     </view>
     <view class="profile-desc">{{user.description}}</view>
     <view class="profile-stats">
@@ -26,29 +29,31 @@
     <view class="section-head">
       <text class="section-title">资质认证</text>
     </view>
-    <view class="certs card">
+    <view class="certs card" wx:if="{{certifications.length}}">
       <view class="cert" wx:for="{{certifications}}" wx:key="id">
         <view class="cert-icon {{item.colorClass}}"><view class="ui-icon icon-{{item.iconClass}}"></view></view>
         <text>{{item.title}}</text>
         <view>{{item.status}}</view>
       </view>
     </view>
+    <view wx:else class="card inline-empty">暂无认证信息</view>
   </view>
 
   <view class="section">
     <view class="section-head">
       <text class="section-title">能力标签</text>
     </view>
-    <view class="skill-card card">
+    <view class="skill-card card" wx:if="{{tags.length}}">
       <text wx:for="{{tags}}" wx:key="*this">{{item}}</text>
     </view>
+    <view wx:else class="card inline-empty" bindtap="editProfile">添加能力标签，让推荐更准确</view>
   </view>
 
   <view class="section">
     <view class="section-head">
       <text class="section-title">精选案例</text>
     </view>
-    <scroll-view class="case-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+    <scroll-view wx:if="{{cases.length}}" class="case-scroll" scroll-x enhanced show-scrollbar="{{false}}">
       <view class="cases">
         <view class="case-card {{item.colorClass}}" wx:for="{{cases}}" wx:key="id">
           <view class="case-type">{{item.caseType}}</view>
@@ -57,6 +62,7 @@
         </view>
       </view>
     </scroll-view>
+    <view wx:else class="card inline-empty">暂无精选案例</view>
   </view>
 
   <view class="section">
@@ -69,12 +75,94 @@
         <view class="wallet-label">可提现余额</view>
         <view class="wallet-value">{{walletBalance}}</view>
       </view>
-      <button class="wallet-button" bindtap="withdraw">提现</button>
+      <button
+        class="wallet-button"
+        disabled="{{actionLoading || walletBalanceCents <= 0}}"
+        bindtap="withdraw"
+      >提现</button>
     </view>
   </view>
 
-  <button class="role-switch" bindtap="switchRole">
-    切换为{{isProvider ? '被服务方' : '服务方'}}
+  <button class="role-switch" disabled="{{actionLoading}}" loading="{{actionLoading}}" bindtap="switchRole">
+    {{actionLoading ? '正在处理' : '切换为'}}{{actionLoading ? '' : (isProvider ? '被服务方' : '服务方')}}
   </button>
+  </block>
 </view>
 <tab-bar active="profile"></tab-bar>
+
+<view wx:if="{{sheetMode}}" class="sheet-layer" bindtap="closeSheet">
+  <view class="sheet-card" catchtap="preventClose">
+    <view class="sheet-head">
+      <view>
+        <view class="sheet-title">{{sheetMode === 'edit' ? '编辑主页资料' : '申请提现'}}</view>
+        <view class="sheet-description">
+          {{sheetMode === 'edit' ? '完整资料能帮助合作伙伴更快了解你' : '提交后会生成一条待处理结算记录'}}
+        </view>
+      </view>
+      <button class="sheet-close" disabled="{{actionLoading}}" bindtap="closeSheet">×</button>
+    </view>
+
+    <block wx:if="{{sheetMode === 'edit'}}">
+      <label class="field">
+        <text>机构或个人名称</text>
+        <input
+          value="{{organizationInput}}"
+          maxlength="40"
+          placeholder="请输入对外展示名称"
+          bindinput="updateOrganization"
+        />
+      </label>
+      <label class="field">
+        <text>业务简介</text>
+        <textarea
+          value="{{descriptionInput}}"
+          maxlength="240"
+          placeholder="介绍业务方向、优势和合作偏好"
+          bindinput="updateDescription"
+        ></textarea>
+        <view class="field-hint">{{descriptionInput.length}} / 240</view>
+      </label>
+      <label class="field">
+        <text>能力标签</text>
+        <input
+          value="{{tagsInput}}"
+          maxlength="100"
+          placeholder="用逗号分隔，最多 8 个"
+          bindinput="updateTags"
+        />
+      </label>
+      <button
+        class="sheet-primary"
+        disabled="{{actionLoading}}"
+        loading="{{actionLoading}}"
+        bindtap="saveProfile"
+      >{{actionLoading ? '保存中' : '保存资料'}}</button>
+    </block>
+
+    <block wx:else>
+      <view class="balance-summary">
+        <view>可提现余额</view>
+        <text>{{walletBalance}}</text>
+      </view>
+      <label class="field">
+        <text>提现金额（元）</text>
+        <view class="amount-input">
+          <text>¥</text>
+          <input
+            value="{{withdrawInput}}"
+            type="digit"
+            placeholder="0.00"
+            bindinput="updateWithdraw"
+          />
+          <button bindtap="fillAllBalance">全部</button>
+        </view>
+      </label>
+      <button
+        class="sheet-primary"
+        disabled="{{actionLoading || !withdrawInput}}"
+        loading="{{actionLoading}}"
+        bindtap="submitWithdrawal"
+      >{{actionLoading ? '提交中' : '确认提现'}}</button>
+    </block>
+  </view>
+</view>

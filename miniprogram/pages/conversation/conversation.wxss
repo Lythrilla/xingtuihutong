@@ -9,10 +9,44 @@ page {
   flex-direction: column;
 }
 
+.conversation-status {
+  flex: none;
+  padding: 12rpx 24rpx;
+  color: #78868d;
+  font-size: 21rpx;
+  text-align: center;
+  background: #edf3f2;
+  border-top: 1rpx solid #e3e9e9;
+  border-bottom: 1rpx solid #dce5e4;
+}
+
 .messages {
   flex: 1;
   box-sizing: border-box;
   padding: 28rpx;
+}
+
+.conversation-empty {
+  max-width: 560rpx;
+  margin: 120rpx auto 0;
+  padding: 38rpx 32rpx;
+  text-align: center;
+  background: #ffffff;
+  border: 1rpx solid #e1e8e9;
+  border-radius: 16rpx;
+}
+
+.empty-title {
+  color: #29393e;
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+.empty-description {
+  margin-top: 12rpx;
+  color: #839096;
+  font-size: 23rpx;
+  line-height: 1.55;
 }
 
 .message-row {
@@ -78,6 +112,11 @@ page {
   line-height: 76rpx;
   background: #167f74;
   border-radius: 14rpx;
+}
+
+.composer button[disabled] {
+  color: #98a3a8;
+  background: #e5eaeb;
 }
 
 .composer button::after {

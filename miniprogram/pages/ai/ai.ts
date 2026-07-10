@@ -18,6 +18,7 @@ interface Plan {
   budgetAmount: number
   budget: string
   score: number
+  saved: boolean
 }
 
 interface AiResponse {
@@ -26,11 +27,15 @@ interface AiResponse {
     description: string
   }
   tabs: Tab[]
-  plans: Omit<Plan, 'budget'>[]
+  plans: Omit<Plan, 'budget' | 'saved'>[]
 }
 
 Component({
   data: {
+    loading: true,
+    error: '',
+    refreshing: false,
+    savingId: '',
     activeTab: 'plans',
     tabs: [] as Tab[],
     insightTitle: '',
@@ -44,7 +49,12 @@ Component({
     },
   },
   methods: {
+    retry() {
+      return this.loadPlans(false)
+    },
     async loadPlans(refresh: boolean) {
+      if (refresh && this.data.refreshing) return
+      this.setData(refresh ? { refreshing: true } : { loading: true, error: '' })
       try {
         const response = await apiRequest<AiResponse>(`/api/ai/plans?refresh=${refresh}`)
         this.setData({
@@ -54,11 +64,20 @@ Component({
           plans: response.plans.map((plan) => ({
             ...plan,
             budget: formatMoney(plan.budgetAmount),
+            saved: false,
           })),
           refreshText: refresh ? '已更新推荐' : '换一批推荐',
+          loading: false,
+          refreshing: false,
         })
       } catch (error) {
-        wx.showToast({ title: error instanceof Error ? error.message : '推荐加载失败', icon: 'none' })
+        const message = error instanceof Error ? error.message : '推荐加载失败'
+        if (refresh) {
+          this.setData({ refreshing: false })
+          wx.showToast({ title: message, icon: 'none' })
+        } else {
+          this.setData({ loading: false, error: message })
+        }
       }
     },
     changeTab(event: WechatMiniprogram.TouchEvent) {
@@ -70,12 +89,22 @@ Component({
     },
     async viewPlan(event: WechatMiniprogram.TouchEvent) {
       const id = event.currentTarget.dataset.id as string
+      if (this.data.savingId || this.data.plans.find((plan) => plan.id === id)?.saved) return
+      this.setData({ savingId: id })
       try {
         await apiRequest(`/api/ai/plans/${id}/save`, 'POST')
+        this.setData({
+          plans: this.data.plans.map((plan) => (plan.id === id ? { ...plan, saved: true } : plan)),
+        })
         wx.showToast({ title: '方案已收藏', icon: 'none' })
       } catch (error) {
         wx.showToast({ title: error instanceof Error ? error.message : '收藏失败', icon: 'none' })
+      } finally {
+        this.setData({ savingId: '' })
       }
+    },
+    openMatch() {
+      wx.redirectTo({ url: '/pages/match/match' })
     },
   },
 })

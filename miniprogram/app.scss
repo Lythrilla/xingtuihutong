@@ -40,6 +40,25 @@ button::after {
   border: 0;
 }
 
+button[disabled] {
+  color: #9ba6ab;
+  background: #e7ebed;
+  opacity: 1;
+}
+
+.pressable {
+  opacity: 0.72;
+  transform: scale(0.985);
+}
+
+.inline-empty {
+  padding: 44rpx 24rpx;
+  color: #869299;
+  font-size: 23rpx;
+  line-height: 1.55;
+  text-align: center;
+}
+
 .page-shell {
   min-height: 100vh;
   padding: 0 28rpx calc(204rpx + env(safe-area-inset-bottom));

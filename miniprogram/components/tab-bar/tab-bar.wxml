@@ -5,6 +5,8 @@
     class="tab-item {{active === item.key ? 'active' : ''}} {{item.key === 'match' ? 'match' : ''}}"
     data-item="{{item}}"
     bindtap="navigate"
+    hover-class="tab-pressed"
+    hover-stay-time="100"
   >
     <view wx:if="{{item.key === 'match'}}" class="match-circle">
       <view class="plus-h"></view>

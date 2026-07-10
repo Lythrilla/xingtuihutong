@@ -43,6 +43,34 @@
   flex: 1;
 }
 
+.notice.read {
+  opacity: 0.72;
+}
+
+.notice-title-line {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+}
+
+.unread-dot {
+  width: 12rpx;
+  height: 12rpx;
+  flex: none;
+  background: #d9634f;
+  border-radius: 50%;
+}
+
+.read-action {
+  padding: 8rpx 0 8rpx 20rpx;
+  background: transparent;
+}
+
+.read-action[disabled] {
+  background: transparent;
+}
+
 .notice-line {
   display: flex;
   align-items: center;

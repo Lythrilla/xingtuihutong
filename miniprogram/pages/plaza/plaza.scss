@@ -17,8 +17,18 @@
 }
 
 .search input {
+  min-width: 0;
   flex: 1;
   font-size: 26rpx;
+}
+
+.search-clear {
+  width: 48rpx;
+  height: 48rpx;
+  color: #78868d;
+  font-size: 34rpx;
+  background: #f0f3f4;
+  border-radius: 50%;
 }
 
 .placeholder {
@@ -53,19 +63,6 @@
   font-weight: 600;
   background: #ecf5f3;
   border-color: #17877b;
-}
-
-.filter-more {
-  gap: 8rpx;
-}
-
-.filter-chevron {
-  width: 10rpx;
-  height: 10rpx;
-  margin-top: -4rpx;
-  border-right: 2rpx solid currentColor;
-  border-bottom: 2rpx solid currentColor;
-  transform: rotate(45deg);
 }
 
 .plaza-tip {
@@ -246,4 +243,8 @@
   font-weight: 600;
   background: #17877b;
   border-radius: 9rpx;
+}
+
+.connect-button[disabled] {
+  min-width: 144rpx;
 }

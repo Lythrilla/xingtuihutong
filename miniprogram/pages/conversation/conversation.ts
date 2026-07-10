@@ -9,46 +9,87 @@ interface MessageItem {
 
 Page({
   data: {
+    loading: true,
+    error: '',
+    sending: false,
     conversationId: '',
     partnerName: '',
     messages: [] as MessageItem[],
     draft: '',
+    canSend: false,
+    scrollTarget: '',
   },
   async onLoad(options: Record<string, string | undefined>) {
     const conversationId = options.id || ''
     const partnerName = decodeURIComponent(options.name || '')
     this.setData({ conversationId, partnerName })
-    wx.setNavigationBarTitle({ title: partnerName || '合作会话' })
     await this.loadMessages()
   },
   async loadMessages() {
+    if (!this.data.conversationId) {
+      this.setData({ loading: false, error: '会话信息不完整，请返回后重试' })
+      return
+    }
+    this.setData({ loading: true, error: '' })
     try {
       const messages = await apiRequest<MessageItem[]>(
         `/api/conversations/${this.data.conversationId}`,
       )
-      this.setData({ messages })
+      const formatted = messages.map((message) => ({
+        ...message,
+        createdAt: formatMessageTime(message.createdAt),
+      }))
+      this.setData({
+        loading: false,
+        messages: formatted,
+        scrollTarget: formatted.length ? `message-${formatted[formatted.length - 1].id}` : '',
+      })
     } catch (error) {
-      wx.showToast({ title: error instanceof Error ? error.message : '会话加载失败', icon: 'none' })
+      this.setData({
+        loading: false,
+        error: error instanceof Error ? error.message : '会话加载失败',
+      })
     }
   },
   updateDraft(event: WechatMiniprogram.Input) {
-    this.setData({ draft: event.detail.value })
+    const draft = event.detail.value
+    this.setData({ draft, canSend: Boolean(draft.trim()) })
   },
   async sendMessage() {
     const content = this.data.draft.trim()
-    if (!content) return
+    if (!content || this.data.sending) return
+    this.setData({ sending: true })
     try {
       const message = await apiRequest<MessageItem>(
         `/api/conversations/${this.data.conversationId}`,
         'POST',
         { content },
       )
+      const formatted = { ...message, createdAt: formatMessageTime(message.createdAt) }
       this.setData({
         draft: '',
-        messages: [...this.data.messages, message],
+        canSend: false,
+        messages: [...this.data.messages, formatted],
+        scrollTarget: `message-${message.id}`,
       })
     } catch (error) {
       wx.showToast({ title: error instanceof Error ? error.message : '发送失败', icon: 'none' })
+    } finally {
+      this.setData({ sending: false })
     }
   },
 })
+
+function formatMessageTime(value: string): string {
+  const normalized = value.includes('T') ? value : value.replace(' ', 'T') + 'Z'
+  const date = new Date(normalized)
+  if (Number.isNaN(date.getTime())) return value.slice(0, 16)
+  const today = new Date()
+  const time = `${pad(date.getHours())}:${pad(date.getMinutes())}`
+  if (date.toDateString() === today.toDateString()) return time
+  return `${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${time}`
+}
+
+function pad(value: number): string {
+  return String(value).padStart(2, '0')
+}

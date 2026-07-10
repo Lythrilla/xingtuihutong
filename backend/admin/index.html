@@ -59,7 +59,7 @@
           <input name="password" type="password" autocomplete="current-password" required />
         </label>
         <p id="loginError" class="form-error"></p>
-        <button class="primary-button wide" type="submit">登录</button>
+        <button id="loginButton" class="primary-button wide" type="submit">登录</button>
       </form>
     </div>
 
@@ -76,12 +76,23 @@
         <p id="formError" class="form-error"></p>
         <div class="modal-actions">
           <button id="cancelModal" class="secondary-button" type="button">取消</button>
-          <button class="primary-button" type="submit">保存</button>
+          <button id="saveButton" class="primary-button" type="submit">保存</button>
         </div>
       </form>
     </div>
 
-    <div id="toast" class="toast"></div>
+    <div id="confirmLayer" class="layer hidden">
+      <div class="confirm-card" role="alertdialog" aria-modal="true" aria-labelledby="confirmTitle">
+        <h2 id="confirmTitle">确认操作</h2>
+        <p id="confirmMessage" class="muted"></p>
+        <div class="modal-actions">
+          <button id="confirmCancel" class="secondary-button" type="button">取消</button>
+          <button id="confirmAccept" class="danger-button" type="button">确认停用</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
     <script src="/admin/app.js" defer></script>
   </body>
 </html>

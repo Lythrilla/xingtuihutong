@@ -1,3 +1,7 @@
 {
-  "navigationBarTitleText": "合作会话"
+  "navigationBarTitleText": "合作会话",
+  "usingComponents": {
+    "data-state": "/components/data-state/data-state",
+    "navigation-bar": "/components/navigation-bar/navigation-bar"
+  }
 }

@@ -1,8 +1,22 @@
 <view class="page">
-  <scroll-view class="messages" scroll-y scroll-into-view="message-end">
+  <navigation-bar title="{{partnerName || '合作会话'}}" background="#ffffff" color="#1c2b33"></navigation-bar>
+  <view class="conversation-status">合作沟通 · 消息会被安全保存</view>
+  <data-state loading="{{loading}}" error="{{error}}" bind:action="loadMessages"></data-state>
+  <scroll-view
+    wx:if="{{!loading && !error}}"
+    class="messages"
+    scroll-y
+    scroll-with-animation
+    scroll-into-view="{{scrollTarget}}"
+  >
+    <view wx:if="{{!messages.length}}" class="conversation-empty">
+      <view class="empty-title">开始这次合作沟通</view>
+      <view class="empty-description">介绍你的需求、档期或预算，让对方更快理解合作方向。</view>
+    </view>
     <view
       wx:for="{{messages}}"
       wx:key="id"
+      id="message-{{item.id}}"
       class="message-row {{item.sender === 'user' ? 'mine' : ''}}"
     >
       <view class="message">
@@ -10,16 +24,22 @@
         <text class="time">{{item.createdAt}}</text>
       </view>
     </view>
-    <view id="message-end"></view>
   </scroll-view>
-  <view class="composer">
+  <view class="composer" wx:if="{{!loading && !error}}">
     <input
       value="{{draft}}"
-      placeholder="输入合作消息"
+      placeholder="输入合作需求或回复"
+      maxlength="500"
       confirm-type="send"
+      cursor-spacing="24"
+      adjust-position
       bindinput="updateDraft"
       bindconfirm="sendMessage"
     />
-    <button bindtap="sendMessage">发送</button>
+    <button
+      disabled="{{!canSend || sending}}"
+      loading="{{sending}}"
+      bindtap="sendMessage"
+    >{{sending ? '发送中' : '发送'}}</button>
   </view>
 </view>

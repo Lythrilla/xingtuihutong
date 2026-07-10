@@ -1,0 +1,75 @@
+.state-shell {
+  min-height: 360rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 64rpx 32rpx;
+  text-align: center;
+}
+
+.state-shell.compact {
+  min-height: 260rpx;
+  padding: 42rpx 28rpx;
+}
+
+.state-spinner {
+  width: 44rpx;
+  height: 44rpx;
+  margin-bottom: 24rpx;
+  border: 4rpx solid #dce8e6;
+  border-top-color: #17877b;
+  border-radius: 50%;
+  animation: state-spin 0.8s linear infinite;
+}
+
+.state-symbol {
+  width: 54rpx;
+  height: 54rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20rpx;
+  color: #a3782e;
+  font-size: 26rpx;
+  font-weight: 600;
+  background: #f7efe1;
+  border-radius: 50%;
+}
+
+.empty-symbol {
+  color: #75848c;
+  background: #edf1f3;
+}
+
+.state-title {
+  color: #26363d;
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+.state-description {
+  max-width: 520rpx;
+  margin-top: 10rpx;
+  color: #7c8990;
+  font-size: 23rpx;
+  line-height: 1.55;
+}
+
+.state-action {
+  min-width: 168rpx;
+  height: 64rpx;
+  margin-top: 24rpx;
+  padding: 0 26rpx;
+  color: #17877b;
+  font-size: 24rpx;
+  font-weight: 600;
+  background: #ecf5f3;
+  border-radius: 9rpx;
+}
+
+@keyframes state-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
