@@ -15,7 +15,6 @@
   </view>
 
   <view class="ai-banner" bindtap="openAI">
-    <view class="ai-glow"></view>
     <view class="ai-copy">
       <view class="ai-label">AI 智能经纪</view>
       <view class="ai-title">发现更适合你的合作伙伴</view>
