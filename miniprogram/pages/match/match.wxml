@@ -1,0 +1,91 @@
+<view class="page-shell match-page">
+  <view class="safe-top"></view>
+  <view class="topbar">
+    <view>
+      <view class="topbar-title">推广匹配</view>
+      <view class="topbar-subtitle">选择歌曲与推广对象，AI 为你智能组局</view>
+    </view>
+    <view class="icon-button">?</view>
+  </view>
+
+  <view class="steps">
+    <view class="step active">
+      <view class="step-number">1</view>
+      <text>选择歌曲</text>
+    </view>
+    <view class="step-line active"></view>
+    <view class="step active">
+      <view class="step-number">2</view>
+      <text>推广对象</text>
+    </view>
+    <view class="step-line"></view>
+    <view class="step">
+      <view class="step-number">3</view>
+      <text>智能匹配</text>
+    </view>
+  </view>
+
+  <view class="form-section card">
+    <view class="form-title">选择要推广的歌曲</view>
+    <view class="form-desc">从已入驻版权曲库中选择</view>
+    <scroll-view class="song-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+      <view class="song-row">
+        <view
+          wx:for="{{songs}}"
+          wx:key="name"
+          class="song-card {{selectedSong === index ? 'selected' : ''}}"
+          data-index="{{index}}"
+          bindtap="chooseSong"
+        >
+          <view class="song-cover {{item.cover}}">
+            <view class="disc">♪</view>
+          </view>
+          <view class="song-name">{{item.name}}</view>
+          <view class="song-artist">{{item.artist}}</view>
+          <view class="song-check">✓</view>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <view class="form-section card">
+    <view class="form-title">希望由谁来推广？</view>
+    <view class="form-desc">可多选，AI 会组合最优推广阵容</view>
+    <view class="target-grid">
+      <view
+        wx:for="{{targets}}"
+        wx:key="key"
+        class="target-card {{item.selected ? 'selected' : ''}}"
+        data-key="{{item.key}}"
+        bindtap="toggleTarget"
+      >
+        <view class="target-icon">{{item.icon}}</view>
+        <view class="target-title">{{item.title}}</view>
+        <view class="target-desc">{{item.desc}}</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="form-section card">
+    <view class="form-title">合作预算</view>
+    <view class="form-desc">用于筛选适配的服务方与推广方案</view>
+    <view class="budget-list">
+      <view
+        wx:for="{{budgets}}"
+        wx:key="*this"
+        class="budget {{selectedBudget === index ? 'selected' : ''}}"
+        data-index="{{index}}"
+        bindtap="chooseBudget"
+      >
+        <view class="radio"></view>
+        <text>{{item}}</text>
+      </view>
+    </view>
+  </view>
+
+  <button class="primary-button match-button" bindtap="startMatching">
+    <text>开始 AI 智能匹配</text>
+    <text>✦</text>
+  </button>
+</view>
+<tab-bar active="match"></tab-bar>

@@ -1,28 +1,53 @@
-<!--index.wxml-->
-<navigation-bar title="Weixin" back="{{false}}" color="black" background="#FFF"></navigation-bar>
-<scroll-view class="scrollarea" scroll-y type="list">
-  <view class="container">
-    <view class="userinfo">
-      <block wx:if="{{canIUseNicknameComp && !hasUserInfo}}">
-        <button class="avatar-wrapper" open-type="chooseAvatar" bind:chooseavatar="onChooseAvatar">
-          <image class="avatar" src="{{userInfo.avatarUrl}}"></image>
-        </button>
-        <view class="nickname-wrapper">
-          <text class="nickname-label">昵称</text>
-          <input type="nickname" class="nickname-input" placeholder="请输入昵称" bind:change="onInputChange" />
-        </view>
-      </block>
-      <block wx:elif="{{!hasUserInfo}}">
-        <button wx:if="{{canIUseGetUserProfile}}" bindtap="getUserProfile"> 获取头像昵称 </button>
-        <view wx:else> 请使用2.10.4及以上版本基础库 </view>
-      </block>
-      <block wx:else>
-        <image bindtap="bindViewTap" class="userinfo-avatar" src="{{userInfo.avatarUrl}}" mode="cover"></image>
-        <text class="userinfo-nickname">{{userInfo.nickName}}</text>
-      </block>
+<view class="onboarding">
+  <view class="safe-top"></view>
+  <view class="brand">
+    <view class="brand-mark">
+      <view class="spark spark-one">✦</view>
+      <view class="spark spark-two">✦</view>
     </view>
-    <view class="usermotto">
-      <text class="user-motto">{{motto}}</text>
+    <view>
+      <view class="brand-name">星推互通</view>
+      <view class="brand-subtitle">音乐版权合作与推广平台</view>
     </view>
   </view>
-</scroll-view>
+
+  <view class="intro">
+    <view class="intro-kicker">CONNECT · CREATE · GROW</view>
+    <view class="intro-title">选择你的角色</view>
+    <view class="intro-desc">连接版权资源与专业推广，让每次合作更高效</view>
+  </view>
+
+  <view class="role-list">
+    <view class="role-card service {{selectedRole === 'provider' ? 'active' : ''}}" data-role="provider" bindtap="selectRole">
+      <view class="role-copy">
+        <view class="role-badge mint">服务方</view>
+        <view class="role-title">我是推广服务方</view>
+        <view class="role-desc">提供宣发、短视频、达人或渠道推广</view>
+        <view class="role-select">
+          <view class="select-dot"></view>
+          <text>{{selectedRole === 'provider' ? '已选择' : '选择此角色'}}</text>
+        </view>
+      </view>
+      <image class="role-image" src="/assets/images/role-service.png" mode="aspectFill"></image>
+    </view>
+
+    <view class="role-card client {{selectedRole === 'client' ? 'active' : ''}}" data-role="client" bindtap="selectRole">
+      <view class="role-copy">
+        <view class="role-badge gold">被服务方</view>
+        <view class="role-title">我有音乐要推广</view>
+        <view class="role-desc">发布版权曲库，找到合适的推广伙伴</view>
+        <view class="role-select">
+          <view class="select-dot"></view>
+          <text>{{selectedRole === 'client' ? '已选择' : '选择此角色'}}</text>
+        </view>
+      </view>
+      <image class="role-image" src="/assets/images/role-client.png" mode="aspectFill"></image>
+    </view>
+  </view>
+
+  <button class="enter-button" bindtap="enterApp">
+    <text>进入星推互通</text>
+    <text class="arrow">→</text>
+  </button>
+  <view class="agreement">进入即表示同意《平台服务协议》与《隐私政策》</view>
+</view>

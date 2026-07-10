@@ -1,0 +1,99 @@
+<view class="page-shell profile-page">
+  <view class="safe-top"></view>
+  <view class="topbar">
+    <view>
+      <view class="topbar-title">我的主页</view>
+      <view class="topbar-subtitle">完善档案，让优质合作主动找到你</view>
+    </view>
+    <view class="icon-button">⚙</view>
+  </view>
+
+  <view class="profile-card">
+    <view class="profile-shape shape-one"></view>
+    <view class="profile-shape shape-two"></view>
+    <view class="profile-head">
+      <view class="profile-avatar">鲸</view>
+      <view class="profile-main">
+        <view class="profile-name">鲸浪音乐营销</view>
+        <view class="profile-role">✓ 已认证{{roleLabel}}</view>
+      </view>
+      <button class="edit-button" bindtap="edit">编辑</button>
+    </view>
+    <view class="profile-desc">用有审美的内容策略，让好音乐被更多人听见。</view>
+    <view class="profile-stats">
+      <view class="profile-stat" wx:for="{{stats}}" wx:key="label">
+        <text>{{item.value}}</text>
+        <view>{{item.label}}</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="section">
+    <view class="section-head">
+      <text class="section-title">资质认证</text>
+      <text class="section-action">查看全部</text>
+    </view>
+    <view class="certs card">
+      <view class="cert">
+        <view class="cert-icon mint">✓</view>
+        <text>企业认证</text>
+        <view>已认证</view>
+      </view>
+      <view class="cert">
+        <view class="cert-icon blue">盾</view>
+        <text>版权资质</text>
+        <view>已认证</view>
+      </view>
+      <view class="cert">
+        <view class="cert-icon gold">信</view>
+        <text>行业资质</text>
+        <view>已认证</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="section">
+    <view class="section-head">
+      <text class="section-title">能力标签</text>
+      <text class="section-action">编辑</text>
+    </view>
+    <view class="skill-card card">
+      <text wx:for="{{tags}}" wx:key="*this">{{item}}</text>
+    </view>
+  </view>
+
+  <view class="section">
+    <view class="section-head">
+      <text class="section-title">精选案例</text>
+      <text class="section-action">查看全部</text>
+    </view>
+    <scroll-view class="case-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+      <view class="cases">
+        <view class="case-card sunset">
+          <view class="case-type">短视频推广</view>
+          <view class="case-name">《微醺日落》</view>
+          <view class="case-result">播放量 860w+</view>
+        </view>
+        <view class="case-card ocean">
+          <view class="case-type">校园共创</view>
+          <view class="case-name">《海风来信》</view>
+          <view class="case-result">覆盖 18 所高校</view>
+        </view>
+        <view class="case-card violet">
+          <view class="case-type">品牌联名</view>
+          <view class="case-name">城市夜游计划</view>
+          <view class="case-result">曝光 1200w+</view>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <view class="section">
+    <view class="menu card">
+      <view class="menu-item"><text>合作订单</text><text>›</text></view>
+      <view class="menu-item"><text>收益与结算</text><text>›</text></view>
+      <view class="menu-item" bindtap="changeRole"><text>切换身份</text><text>›</text></view>
+    </view>
+  </view>
+</view>
+<tab-bar active="profile"></tab-bar>

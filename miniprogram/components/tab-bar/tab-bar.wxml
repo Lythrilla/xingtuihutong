@@ -1,0 +1,12 @@
+<view class="tab-shell">
+  <view
+    wx:for="{{items}}"
+    wx:key="key"
+    class="tab-item {{active === item.key ? 'active' : ''}} {{item.key === 'match' ? 'match' : ''}}"
+    data-item="{{item}}"
+    bindtap="navigate"
+  >
+    <view class="tab-icon">{{item.icon}}</view>
+    <text class="tab-label">{{item.label}}</text>
+  </view>
+</view>
