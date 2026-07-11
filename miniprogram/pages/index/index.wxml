@@ -1,58 +1,38 @@
 <view class="onboarding">
-  <view class="brand-shell" style="padding-top: {{statusBarHeight}}px;">
-    <view class="brand" style="height: {{navigationHeight}}px; padding-right: {{rightInset}}px;">
-      <view class="brand-mark">
-        <view class="ui-icon icon-spark spark spark-one"></view>
-        <view class="ui-icon icon-spark spark spark-two"></view>
-      </view>
-      <view class="brand-copy">
-        <view class="brand-name">星推互通</view>
-        <view class="brand-subtitle">音乐版权合作与推广平台</view>
-      </view>
-    </view>
+  <view class="hero" style="padding-top: {{statusBarHeight}}px;">
+    <view class="hero-spacer" style="height: {{navigationHeight}}px;"></view>
+    <view class="brand-title">星推互通</view>
+    <view class="brand-subtitle">连接每一个梦想，让更多人听见你的声音</view>
+    <image class="hero-image" src="/assets/images/hero.png" mode="aspectFill"></image>
   </view>
 
-  <view class="intro">
-    <view class="intro-kicker">CONNECT · CREATE · GROW</view>
-    <view class="intro-title">选择你的角色</view>
-    <view class="intro-desc">连接版权资源与专业推广，让每次合作更高效</view>
-  </view>
-
-  <view class="role-list">
-    <view class="role-card service {{selectedRole === 'provider' ? 'active' : ''}}" data-role="provider" bindtap="selectRole">
-      <view class="role-copy">
-        <view class="role-badge mint">服务方</view>
-        <view class="role-title">我是推广服务方</view>
-        <view class="role-desc">提供宣发、短视频、达人或渠道推广</view>
-        <view class="role-select">
-          <view class="select-dot"></view>
-          <text>{{selectedRole === 'provider' ? '已选择' : '选择此角色'}}</text>
-        </view>
-      </view>
-      <view class="role-visual service-visual">
-        <image class="role-image" src="/assets/images/role-service.png" mode="aspectFit"></image>
-      </view>
+  <view class="panel">
+    <view class="panel-header">
+      <view class="panel-title">请选择您的角色</view>
+      <view class="panel-subtitle">我们为您提供专属的服务体验</view>
     </view>
 
-    <view class="role-card client {{selectedRole === 'client' ? 'active' : ''}}" data-role="client" bindtap="selectRole">
-      <view class="role-copy">
-        <view class="role-badge gold">被服务方</view>
-        <view class="role-title">我有音乐要推广</view>
-        <view class="role-desc">发布版权曲库，找到合适的推广伙伴</view>
-        <view class="role-select">
-          <view class="select-dot"></view>
-          <text>{{selectedRole === 'client' ? '已选择' : '选择此角色'}}</text>
-        </view>
+    <view class="role-card provider" data-role="provider" bindtap="chooseRole">
+      <view class="role-info">
+        <view class="role-name">我是服务方</view>
+        <view class="role-desc">我提供音乐推广、宣发等专业服务</view>
       </view>
-      <view class="role-visual client-visual">
-        <image class="role-image" src="/assets/images/role-client.png" mode="aspectFit"></image>
+      <image class="role-icon" src="/assets/images/role-service.png" mode="aspectFit"></image>
+    </view>
+
+    <view class="role-card client" data-role="client" bindtap="chooseRole">
+      <view class="role-info">
+        <view class="role-name">我是创作者</view>
+        <view class="role-desc">我希望宣传我的作品，寻求音乐推广</view>
       </view>
+      <image class="role-icon" src="/assets/images/role-client.png" mode="aspectFit"></image>
+    </view>
+
+    <view class="agreement" bindtap="toggleAgree">
+      <view class="agree-box {{agreed ? 'on' : ''}}">
+        <view class="agree-tick" wx:if="{{agreed}}"></view>
+      </view>
+      <view class="agree-text">已阅读并同意 <text class="link">《用户协议》</text>与<text class="link">《隐私政策》</text></view>
     </view>
   </view>
-
-  <button class="enter-button" disabled="{{entering}}" loading="{{entering}}" bindtap="enterApp">
-    <text>{{entering ? '正在连接服务' : '进入星推互通'}}</text>
-    <view class="button-arrow"></view>
-  </button>
-  <view class="agreement">继续即表示你已阅读并同意平台服务协议与隐私政策</view>
 </view>

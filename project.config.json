@@ -14,24 +14,24 @@
     },
     "coverView": false,
     "postcss": false,
-    "minified": false,
+    "minified": true,
     "enhance": false,
     "showShadowRootInWxmlPanel": false,
     "packNpmRelationList": [],
     "ignoreUploadUnusedFiles": true,
     "compileHotReLoad": false,
     "skylineRenderEnable": false,
-    "es6": false,
+    "es6": true,
     "compileWorklet": false,
-    "uglifyFileName": false,
+    "uglifyFileName": true,
     "uploadWithSourceMap": true,
     "packNpmManually": false,
     "minifyWXSS": true,
     "minifyWXML": true,
     "localPlugins": false,
     "condition": false,
-    "swc": false,
-    "disableSWC": true,
+    "swc": true,
+    "disableSWC": false,
     "disableUseStrict": false
   },
   "simulatorType": "wechat",
@@ -44,7 +44,9 @@
   },
   "libVersion": "2.32.3",
   "packOptions": {
-    "ignore": [],
+    "ignore": [
+      { "type": "folder", "value": "backend" }
+    ],
     "include": []
   },
   "appid": "wxf5500a7e95f4fb41"

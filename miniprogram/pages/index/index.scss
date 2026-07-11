@@ -1,274 +1,167 @@
 page {
-  background:
-    linear-gradient(180deg, rgba(214, 241, 236, 0.48), rgba(246, 247, 249, 0) 480rpx),
-    #f6f7f9;
+  height: 100vh;
+  overflow: hidden;
+  background: rgba(237, 239, 253, 1);
 }
 
 .onboarding {
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  padding: 0 32rpx calc(42rpx + env(safe-area-inset-bottom));
+  background: linear-gradient(180deg, rgba(237, 239, 253, 1) 0%, rgba(251, 251, 254, 1) 100%);
 }
 
-.brand {
+/* 顶部：标题 + 副标题 + 插画 */
+.hero {
+  flex: 1;
   display: flex;
+  flex-direction: column;
   align-items: center;
+  padding-left: 40rpx;
+  padding-right: 40rpx;
 }
 
-.brand-copy {
-  min-width: 0;
-}
-
-.brand-mark {
-  position: relative;
-  width: 68rpx;
-  height: 68rpx;
-  flex: none;
-  margin-right: 16rpx;
-  background: linear-gradient(135deg, #17877b, #22a390);
-  border-radius: 14rpx;
-  box-shadow: 0 8rpx 18rpx rgba(23, 135, 123, 0.18);
-}
-
-.spark {
-  position: absolute;
-  color: #ffffff;
-}
-
-.spark-one {
-  top: 8rpx;
-  left: 22rpx;
-  width: 28rpx;
-  height: 28rpx;
-}
-
-.spark-two {
-  right: 10rpx;
-  bottom: 10rpx;
-  width: 16rpx;
-  height: 16rpx;
-}
-
-.brand-name {
-  color: #20333a;
-  font-size: 34rpx;
+.brand-title {
+  margin-top: 24rpx;
+  color: #343B56;
+  font-size: 78rpx;
   font-weight: 700;
-  letter-spacing: 1rpx;
+  text-align: center;
+  letter-spacing: 2rpx;
 }
 
 .brand-subtitle {
-  margin-top: 5rpx;
-  color: #829196;
-  font-size: 22rpx;
-}
-
-.intro {
-  margin: 72rpx 4rpx 40rpx;
-}
-
-.intro-kicker {
-  margin-bottom: 14rpx;
-  color: #17877b;
-  font-size: 21rpx;
-  font-weight: 700;
-  letter-spacing: 4rpx;
-}
-
-.intro-title {
-  color: #20333a;
-  font-size: 56rpx;
-  font-weight: 700;
-  line-height: 1.1;
-  letter-spacing: -2rpx;
-}
-
-.intro-desc {
+  margin-top: 18rpx;
   max-width: 560rpx;
-  margin-top: 16rpx;
-  color: #718187;
-  font-size: 25rpx;
-  line-height: 1.55;
+  color: #75798F;
+  font-size: 30rpx;
+  text-align: center;
+  line-height: 1.5;
 }
 
-.role-list {
+.hero-image {
+  width: 440rpx;
+  flex: 1;
+  min-height: 280rpx;
+  margin-top: 16rpx;
+  opacity: 0.7;
+}
+
+/* 底部白色圆角面板 */
+.panel {
   display: flex;
   flex-direction: column;
-  gap: 18rpx;
-  margin-bottom: 34rpx;
+  margin-top: 36rpx;
+  padding: 44rpx 40rpx calc(48rpx + env(safe-area-inset-bottom));
+  background: #FFFFFF;
+  border-top-left-radius: 48rpx;
+  border-top-right-radius: 48rpx;
+  box-shadow: 0 -10rpx 40rpx rgba(120, 130, 180, 0.08);
 }
 
+.panel-title {
+  color: #2E313E;
+  font-size: 44rpx;
+  font-weight: 700;
+  text-align: center;
+}
+
+.panel-subtitle {
+  margin-top: 14rpx;
+  color: #76798F;
+  font-size: 30rpx;
+  text-align: center;
+}
+
+/* 角色卡片 */
 .role-card {
   position: relative;
-  height: 258rpx;
-  overflow: hidden;
-  padding: 26rpx 28rpx;
-  background: rgba(255, 255, 255, 0.92);
-  border: 1rpx solid rgba(38, 64, 71, 0.08);
-  border-radius: 14rpx;
-  box-shadow:
-    0 1rpx 2rpx rgba(30, 51, 58, 0.04),
-    0 12rpx 32rpx rgba(30, 51, 58, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 32rpx;
+  padding: 30rpx 32rpx;
+  background: #F0F3FD;
 }
 
-.role-card.active.service {
-  border: 2rpx solid #17877b;
+.role-card.provider {
+  border-top-left-radius: 48rpx;
+  border-top-right-radius: 48rpx;
 }
 
-.role-card.active.client {
-  border: 2rpx solid #bd8d43;
+.role-card.client {
+  margin-top: 6rpx;
+  border-bottom-left-radius: 48rpx;
+  border-bottom-right-radius: 48rpx;
 }
 
-.role-copy {
-  position: relative;
-  z-index: 2;
-  width: 60%;
+.role-info {
+  flex: 1;
+  min-width: 0;
 }
 
-.role-badge {
-  display: inline-flex;
-  padding: 8rpx 15rpx;
-  font-size: 21rpx;
-  font-weight: 700;
-  border-radius: 8rpx;
-}
-
-.mint {
-  color: #17877b;
-  background: #eaf6f3;
-}
-
-.gold {
-  color: #a3782e;
-  background: #f8f0e3;
-}
-
-.role-title {
-  margin-top: 18rpx;
-  color: #20333a;
-  font-size: 30rpx;
+.role-name {
+  color: #2E313E;
+  font-size: 32rpx;
   font-weight: 700;
 }
 
 .role-desc {
-  margin-top: 10rpx;
-  color: #78878c;
-  font-size: 22rpx;
+  margin-top: 12rpx;
+  color: #76798F;
+  font-size: 24rpx;
   line-height: 1.5;
 }
 
-.role-select {
-  display: flex;
-  align-items: center;
-  gap: 10rpx;
-  margin-top: 14rpx;
-  color: #617277;
-  font-size: 22rpx;
-}
-
-.select-dot {
-  width: 14rpx;
-  height: 14rpx;
-  background: #d6dee1;
-  border: 4rpx solid #ffffff;
-  border-radius: 50%;
-  box-shadow: 0 0 0 2rpx #d6dee1;
-}
-
-.active.service .select-dot {
-  background: #17877b;
-  box-shadow: 0 0 0 2rpx #17877b;
-}
-
-.active.client .select-dot {
-  background: #b78b3d;
-  box-shadow: 0 0 0 2rpx #b78b3d;
-}
-
-.role-visual {
-  position: absolute;
-  top: 20rpx;
-  right: 18rpx;
-  bottom: 20rpx;
-  width: 216rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  border-radius: 11rpx;
-}
-
-.service-visual {
-  background: linear-gradient(135deg, #eaf7f4, #f7fbfa);
-}
-
-.client-visual {
-  background: linear-gradient(135deg, #fbf2e5, #fdfaf5);
-}
-
-.role-image {
-  width: 204rpx;
-  height: 204rpx;
-}
-
-.enter-button {
-  height: 82rpx;
+.role-icon {
+  width: 124rpx;
+  height: 134rpx;
   flex: none;
+  margin-left: 18rpx;
+}
+
+/* 协议勾选 */
+.agreement {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 14rpx;
-  margin-top: auto;
-  color: #ffffff;
-  font-size: 26rpx;
-  font-weight: 700;
-  background: linear-gradient(135deg, #17877b, #22a390);
-  border-radius: 11rpx;
-  box-shadow: 0 10rpx 22rpx rgba(23, 135, 123, 0.18);
+  margin-top: 44rpx;
 }
 
-.enter-button[disabled] {
-  color: #ffffff;
-  background: #80bcb5;
-}
-
-.enter-button[disabled] .button-arrow {
-  display: none;
-}
-
-.button-arrow {
+.agree-box {
   position: relative;
-  width: 24rpx;
-  height: 24rpx;
+  width: 32rpx;
+  height: 32rpx;
+  flex: none;
+  margin-right: 16rpx;
+  border-radius: 8rpx;
+  border: 2rpx solid #C9CFE0;
+  background: #FFFFFF;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
-.button-arrow::before,
-.button-arrow::after {
+.agree-box.on {
+  border-color: #718CFF;
+  background: #718CFF;
+}
+
+.agree-tick {
   position: absolute;
-  content: "";
-}
-
-.button-arrow::before {
-  top: 11rpx;
-  left: 1rpx;
-  width: 19rpx;
-  height: 2rpx;
-  background: currentColor;
-}
-
-.button-arrow::after {
-  top: 7rpx;
-  right: 2rpx;
+  top: 4rpx;
+  left: 11rpx;
   width: 8rpx;
-  height: 8rpx;
-  border-top: 2rpx solid currentColor;
-  border-right: 2rpx solid currentColor;
+  height: 16rpx;
+  border-right: 3rpx solid #FFFFFF;
+  border-bottom: 3rpx solid #FFFFFF;
   transform: rotate(45deg);
 }
 
-.agreement {
-  margin-top: 20rpx;
-  color: #93a0a4;
-  font-size: 21rpx;
-  text-align: center;
+.agree-text {
+  color: #76798F;
+  font-size: 24rpx;
+  line-height: 1.4;
+}
+
+.link {
+  color: #718CFF;
 }

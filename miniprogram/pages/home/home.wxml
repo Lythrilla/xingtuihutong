@@ -28,7 +28,7 @@
       </view>
     </view>
     <view class="ai-visual">
-      <image class="ai-image" src="/assets/images/ai-orb.png" mode="aspectFit"></image>
+      <image class="ai-image" src="/assets/images/ai-orb.webp" mode="aspectFit"></image>
     </view>
   </view>
 

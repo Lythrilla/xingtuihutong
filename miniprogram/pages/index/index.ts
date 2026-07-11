@@ -7,6 +7,7 @@ const app = getApp<IAppOption>()
 Component({
   data: {
     selectedRole: 'provider',
+    agreed: false,
     entering: false,
     statusBarHeight: 20,
     navigationHeight: 44,
@@ -26,15 +27,20 @@ Component({
         navigationHeight: Math.max(menuHeight + gap * 2, 52),
         rightInset,
       })
-      if (wx.getStorageSync('starconnect-token')) {
-        wx.redirectTo({ url: '/pages/home/home' })
-      }
     },
   },
   methods: {
-    selectRole(event: WechatMiniprogram.TouchEvent) {
+    chooseRole(event: WechatMiniprogram.TouchEvent) {
       const role = event.currentTarget.dataset.role as 'provider' | 'client'
       this.setData({ selectedRole: role })
+      if (!this.data.agreed) {
+        wx.showToast({ title: '请先阅读并同意用户协议与隐私政策', icon: 'none' })
+        return
+      }
+      this.enterApp()
+    },
+    toggleAgree() {
+      this.setData({ agreed: !this.data.agreed })
     },
     async enterApp() {
       if (this.data.entering) return

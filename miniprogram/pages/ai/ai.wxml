@@ -11,7 +11,7 @@
       <view class="hero-desc">根据当前在架方案与真实合作数据动态推荐</view>
     </view>
     <view class="hero-visual">
-      <image class="hero-image" src="/assets/images/ai-orb.png" mode="aspectFit"></image>
+      <image class="hero-image" src="/assets/images/ai-orb.webp" mode="aspectFit"></image>
     </view>
   </view>
 
