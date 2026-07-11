@@ -166,8 +166,13 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.65);
-  border-radius: 12rpx;
+  background:
+    radial-gradient(
+      circle at 50% 50%,
+      rgba(222, 246, 240, 0.72) 0,
+      rgba(234, 248, 245, 0.3) 46%,
+      rgba(255, 255, 255, 0) 78%
+    );
 }
 
 .ai-image {
@@ -265,9 +270,10 @@
 .cooperate {
   height: 50rpx;
   padding: 0 14rpx;
-  color: #5d7074;
+  color: #17877b;
   font-size: 21rpx;
-  background: #f0f4f4;
+  font-weight: 600;
+  background: #edf7f5;
   border-radius: 8rpx;
 }
 
