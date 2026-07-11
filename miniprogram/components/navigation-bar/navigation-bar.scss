@@ -1,7 +1,9 @@
 .weui-navigation-bar {
+  position: relative;
+  z-index: 100;
   overflow: hidden;
   flex: none;
-  color: rgba(32, 51, 58, 0.94);
+  color: #20333a;
 }
 
 .weui-navigation-bar__inner {
@@ -15,52 +17,119 @@
   padding-top: env(safe-area-inset-top);
   width: 100%;
   box-sizing: border-box;
-  border-bottom: 1rpx solid rgba(38, 64, 71, 0.07);
+  background: #ffffff;
+  box-shadow: 0 8rpx 30rpx rgba(30, 51, 58, 0.06);
+  transition: box-shadow 0.25s ease, background-color 0.25s ease;
+}
+
+/* 底部品牌色渐变强调线 */
+.weui-navigation-bar__inner::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2rpx;
+  background: linear-gradient(90deg, rgba(23, 135, 123, 0), rgba(23, 135, 123, 0.55) 50%, rgba(34, 163, 144, 0));
+}
+
+/* 毛玻璃模式（默认） */
+.weui-navigation-bar__inner.is-blur {
+  background: rgba(255, 255, 255, 0.72) !important;
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  backdrop-filter: saturate(180%) blur(20px);
+  box-shadow: 0 8rpx 30rpx rgba(30, 51, 58, 0.05);
+}
+
+/* 品牌渐变模式 */
+.weui-navigation-bar__inner.is-brand {
+  background: linear-gradient(135deg, #17877b, #22a390) !important;
+  color: #ffffff;
+  box-shadow: 0 10rpx 30rpx rgba(23, 135, 123, 0.18);
+}
+.weui-navigation-bar__inner.is-brand::after {
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.5) 50%, rgba(255, 255, 255, 0));
+}
+.weui-navigation-bar__inner.is-brand .nav-btn--active {
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
 .weui-navigation-bar__left {
   position: relative;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   height: 100%;
   padding-left: 16px;
   box-sizing: border-box;
 }
 
-.weui-navigation-bar__btn_goback_wrapper {
-  padding: 11px 18px 11px 16px;
-  margin: -11px -18px -11px -16px;
+.weui-navigation-bar__buttons {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
 }
 
-.weui-navigation-bar__btn_goback_wrapper.weui-active {
-  opacity: 0.5;
+/* 圆形按钮 */
+.nav-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 50%;
+  transition: background-color 0.2s ease, transform 0.12s ease;
 }
 
-.weui-navigation-bar__btn_goback {
-  font-size: 12px;
+.nav-btn--active {
+  background-color: rgba(23, 135, 123, 0.1);
+}
+
+.nav-btn__icon {
+  background-color: currentColor;
+}
+
+.nav-btn__icon_goback {
   width: 12px;
   height: 24px;
   -webkit-mask: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='24' viewBox='0 0 12 24'%3E%3Cpath fill-opacity='.9' fill-rule='evenodd' d='M10 19.438L8.955 20.5l-7.666-7.79a1.02 1.02 0 0 1 0-1.42L8.955 3.5 10 4.563 2.682 12 10 19.438z'/%3E%3C/svg%3E") no-repeat 50% 50%;
   mask: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='24' viewBox='0 0 12 24'%3E%3Cpath fill-opacity='.9' fill-rule='evenodd' d='M10 19.438L8.955 20.5l-7.666-7.79a1.02 1.02 0 0 1 0-1.42L8.955 3.5 10 4.563 2.682 12 10 19.438z'/%3E%3C/svg%3E") no-repeat 50% 50%;
   -webkit-mask-size: cover;
   mask-size: cover;
-  background-color: currentColor;
+}
+
+.nav-btn__icon_home {
+  width: 22px;
+  height: 22px;
+  -webkit-mask: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 22 22'%3E%3Cpath fill-rule='evenodd' d='M3 10.5 11 3l8 7.5V19a1 1 0 0 1-1 1h-4v-6H8v6H4a1 1 0 0 1-1-1z'/%3E%3C/svg%3E") no-repeat 50% 50%;
+  mask: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 22 22'%3E%3Cpath fill-rule='evenodd' d='M3 10.5 11 3l8 7.5V19a1 1 0 0 1-1 1h-4v-6H8v6H4a1 1 0 0 1-1-1z'/%3E%3C/svg%3E") no-repeat 50% 50%;
+  -webkit-mask-size: cover;
+  mask-size: cover;
 }
 
 .weui-navigation-bar__center {
   position: relative;
+  flex: 1;
+  min-width: 0;
   height: 100%;
   display: flex;
-  flex: 1;
   align-items: center;
   justify-content: center;
-  font-size: 17px;
+}
+
+.weui-navigation-bar__title {
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 34rpx;
   font-weight: 700;
-  text-align: center;
+  letter-spacing: 0.6rpx;
+  line-height: 1.2;
 }
 
 .weui-navigation-bar__loading {
-  margin-right: 4px;
+  margin-right: 8rpx;
+  display: flex;
   align-items: center;
 }
 
@@ -75,8 +144,28 @@
 }
 
 .weui-navigation-bar__right {
-  width: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
   height: 100%;
+  flex: none;
+  padding-right: 8rpx;
+}
+
+/* slot 内圆形操作按钮 */
+.weui-navigation-bar__right .nav-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 50%;
+  color: inherit;
+  transition: background-color 0.2s ease;
+}
+
+.weui-navigation-bar__right .nav-action--active {
+  background-color: rgba(23, 135, 123, 0.1);
 }
 
 @keyframes loading {

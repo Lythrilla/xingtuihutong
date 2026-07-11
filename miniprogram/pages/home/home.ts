@@ -2,25 +2,20 @@ import { apiRequest } from '../../utils/api'
 
 export {}
 
-interface Metric {
-  value: string
-  label: string
-}
-
 interface Recommendation {
   id: string
   avatar: string
   avatarClass: string
+  verified: boolean
+  preferred: boolean
   title: string
   subtitle: string
-  score: number
+  score: string
   price: string
 }
 
 interface HomeResponse {
-  headerSubtitle: string
   name: string
-  metrics: Metric[]
   recommendations: Recommendation[]
 }
 
@@ -28,22 +23,20 @@ Component({
   data: {
     loading: true,
     error: '',
-    greeting: '你好',
-    todayLabel: '',
-    headerSubtitle: '',
+    greeting: '早上好',
+    statusBarHeight: 20,
     name: '',
-    metrics: [] as Metric[],
     recommendations: [] as Recommendation[],
     connectingId: '',
   },
   lifetimes: {
-    async attached() {
-      const now = new Date()
+    attached() {
+      const systemInfo = wx.getSystemInfoSync()
       this.setData({
-        greeting: greetingForHour(now.getHours()),
-        todayLabel: formatToday(now),
+        greeting: greetingForHour(new Date().getHours()),
+        statusBarHeight: systemInfo.statusBarHeight || 20,
       })
-      await this.loadHome()
+      this.loadHome()
     },
   },
   methods: {
@@ -51,7 +44,12 @@ Component({
       this.setData({ loading: true, error: '' })
       try {
         const response = await apiRequest<HomeResponse>('/api/home')
-        this.setData({ ...response, loading: false })
+        const recommendations = (response.recommendations || []).map((item) => ({
+          ...item,
+          verified: item.verified ?? true,
+          preferred: item.preferred ?? true,
+        }))
+        this.setData({ ...response, recommendations, loading: false })
       } catch (error) {
         this.setData({
           loading: false,
@@ -62,14 +60,8 @@ Component({
     openAI() {
       wx.redirectTo({ url: '/pages/ai/ai' })
     },
-    openMatch() {
-      wx.redirectTo({ url: '/pages/match/match' })
-    },
     openPlaza() {
       wx.redirectTo({ url: '/pages/plaza/plaza' })
-    },
-    openProfile() {
-      wx.redirectTo({ url: '/pages/profile/profile' })
     },
     async contactPartner(event: WechatMiniprogram.TouchEvent) {
       const partnerId = event.currentTarget.dataset.id as string
@@ -99,9 +91,4 @@ function greetingForHour(hour: number): string {
   if (hour < 14) return '中午好'
   if (hour < 19) return '下午好'
   return '晚上好'
-}
-
-function formatToday(date: Date): string {
-  const weekdays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
-  return `${date.getMonth() + 1}月${date.getDate()}日 · ${weekdays[date.getDay()]}`
 }

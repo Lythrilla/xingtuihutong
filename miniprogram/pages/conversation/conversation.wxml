@@ -1,5 +1,5 @@
 <view class="page">
-  <navigation-bar title="{{partnerName || '合作会话'}}" background="#ffffff" color="#1c2b33"></navigation-bar>
+  <navigation-bar title="{{partnerName || '合作会话'}}" background="#ffffff" color="#1c2b33" blur="{{true}}"></navigation-bar>
   <view class="conversation-status">合作沟通 · 消息会被安全保存</view>
   <data-state loading="{{loading}}" error="{{error}}" bind:action="loadMessages"></data-state>
   <scroll-view

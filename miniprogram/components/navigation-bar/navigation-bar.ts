@@ -34,6 +34,16 @@ Component({
       type: Boolean,
       value: false,
     },
+    // 是否启用毛玻璃（半透明模糊）背景，默认开启
+    blur: {
+      type: Boolean,
+      value: true,
+    },
+    // 主题：light 浅色 / brand 品牌青绿渐变
+    theme: {
+      type: String,
+      value: 'light',
+    },
     animated: {
       // 显示隐藏的时候opacity动画效果
       type: Boolean,
@@ -100,6 +110,10 @@ Component({
         })
       }
       this.triggerEvent('back', { delta: data.delta }, {})
+    },
+    home() {
+      wx.reLaunch({ url: '/pages/home/home' })
+      this.triggerEvent('home', {}, {})
     }
   },
 })

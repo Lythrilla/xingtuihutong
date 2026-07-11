@@ -102,9 +102,11 @@ struct Recommendation {
     id: String,
     avatar: String,
     avatar_class: String,
+    verified: bool,
+    preferred: bool,
     title: String,
     subtitle: String,
-    score: i64,
+    score: String,
     price: String,
 }
 
@@ -179,18 +181,25 @@ async fn home(State(state): State<AppState>, headers: HeaderMap) -> AppResult<Js
     )
     .fetch_all(&state.pool)
     .await?;
-    let recommendations = rows
+    let recommendations: Vec<Recommendation> = rows
         .into_iter()
         .map(|row| Recommendation {
             id: row.get("id"),
             avatar: row.get("avatar"),
             avatar_class: row.get("avatar_class"),
+            verified: true,
+            preferred: true,
             title: row.get("name"),
             subtitle: row.get("description"),
-            score: row.get("match_score"),
+            score: row.get::<i64, _>("match_score").to_string(),
             price: row.get("result_text"),
         })
         .collect();
+    let recommendations = if recommendations.is_empty() {
+        mock_recommendations()
+    } else {
+        recommendations
+    };
 
     Ok(Json(HomeResponse {
         header_subtitle: if user.role == "provider" {
@@ -202,6 +211,33 @@ async fn home(State(state): State<AppState>, headers: HeaderMap) -> AppResult<Js
         metrics,
         recommendations,
     }))
+}
+
+fn mock_recommendations() -> Vec<Recommendation> {
+    vec![
+        Recommendation {
+            id: "mock-1".into(),
+            avatar: "星".into(),
+            avatar_class: "violet".into(),
+            verified: true,
+            preferred: true,
+            title: "星云互动传媒".into(),
+            subtitle: "短视频推广、音乐宣发、KOL矩阵传播".into(),
+            score: "4.9".into(),
+            price: "高匹配".into(),
+        },
+        Recommendation {
+            id: "mock-2".into(),
+            avatar: "声".into(),
+            avatar_class: "blue".into(),
+            verified: true,
+            preferred: false,
+            title: "声波音乐工作室".into(),
+            subtitle: "音乐制作、版权运营、艺人经纪".into(),
+            score: "4.8".into(),
+            price: "中匹配".into(),
+        },
+    ]
 }
 
 #[derive(Deserialize)]
