@@ -112,6 +112,7 @@ struct Recommendation {
 #[serde(rename_all = "camelCase")]
 struct HomeResponse {
     header_subtitle: String,
+    name: String,
     metrics: Vec<Metric>,
     recommendations: Vec<Recommendation>,
 }
@@ -197,6 +198,7 @@ async fn home(State(state): State<AppState>, headers: HeaderMap) -> AppResult<Js
         } else {
             "被服务方 · 今日推广概览".into()
         },
+        name: user.organization,
         metrics,
         recommendations,
     }))

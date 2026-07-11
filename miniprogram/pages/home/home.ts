@@ -19,6 +19,7 @@ interface Recommendation {
 
 interface HomeResponse {
   headerSubtitle: string
+  name: string
   metrics: Metric[]
   recommendations: Recommendation[]
 }
@@ -30,6 +31,7 @@ Component({
     greeting: '你好',
     todayLabel: '',
     headerSubtitle: '',
+    name: '',
     metrics: [] as Metric[],
     recommendations: [] as Recommendation[],
     connectingId: '',

@@ -1,5 +1,5 @@
 <view class="page-shell home-page">
-  <page-header title="{{greeting}}，星光音乐" subtitle="{{headerSubtitle}}"></page-header>
+  <page-header title="{{greeting}}，{{name}}" subtitle="{{headerSubtitle}}"></page-header>
 
   <data-state loading="{{loading}}" error="{{error}}" bind:action="loadHome"></data-state>
 
@@ -35,7 +35,7 @@
   <view class="section">
     <view class="section-head">
       <text class="section-title">为你推荐</text>
-      <text class="section-action" bindtap="openAI">查看全部</text>
+      <text class="section-action" bindtap="openPlaza">查看全部</text>
     </view>
     <view class="recommend-list card" wx:if="{{recommendations.length}}">
       <view class="recommend-item" wx:for="{{recommendations}}" wx:key="id">
