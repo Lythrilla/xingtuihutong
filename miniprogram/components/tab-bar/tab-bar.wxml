@@ -9,9 +9,13 @@
     hover-stay-time="80"
   >
     <view wx:if="{{item.key === 'match'}}" class="fab-wrap">
+      <view class="fab-halo"></view>
+      <view class="fab-ring"></view>
       <view class="fab-core">
-        <view class="fab-icon"></view>
+        <image class="fab-orb" src="/assets/images/ai-orb.webp" mode="aspectFit"></image>
+        <view class="fab-shine"></view>
       </view>
+      <text class="fab-label">AI</text>
     </view>
     <view wx:else class="tab-icon icon-{{item.iconClass}}"></view>
     <text wx:if="{{item.key !== 'match'}}" class="tab-label">{{item.label}}</text>

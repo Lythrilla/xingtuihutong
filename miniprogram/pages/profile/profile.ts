@@ -45,6 +45,18 @@ Component({
     descriptionInput: '',
     tagsInput: '',
     withdrawInput: '',
+    quickActions: [
+      { key: 'match', label: 'AI 匹配', icon: 'spark' },
+      { key: 'plaza', label: '找合作', icon: 'target' },
+      { key: 'messages', label: '合作会话', icon: 'audio' },
+      { key: 'edit', label: '完善资料', icon: 'briefcase' },
+    ],
+    serviceActions: [
+      { key: 'ai', label: 'AI 推荐方案', description: '查看为你生成的推广策略', icon: 'spark' },
+      { key: 'favorites', label: '我的收藏', description: '回看感兴趣的合作伙伴', icon: 'target' },
+      { key: 'role', label: '合作身份', description: '切换服务方或被服务方', icon: 'refresh' },
+      { key: 'edit', label: '主页设置', description: '名称、简介与能力标签', icon: 'briefcase' },
+    ],
   },
   lifetimes: {
     async attached() {
@@ -123,6 +135,32 @@ Component({
       this.setData({ sheetMode: '', withdrawInput: '' })
     },
     preventClose() {},
+    openQuickAction(event: WechatMiniprogram.TouchEvent) {
+      const key = event.currentTarget.dataset.key as string
+      if (key === 'edit') {
+        this.editProfile()
+        return
+      }
+      const routes: Record<string, string> = {
+        match: '/pages/match/match',
+        plaza: '/pages/plaza/plaza',
+        messages: '/pages/messages/messages',
+      }
+      const url = routes[key]
+      if (url) wx.redirectTo({ url })
+    },
+    openServiceAction(event: WechatMiniprogram.TouchEvent) {
+      const key = event.currentTarget.dataset.key as string
+      if (key === 'role') {
+        void this.switchRole()
+        return
+      }
+      if (key === 'edit') {
+        this.editProfile()
+        return
+      }
+      wx.redirectTo({ url: key === 'ai' ? '/pages/ai/ai' : '/pages/plaza/plaza' })
+    },
     async saveProfile() {
       const organization = this.data.organizationInput.trim()
       const description = this.data.descriptionInput.trim()

@@ -18,6 +18,7 @@ interface PlazaEntry {
   tags: string[]
   matchScore: number
   resultText: string
+  favorite: boolean
 }
 
 interface PlazaResponse {
@@ -36,6 +37,8 @@ Component({
     entries: [] as PlazaEntry[],
     visibleEntries: [] as PlazaEntry[],
     connectingId: '',
+    previousType: 'all',
+    favoritesOnly: false,
   },
   lifetimes: {
     async attached() {
@@ -51,6 +54,10 @@ Component({
         this.clearSearch()
         return
       }
+      if (this.data.favoritesOnly) {
+        this.toggleFavoritesOnly()
+        return
+      }
       return this.retry()
     },
     async loadEntries(type: string) {
@@ -62,10 +69,15 @@ Component({
       })
       try {
         const response = await apiRequest<PlazaResponse>(`/api/plaza?type=${type}`)
+        const favoriteIds = getFavoriteIds()
+        const entries = response.entries.map((entry) => ({
+          ...entry,
+          favorite: favoriteIds.includes(entry.id),
+        }))
         this.setData({
           activeType: type,
           types: response.types,
-          entries: response.entries,
+          entries,
           loading: false,
           listLoading: false,
         })
@@ -81,7 +93,17 @@ Component({
     async changeType(event: WechatMiniprogram.TouchEvent) {
       const key = event.currentTarget.dataset.key as string
       if (key === this.data.activeType || this.data.listLoading) return
+      this.setData({ previousType: key })
       await this.loadEntries(key)
+    },
+    async toggleLatest() {
+      if (this.data.listLoading) return
+      if (this.data.activeType === 'latest') {
+        await this.loadEntries(this.data.previousType)
+        return
+      }
+      this.setData({ previousType: this.data.activeType })
+      await this.loadEntries('latest')
     },
     updateSearch(event: WechatMiniprogram.Input) {
       const query = event.detail.value
@@ -94,14 +116,38 @@ Component({
     },
     filterEntries(query: string) {
       const keyword = query.trim().toLocaleLowerCase()
+      const favoriteEntries = this.data.favoritesOnly
+        ? this.data.entries.filter((entry) => entry.favorite)
+        : this.data.entries
       const visibleEntries = keyword
-        ? this.data.entries.filter((entry) =>
+        ? favoriteEntries.filter((entry) =>
             [entry.name, entry.identity, entry.description, ...entry.tags].some((value) =>
               value.toLocaleLowerCase().includes(keyword),
             ),
           )
-        : this.data.entries
+        : favoriteEntries
       this.setData({ visibleEntries })
+    },
+    toggleFavoritesOnly() {
+      this.setData({ favoritesOnly: !this.data.favoritesOnly })
+      this.filterEntries(this.data.query)
+    },
+    toggleFavorite(event: WechatMiniprogram.TouchEvent) {
+      const id = event.currentTarget.dataset.id as string
+      const entries = this.data.entries.map((entry) =>
+        entry.id === id ? { ...entry, favorite: !entry.favorite } : entry,
+      )
+      const favoriteIds = entries.filter((entry) => entry.favorite).map((entry) => entry.id)
+      wx.setStorageSync('starconnect-favorite-partners', favoriteIds)
+      this.setData({ entries })
+      this.filterEntries(this.data.query)
+      wx.showToast({
+        title: favoriteIds.includes(id) ? '已收藏合作伙伴' : '已取消收藏',
+        icon: 'none',
+      })
+    },
+    openAI() {
+      wx.redirectTo({ url: '/pages/match/match' })
     },
     async connect(event: WechatMiniprogram.TouchEvent) {
       const partnerId = event.currentTarget.dataset.id as string
@@ -124,3 +170,8 @@ Component({
     },
   },
 })
+
+function getFavoriteIds(): string[] {
+  const stored = wx.getStorageSync('starconnect-favorite-partners') as unknown
+  return Array.isArray(stored) ? stored.filter((id): id is string => typeof id === 'string') : []
+}

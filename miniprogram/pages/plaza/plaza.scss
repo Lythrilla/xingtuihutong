@@ -1,16 +1,52 @@
-/* === 搜索框 === */
+.plaza-tabs {
+  display: flex;
+  align-items: center;
+  gap: 52rpx;
+  margin-top: 24rpx;
+}
+
+.plaza-tab {
+  position: relative;
+  padding: 18rpx 0;
+  color: rgba(118, 121, 143, 1);
+  font-size: 28rpx;
+  font-weight: 500;
+}
+
+.plaza-tab.active {
+  color: rgba(52, 59, 86, 1);
+  font-size: 32rpx;
+  font-weight: 700;
+}
+
+.tab-line {
+  position: absolute;
+  right: 18%;
+  bottom: 0;
+  left: 18%;
+  height: 5rpx;
+  opacity: 0;
+  background: linear-gradient(90deg, rgba(126, 142, 244, 1), rgba(166, 107, 248, 1));
+  border-radius: 3rpx;
+  transform: scaleX(0.3);
+  transition: all 0.25s ease;
+}
+
+.plaza-tab.active .tab-line {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
 .search {
   height: 88rpx;
   display: flex;
   align-items: center;
   gap: 18rpx;
-  margin-top: 24rpx;
+  margin-top: 28rpx;
   padding: 0 28rpx;
-  background: rgba(255, 255, 255, 1);
-  border-radius: 48rpx;
-  box-shadow:
-    0 2rpx 6rpx rgba(46, 49, 62, 0.04),
-    0 12rpx 28rpx rgba(95, 101, 180, 0.06);
+  background: rgba(255, 255, 255, 0.56);
+  border: 1rpx solid rgba(255, 255, 255, 0.86);
+  border-radius: 28rpx;
 }
 
 .search-icon {
@@ -39,92 +75,67 @@
   color: rgba(118, 121, 143, 1);
 }
 
-/* === 横向筛选 === */
-.filter-scroll {
-  margin-top: 28rpx;
-  white-space: nowrap;
-}
-
-.filters {
-  display: inline-flex;
-  gap: 14rpx;
-}
-
-.filter {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: 64rpx;
-  padding: 0 28rpx;
-  color: rgba(118, 121, 143, 1);
-  font-size: 26rpx;
-  font-weight: 500;
-  background: rgba(255, 255, 255, 1);
-  border-radius: 48rpx;
-  box-shadow: 0 4rpx 14rpx rgba(95, 101, 180, 0.06);
-}
-
-.filter.active {
-  color: rgba(255, 255, 255, 1);
-  font-weight: 600;
-  background: rgba(46, 49, 62, 1);
-  box-shadow: 0 6rpx 16rpx rgba(46, 49, 62, 0.18);
-}
-
-/* === AI 提示条 === */
-.plaza-tip {
+.discovery-line {
   display: flex;
   align-items: center;
-  gap: 20rpx;
-  margin-top: 28rpx;
-  padding: 24rpx 28rpx;
-  background: rgba(255, 255, 255, 1);
-  border-radius: 32rpx;
-  box-shadow:
-    0 2rpx 6rpx rgba(46, 49, 62, 0.04),
-    0 12rpx 28rpx rgba(95, 101, 180, 0.06);
+  justify-content: space-between;
+  gap: 24rpx;
+  margin-top: 40rpx;
 }
 
-.plaza-tip-icon {
-  width: 72rpx;
-  height: 72rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex: none;
-  color: rgba(255, 255, 255, 1);
-  background: linear-gradient(135deg, rgba(137, 154, 248, 1), rgba(95, 101, 180, 1));
-  border-radius: 24rpx;
-}
-
-.plaza-tip-icon .ui-icon {
-  width: 36rpx;
-  height: 36rpx;
-}
-
-.plaza-tip-title {
+.discovery-title {
   color: rgba(52, 59, 86, 1);
   font-size: 28rpx;
+  font-weight: 650;
+}
+
+.discovery-desc {
+  margin-top: 8rpx;
+  color: rgba(118, 121, 143, 1);
+  font-size: 22rpx;
+}
+
+.discovery-actions {
+  display: flex;
+  align-items: center;
+  flex: none;
+}
+
+.favorite-filter {
+  height: 56rpx;
+  padding: 0 12rpx;
+  color: rgba(118, 121, 143, 1);
+  font-size: 22rpx;
+  background: transparent;
+}
+
+.favorite-filter.active {
+  color: rgba(95, 101, 180, 1);
   font-weight: 600;
 }
 
-.plaza-tip-desc {
-  margin-top: 6rpx;
+.sort-button {
+  height: 56rpx;
+  flex: none;
+  padding: 0 6rpx 0 16rpx;
   color: rgba(118, 121, 143, 1);
-  font-size: 24rpx;
-  line-height: 1.4;
+  font-size: 22rpx;
+  background: transparent;
 }
 
-/* === 合作方列表 === */
+.sort-button.active {
+  color: rgba(95, 101, 180, 1);
+}
+
 .entry-list {
   display: flex;
   flex-direction: column;
-  gap: 20rpx;
-  margin-top: 28rpx;
+  margin-top: 16rpx;
 }
 
 .entry {
-  padding: 30rpx 28rpx;
+  padding: 32rpx 0;
+  border-bottom: 1rpx solid rgba(95, 101, 180, 0.11);
 }
 
 .entry-head {
@@ -133,23 +144,30 @@
 }
 
 .entry .avatar {
-  width: 96rpx;
-  height: 96rpx;
+  width: 104rpx;
+  height: 104rpx;
   flex: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: 24rpx;
+  margin-right: 22rpx;
   color: rgba(95, 101, 180, 1);
   font-size: 36rpx;
   font-weight: 700;
-  background: rgba(237, 239, 253, 1);
-  border-radius: 26rpx;
+  background: rgba(255, 255, 255, 0.62);
+  border-radius: 32rpx;
+  box-shadow: 0 10rpx 28rpx rgba(95, 101, 180, 0.1);
 }
 
 .entry-identity {
   min-width: 0;
   flex: 1;
+}
+
+.entry-name-line {
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
 }
 
 .entry-name {
@@ -164,72 +182,65 @@
 .verified {
   display: flex;
   align-items: center;
-  gap: 10rpx;
-  margin-top: 10rpx;
-  color: rgba(118, 121, 143, 1);
-  font-size: 24rpx;
+  gap: 6rpx;
+  flex: none;
+  color: rgba(95, 101, 180, 1);
+  font-size: 20rpx;
 }
 
 .verify-dot {
-  width: 28rpx;
-  height: 28rpx;
+  width: 24rpx;
+  height: 24rpx;
   display: flex;
   align-items: center;
   justify-content: center;
   color: rgba(255, 255, 255, 1);
-  font-size: 18rpx;
+  font-size: 16rpx;
   line-height: 1;
   background: rgba(95, 101, 180, 1);
   border-radius: 8rpx;
 }
 
-.match-score {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  color: rgba(95, 101, 180, 1);
-  font-weight: 700;
-}
-
-.match-score text:first-child {
-  font-size: 40rpx;
-  line-height: 1;
-  font-variant-numeric: tabular-nums;
-}
-
-.score-suffix {
-  font-size: 22rpx !important;
-  font-weight: 500;
-  margin-left: 2rpx;
-}
-
-.match-score view {
-  margin-top: 6rpx;
+.entry-role {
+  margin-top: 10rpx;
   color: rgba(118, 121, 143, 1);
-  font-size: 22rpx;
-  font-weight: 500;
+  font-size: 24rpx;
 }
 
-.entry-description {
-  margin-top: 20rpx;
-  color: rgba(118, 121, 143, 1);
-  font-size: 26rpx;
-  line-height: 1.55;
+.favorite-button {
+  width: 64rpx;
+  height: 64rpx;
+  flex: none;
+  color: rgba(118, 121, 143, 0.72);
+  font-size: 42rpx;
+  background: transparent;
+}
+
+.favorite-button.active {
+  color: rgba(126, 112, 226, 1);
+}
+
+.entry-service {
+  margin-top: 22rpx;
+  color: rgba(52, 59, 86, 1);
+  font-size: 28rpx;
+  font-weight: 600;
+  line-height: 1.45;
 }
 
 .tag-row {
   display: flex;
   flex-wrap: wrap;
   gap: 12rpx;
-  margin-top: 18rpx;
+  margin-top: 16rpx;
 }
 
 .tag {
-  padding: 8rpx 18rpx;
-  color: rgba(118, 121, 143, 1);
+  padding: 7rpx 16rpx;
+  color: rgba(95, 101, 180, 1);
   font-size: 22rpx;
-  background: rgba(237, 239, 253, 1);
-  border-radius: 16rpx;
+  background: rgba(255, 255, 255, 0.48);
+  border-radius: 14rpx;
 }
 
 .entry-foot {
@@ -237,35 +248,118 @@
   align-items: center;
   justify-content: space-between;
   gap: 18rpx;
-  margin-top: 24rpx;
-  padding-top: 20rpx;
-  border-top: 1rpx solid rgba(95, 101, 180, 0.08);
+  margin-top: 22rpx;
 }
 
-.entry-result {
+.entry-proof {
   min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
   overflow: hidden;
   color: rgba(118, 121, 143, 1);
-  font-size: 24rpx;
+  font-size: 22rpx;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
+.match-number {
+  color: rgba(95, 101, 180, 1);
+  font-size: 26rpx;
+  font-weight: 700;
+}
+
+.proof-dot {
+  width: 6rpx;
+  height: 6rpx;
+  margin: 0 4rpx;
+  background: rgba(118, 121, 143, 0.5);
+  border-radius: 50%;
+}
+
 .connect-button {
-  min-width: 168rpx;
-  height: 64rpx;
+  min-width: 148rpx;
+  height: 58rpx;
   display: flex;
   align-items: center;
-  padding: 0 28rpx;
+  padding: 0 24rpx;
   color: rgba(255, 255, 255, 1);
-  font-size: 26rpx;
-  font-weight: 600;
+  font-size: 24rpx;
+  font-weight: 500;
   background: rgba(46, 49, 62, 1);
   border-radius: 48rpx;
-  box-shadow: 0 4rpx 12rpx rgba(46, 49, 62, 0.18);
+  box-shadow: 0 8rpx 18rpx rgba(46, 49, 62, 0.15);
 }
 
 .connect-button[disabled] {
-  min-width: 168rpx;
+  min-width: 148rpx;
 }
 
+.ai-invite {
+  position: relative;
+  min-height: 144rpx;
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+  overflow: hidden;
+  margin: 34rpx 0 18rpx;
+  padding: 24rpx 26rpx;
+  background: linear-gradient(105deg, rgba(218, 222, 255, 0.76), rgba(239, 226, 255, 0.74));
+  border-radius: 34rpx;
+}
+
+.ai-invite-glow {
+  position: absolute;
+  top: -90rpx;
+  right: 30rpx;
+  width: 240rpx;
+  height: 240rpx;
+  background: radial-gradient(circle, rgba(137, 154, 248, 0.36), transparent 68%);
+  animation: invite-breathe 3s ease-in-out infinite;
+}
+
+.ai-invite-orb {
+  position: relative;
+  z-index: 1;
+  width: 92rpx;
+  height: 92rpx;
+  flex: none;
+  filter: drop-shadow(0 10rpx 18rpx rgba(95, 101, 180, 0.24));
+}
+
+.ai-invite-copy {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+  flex: 1;
+  color: rgba(52, 59, 86, 1);
+  font-size: 27rpx;
+  font-weight: 650;
+}
+
+.ai-invite-copy text {
+  display: block;
+  margin-top: 8rpx;
+  color: rgba(118, 121, 143, 1);
+  font-size: 21rpx;
+  font-weight: 400;
+}
+
+.ai-invite-arrow {
+  position: relative;
+  z-index: 1;
+  color: rgba(95, 101, 180, 1);
+  font-size: 34rpx;
+}
+
+@keyframes invite-breathe {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(0.9);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.12);
+  }
+}
