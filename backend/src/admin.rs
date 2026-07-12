@@ -33,6 +33,7 @@ pub fn routes() -> Router<AppState> {
         .route("/settlements", get(settlements))
         .route("/settlements/{id}", put(update_settlement))
         .nest("/analytics", crate::analytics::admin_routes())
+        .nest("/agent", crate::admin_agent::routes())
 }
 
 async fn login(

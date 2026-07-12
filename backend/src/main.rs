@@ -1,4 +1,5 @@
 mod admin;
+mod admin_agent;
 mod agent;
 mod analytics;
 mod api;
