@@ -2,113 +2,208 @@ import { apiRequest } from '../../utils/api'
 
 export {}
 
-interface Tab {
-  key: string
-  label: string
-}
-
-interface Plan {
+interface AgentMessage {
   id: string
-  iconClass: string
-  colorClass: string
-  title: string
-  planType: string
-  description: string
-  tags: string[]
-  budgetAmount: number
-  budget: string
-  score: number
-  saved: boolean
+  role: 'user' | 'assistant'
+  content: string
+  createdAt: string
 }
 
-interface AiResponse {
-  insight: {
-    title: string
+interface ToolCall {
+  id: string
+  name: string
+  label: string
+  status: string
+  input: Record<string, unknown>
+  output: Record<string, unknown>
+  durationMs: number
+}
+
+interface ToolDefinition {
+  name: string
+  label: string
+  description: string
+  mode: 'read' | 'write'
+}
+
+interface FunnelItem {
+  label: string
+  value: number
+  width: number
+}
+
+interface ArtifactData {
+  matches?: number
+  conversations?: number
+  savedPlans?: number
+  revenueDisplay?: string
+  partners?: Array<{
+    id: string
+    name: string
+    identity: string
     description: string
-  }
-  tabs: Tab[]
-  plans: Omit<Plan, 'budget' | 'saved'>[]
+    tags: string[]
+    matchScore: number
+  }>
+  plans?: Array<{
+    id: string
+    title: string
+    planType: string
+    description: string
+    tags: string[]
+    budget: string
+    score: number
+  }>
+  saved?: boolean
+  status?: string
+}
+
+interface Artifact {
+  kind: 'metrics' | 'funnel' | 'partners' | 'plans' | 'action'
+  title: string
+  summary: string
+  data: ArtifactData | FunnelItem[]
+}
+
+interface ViewArtifact extends Artifact {
+  funnel: FunnelItem[]
+  payload: ArtifactData
+}
+
+interface BootstrapResponse {
+  sessionId: string
+  engine: string
+  messages: AgentMessage[]
+  recentToolCalls: ToolCall[]
+  suggestions: string[]
+  tools: ToolDefinition[]
+}
+
+interface QueryResponse {
+  sessionId: string
+  message: AgentMessage
+  toolCalls: ToolCall[]
+  artifacts: Artifact[]
+  suggestions: string[]
 }
 
 Component({
   data: {
     loading: true,
     error: '',
-    refreshing: false,
-    savingId: '',
-    activeTab: 'plans',
-    tabs: [] as Tab[],
-    insightTitle: '',
-    insightDescription: '',
-    plans: [] as Plan[],
-    refreshText: '换一批推荐',
+    thinking: false,
+    sessionId: '',
+    engine: '',
+    input: '',
+    messages: [] as AgentMessage[],
+    toolCalls: [] as ToolCall[],
+    artifacts: [] as ViewArtifact[],
+    suggestions: [] as string[],
+    tools: [] as ToolDefinition[],
+    showTools: false,
+    scrollTarget: '',
   },
   lifetimes: {
     async attached() {
-      await this.loadPlans(false)
+      await this.bootstrap()
     },
   },
   methods: {
     retry() {
-      return this.loadPlans(false)
+      return this.bootstrap()
     },
-    async loadPlans(refresh: boolean) {
-      if (refresh && this.data.refreshing) return
-      this.setData(refresh ? { refreshing: true } : { loading: true, error: '' })
+    async bootstrap() {
+      this.setData({ loading: true, error: '' })
       try {
-        const response = await apiRequest<AiResponse>(`/api/ai/plans?refresh=${refresh}`)
+        const response = await apiRequest<BootstrapResponse>('/api/agent/bootstrap')
         this.setData({
-          tabs: response.tabs,
-          insightTitle: response.insight.title,
-          insightDescription: response.insight.description,
-          plans: response.plans.map((plan) => ({
-            ...plan,
-            budget: formatMoney(plan.budgetAmount),
-            saved: false,
-          })),
-          refreshText: refresh ? '已更新推荐' : '换一批推荐',
+          ...response,
+          toolCalls: response.recentToolCalls,
           loading: false,
-          refreshing: false,
+          scrollTarget: response.messages.length ? 'conversation-end' : '',
         })
       } catch (error) {
-        const message = error instanceof Error ? error.message : '推荐加载失败'
-        if (refresh) {
-          this.setData({ refreshing: false })
-          wx.showToast({ title: message, icon: 'none' })
-        } else {
-          this.setData({ loading: false, error: message })
-        }
-      }
-    },
-    changeTab(event: WechatMiniprogram.TouchEvent) {
-      const key = event.currentTarget.dataset.key as string
-      this.setData({ activeTab: key })
-    },
-    async refresh() {
-      await this.loadPlans(true)
-    },
-    async viewPlan(event: WechatMiniprogram.TouchEvent) {
-      const id = event.currentTarget.dataset.id as string
-      if (this.data.savingId || this.data.plans.find((plan) => plan.id === id)?.saved) return
-      this.setData({ savingId: id })
-      try {
-        await apiRequest(`/api/ai/plans/${id}/save`, 'POST')
         this.setData({
-          plans: this.data.plans.map((plan) => (plan.id === id ? { ...plan, saved: true } : plan)),
+          loading: false,
+          error: error instanceof Error ? error.message : 'Agent 初始化失败',
         })
-        wx.showToast({ title: '方案已收藏', icon: 'none' })
-      } catch (error) {
-        wx.showToast({ title: error instanceof Error ? error.message : '收藏失败', icon: 'none' })
-      } finally {
-        this.setData({ savingId: '' })
       }
     },
-    openMatch() {
-      wx.redirectTo({ url: '/pages/match/match' })
+    updateInput(event: WechatMiniprogram.Input) {
+      this.setData({ input: event.detail.value })
+    },
+    useSuggestion(event: WechatMiniprogram.TouchEvent) {
+      const value = event.currentTarget.dataset.value as string
+      this.setData({ input: value })
+      void this.send()
+    },
+    async send() {
+      const message = this.data.input.trim()
+      if (!message || this.data.thinking) return
+      const pending: AgentMessage = {
+        id: `pending-${Date.now()}`,
+        role: 'user',
+        content: message,
+        createdAt: '',
+      }
+      this.setData({
+        input: '',
+        thinking: true,
+        artifacts: [],
+        toolCalls: [],
+        messages: [...this.data.messages, pending],
+        scrollTarget: 'conversation-end',
+      })
+      try {
+        const response = await apiRequest<QueryResponse>('/api/agent/query', 'POST', {
+          sessionId: this.data.sessionId,
+          message,
+        })
+        this.setData({
+          sessionId: response.sessionId,
+          messages: [...this.data.messages, response.message],
+          toolCalls: response.toolCalls,
+          artifacts: response.artifacts.map(toViewArtifact),
+          suggestions: response.suggestions,
+          thinking: false,
+          scrollTarget: 'conversation-end',
+        })
+      } catch (error) {
+        this.setData({
+          thinking: false,
+          input: message,
+          messages: this.data.messages.filter((item) => item.id !== pending.id),
+        })
+        wx.showToast({
+          title: error instanceof Error ? error.message : 'Agent 执行失败',
+          icon: 'none',
+        })
+      }
+    },
+    toggleTools() {
+      this.setData({ showTools: !this.data.showTools })
+    },
+    openInsights() {
+      wx.redirectTo({ url: '/pages/analytics/analytics' })
+    },
+    openPartner(event: WechatMiniprogram.TouchEvent) {
+      const id = event.currentTarget.dataset.id as string
+      wx.setStorageSync('starconnect-agent-partner', id)
+      wx.redirectTo({ url: '/pages/plaza/plaza' })
+    },
+    openMessages() {
+      wx.redirectTo({ url: '/pages/messages/messages' })
     },
   },
 })
 
-function formatMoney(cents: number): string {
-  return `¥${(cents / 100).toLocaleString('zh-CN')}`
+function toViewArtifact(artifact: Artifact): ViewArtifact {
+  const funnel = Array.isArray(artifact.data)
+    ? artifact.data.map((item, index) => ({ ...item, width: item.value > 0 ? 30 + index * 18 : 4 }))
+    : []
+  return {
+    ...artifact,
+    funnel,
+    payload: Array.isArray(artifact.data) ? {} : artifact.data,
+  }
 }

@@ -1,86 +1,171 @@
-<view class="page-shell">
-  <page-header title="AI 智能推荐" subtitle="让每次合作都有数据与灵感支撑"></page-header>
+<view class="page-shell agent-page">
+  <page-header title="AI Agent" subtitle="查询数据、调用工具并继续执行"></page-header>
 
   <data-state loading="{{loading}}" error="{{error}}" bind:action="retry"></data-state>
 
   <block wx:if="{{!loading && !error}}">
-    <view class="ai-hero">
-      <view class="ai-hero-copy">
-        <view class="ai-hero-kicker">STARCONNECT AI</view>
-        <view class="ai-hero-title">找到此刻最值得合作的人</view>
-        <view class="ai-hero-desc">根据当前在架方案与真实合作数据动态推荐</view>
+    <view class="agent-hero">
+      <view class="hero-grid"></view>
+      <view class="agent-orb-wrap">
+        <view class="agent-orb-halo"></view>
+        <image class="agent-orb" src="/assets/images/ai-orb.webp" mode="aspectFit"></image>
       </view>
-      <image class="ai-hero-image" src="/assets/images/ai-orb.webp" mode="aspectFit"></image>
-    </view>
-
-    <view class="ai-tabs" wx:if="{{tabs.length > 1}}">
-      <view
-        wx:for="{{tabs}}"
-        wx:key="key"
-        class="ai-tab {{activeTab === item.key ? 'active' : ''}}"
-        data-key="{{item.key}}"
-        bindtap="changeTab"
-      >
-        {{item.label}}
+      <view class="agent-hero-copy">
+        <view class="agent-state"><text></text> AGENT ONLINE</view>
+        <view class="agent-title">你的全链路音乐<br />商业智能体</view>
+        <view class="agent-engine">{{engine}}</view>
+      </view>
+      <view class="hero-actions">
+        <button bindtap="openInsights">数据洞察 <text>→</text></button>
+        <button bindtap="toggleTools">{{showTools ? '收起工具' : tools.length + ' 个工具在线'}}</button>
       </view>
     </view>
 
-    <view class="ai-insight" wx:if="{{plans.length}}">
-      <view class="ai-insight-icon"><view class="ui-icon icon-spark"></view></view>
-      <view class="ai-insight-copy">
-        <view class="ai-insight-title">{{insightTitle}}</view>
-        <view class="ai-insight-desc">{{insightDescription}}</view>
-      </view>
-    </view>
-
-    <view class="plan-list" wx:if="{{plans.length}}">
-      <view class="plan card" wx:for="{{plans}}" wx:key="id">
-        <view class="plan-head">
-          <view class="plan-icon {{item.colorClass}}">
-            <view class="ui-icon icon-{{item.iconClass}}"></view>
-          </view>
-          <view class="plan-name">
-            <view class="plan-title">{{item.title}}</view>
-            <view class="plan-type">{{item.planType}}</view>
-          </view>
-          <view class="plan-score">
-            <text>{{item.score}}</text>
-            <view>匹配度</view>
-          </view>
+    <view class="tool-drawer" wx:if="{{showTools}}">
+      <view class="tool-row" wx:for="{{tools}}" wx:key="name">
+        <view class="tool-mode {{item.mode}}">{{item.mode === 'read' ? 'Q' : 'A'}}</view>
+        <view class="tool-copy">
+          <view>{{item.label}}</view>
+          <text>{{item.description}}</text>
         </view>
-        <view class="plan-desc">{{item.description}}</view>
-        <view class="plan-tags">
-          <text wx:for="{{item.tags}}" wx:key="*this" wx:for-item="tag">{{tag}}</text>
+        <view class="tool-ready"></view>
+      </view>
+    </view>
+
+    <scroll-view
+      class="conversation"
+      scroll-y
+      enhanced
+      show-scrollbar="{{false}}"
+      scroll-into-view="{{scrollTarget}}"
+    >
+      <view wx:for="{{messages}}" wx:key="id" class="message {{item.role}}">
+        <view class="message-avatar" wx:if="{{item.role === 'assistant'}}">
+          <image src="/assets/images/ai-orb.webp" mode="aspectFit"></image>
         </view>
-        <view class="plan-foot">
+        <view class="message-body">
+          <view class="message-role">{{item.role === 'assistant' ? 'STARCONNECT AGENT' : '你'}}</view>
+          <view class="message-content">{{item.content}}</view>
+        </view>
+      </view>
+
+      <view class="thinking" wx:if="{{thinking}}">
+        <image src="/assets/images/ai-orb.webp" mode="aspectFit"></image>
+        <view>
+          <view>正在规划执行链路</view>
+          <text>分析意图 · 选择工具 · 查询实时数据</text>
+        </view>
+        <view class="thinking-dots"><view></view><view></view><view></view></view>
+      </view>
+
+      <view class="execution" wx:if="{{toolCalls.length}}">
+        <view class="execution-head">
           <view>
-            <view class="budget-label">建议预算</view>
-            <view class="budget-value">{{item.budget}}</view>
+            <text>TOOL CALL TRACE</text>
+            <view>执行链路</view>
           </view>
-          <button
-            class="plan-button {{item.saved ? 'saved' : ''}}"
-            data-id="{{item.id}}"
-            disabled="{{item.saved || savingId !== ''}}"
-            loading="{{savingId === item.id}}"
-            bindtap="viewPlan"
-          >{{item.saved ? '已收藏' : (savingId === item.id ? '收藏中' : '收藏方案')}}</button>
+          <text>{{toolCalls.length}} 个工具完成</text>
+        </view>
+        <view class="trace-item" wx:for="{{toolCalls}}" wx:key="id">
+          <view class="trace-axis">
+            <view class="trace-dot"></view>
+            <view class="trace-line"></view>
+          </view>
+          <view class="trace-main">
+            <view class="trace-name">{{item.label}}</view>
+            <view class="trace-code">{{item.name}}</view>
+            <view class="trace-meta">
+              <text>COMPLETED</text>
+              <text>{{item.durationMs}}ms</text>
+            </view>
+          </view>
         </view>
       </view>
-    </view>
 
-    <data-state
-      wx:else
-      empty="{{true}}"
-      empty-title="暂无可用推荐"
-      empty-description="完成一次推广匹配，或稍后等待新方案上线"
-      action-text="去推广匹配"
-      bind:action="openMatch"
-    ></data-state>
+      <view class="artifact-stream" wx:if="{{artifacts.length}}">
+        <block wx:for="{{artifacts}}" wx:key="title">
+          <view class="artifact">
+            <view class="artifact-kicker">{{item.kind === 'action' ? 'ACTION EXECUTED' : 'LIVE DATA'}}</view>
+            <view class="artifact-title">{{item.title}}</view>
+            <view class="artifact-summary">{{item.summary}}</view>
 
-    <button class="refresh" wx:if="{{plans.length}}" disabled="{{refreshing}}" bindtap="refresh">
-      <view class="ui-icon icon-refresh"></view>
-      <text>{{refreshing ? '正在更新' : refreshText}}</text>
-    </button>
+            <view class="metric-result" wx:if="{{item.kind === 'metrics'}}">
+              <view><text>{{item.payload.matches}}</text><label>匹配</label></view>
+              <view><text>{{item.payload.conversations}}</text><label>会话</label></view>
+              <view><text>{{item.payload.savedPlans}}</text><label>收藏</label></view>
+              <view><text>{{item.payload.revenueDisplay}}</text><label>收益</label></view>
+            </view>
+
+            <view class="funnel-result" wx:elif="{{item.kind === 'funnel'}}">
+              <view wx:for="{{item.funnel}}" wx:key="label" wx:for-item="stage">
+                <view class="funnel-label"><text>{{stage.label}}</text><text>{{stage.value}}</text></view>
+                <view class="funnel-track"><view style="width: {{stage.width}}%"></view></view>
+              </view>
+            </view>
+
+            <view class="partner-result" wx:elif="{{item.kind === 'partners'}}">
+              <view
+                class="partner-line"
+                wx:for="{{item.payload.partners}}"
+                wx:key="id"
+                wx:for-item="partner"
+                data-id="{{partner.id}}"
+                bindtap="openPartner"
+              >
+                <view class="partner-rank">{{$index + 1}}</view>
+                <view class="partner-copy">
+                  <view>{{partner.name}} <text>{{partner.matchScore}}%</text></view>
+                  <text>{{partner.identity}} · {{partner.description}}</text>
+                </view>
+                <view class="partner-arrow">›</view>
+              </view>
+            </view>
+
+            <scroll-view class="plan-result" wx:elif="{{item.kind === 'plans'}}" scroll-x enhanced show-scrollbar="{{false}}">
+              <view class="plan-strip">
+                <view class="plan-item" wx:for="{{item.payload.plans}}" wx:key="id" wx:for-item="plan">
+                  <view class="plan-score">{{plan.score}}%</view>
+                  <view class="plan-name">{{plan.title}}</view>
+                  <view class="plan-type">{{plan.planType}}</view>
+                  <view class="plan-budget">{{plan.budget}}</view>
+                </view>
+              </view>
+            </scroll-view>
+
+            <button class="action-result" wx:elif="{{item.kind === 'action'}}" bindtap="openMessages">
+              已完成 · 前往消息中心
+            </button>
+          </view>
+        </block>
+      </view>
+
+      <view class="suggestions" wx:if="{{!thinking && suggestions.length}}">
+        <view class="suggestion-title">继续追问</view>
+        <button
+          wx:for="{{suggestions}}"
+          wx:key="*this"
+          data-value="{{item}}"
+          bindtap="useSuggestion"
+        >{{item}} <text>↗</text></button>
+      </view>
+      <view id="conversation-end" class="conversation-end"></view>
+    </scroll-view>
   </block>
+</view>
+
+<view class="agent-composer" wx:if="{{!loading && !error}}">
+  <input
+    value="{{input}}"
+    disabled="{{thinking}}"
+    maxlength="240"
+    confirm-type="send"
+    placeholder="告诉 Agent 你的目标，或让它查询数据…"
+    bindinput="updateInput"
+    bindconfirm="send"
+  />
+  <button disabled="{{thinking || !input}}" bindtap="send">
+    <text wx:if="{{!thinking}}">↑</text>
+    <view wx:else class="composer-loader"></view>
+  </button>
 </view>
 <tab-bar active="match"></tab-bar>

@@ -1,4 +1,6 @@
 mod admin;
+mod agent;
+mod analytics;
 mod api;
 mod config;
 mod db;

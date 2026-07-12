@@ -31,6 +31,8 @@ pub fn routes() -> Router<AppState> {
         .route("/match", post(create_match))
         .route("/ai/plans", get(ai_plans))
         .route("/ai/plans/{id}/save", post(save_plan))
+        .nest("/agent", crate::agent::routes())
+        .nest("/analytics", crate::analytics::user_routes())
         .route("/messages", get(messages))
         .route("/messages/read-all", post(mark_all_read))
         .route(
@@ -63,6 +65,15 @@ async fn create_session(
     }
     let role = input.role.as_deref().unwrap_or("provider");
     let (token, user) = db::create_user_session(&state.pool, role).await?;
+    let _ = crate::analytics::track_event(
+        &state,
+        Some(&user.id),
+        "session_created",
+        Some("user"),
+        Some(&user.id),
+        json!({ "role": &user.role }),
+    )
+    .await;
     Ok(Json(SessionResponse {
         token,
         user: user.into(),
@@ -385,6 +396,15 @@ async fn connect_partner(
         }
     }
     tx.commit().await?;
+    let _ = crate::analytics::track_event(
+        &state,
+        Some(&user.id),
+        "partner_connected",
+        Some("conversation"),
+        Some(&conversation_id),
+        json!({ "partnerId": input.partner_id, "created": created }),
+    )
+    .await;
     Ok(Json(
         json!({ "conversationId": conversation_id, "partnerName": partner_name }),
     ))
@@ -502,6 +522,20 @@ async fn create_match(
     .execute(&mut *tx)
     .await?;
     tx.commit().await?;
+    let _ = crate::analytics::track_event(
+        &state,
+        Some(&user.id),
+        "match_created",
+        Some("match_request"),
+        Some(&match_id),
+        json!({
+            "songId": input.song_id,
+            "budgetId": input.budget_id,
+            "targets": input.target_keys,
+            "planCount": plans.len()
+        }),
+    )
+    .await;
     Ok(Json(MatchResponse {
         match_id,
         plans: plans.into_iter().map(with_plan_tags).collect(),
@@ -577,9 +611,18 @@ async fn save_plan(
          ON CONFLICT(user_id, plan_id) DO NOTHING",
     )
     .bind(&user.id)
-    .bind(id)
+    .bind(&id)
     .execute(&state.pool)
     .await?;
+    let _ = crate::analytics::track_event(
+        &state,
+        Some(&user.id),
+        "plan_saved",
+        Some("plan"),
+        Some(&id),
+        json!({}),
+    )
+    .await;
     Ok(Json(json!({ "saved": true })))
 }
 
@@ -764,6 +807,15 @@ async fn send_message(
     .bind(message_id)
     .fetch_one(&state.pool)
     .await?;
+    let _ = crate::analytics::track_event(
+        &state,
+        Some(&user.id),
+        "message_sent",
+        Some("conversation"),
+        Some(&id),
+        json!({ "messageId": &item.id }),
+    )
+    .await;
     Ok(Json(item))
 }
 
@@ -881,6 +933,15 @@ async fn withdraw(
     .execute(&mut *tx)
     .await?;
     tx.commit().await?;
+    let _ = crate::analytics::track_event(
+        &state,
+        Some(&user.id),
+        "withdrawal_requested",
+        Some("settlement"),
+        None,
+        json!({ "amount": input.amount }),
+    )
+    .await;
     Ok(Json(json!({
         "success": true,
         "balance": balance - input.amount
@@ -959,7 +1020,7 @@ async fn profile_payload(state: &AppState, user: UserRow) -> AppResult<ProfileRe
     })
 }
 
-async fn current_user(state: &AppState, headers: &HeaderMap) -> AppResult<UserRow> {
+pub(crate) async fn current_user(state: &AppState, headers: &HeaderMap) -> AppResult<UserRow> {
     let token = bearer_token(headers).ok_or(AppError::Unauthorized)?;
     db::user_from_token(&state.pool, token).await
 }

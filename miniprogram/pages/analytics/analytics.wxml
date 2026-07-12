@@ -1,0 +1,95 @@
+<view class="page-shell analytics-page">
+  <page-header title="数据洞察" subtitle="你的合作增长与转化全景"></page-header>
+  <data-state loading="{{loading}}" error="{{error}}" bind:action="retry"></data-state>
+
+  <block wx:if="{{!loading && !error}}">
+    <view class="insight-hero">
+      <view class="insight-grid"></view>
+      <view class="score-ring">
+        <view class="score-inner">
+          <text>{{opportunity.score}}</text>
+          <label>机会指数</label>
+        </view>
+      </view>
+      <view class="insight-copy">
+        <view class="insight-kicker">AI GROWTH SIGNAL</view>
+        <view class="insight-title">{{opportunity.title}}</view>
+        <view class="insight-desc">{{opportunity.description}}</view>
+        <button bindtap="askAgent">{{opportunity.action}} <text>→</text></button>
+      </view>
+    </view>
+
+    <scroll-view class="metric-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+      <view class="metric-line">
+        <view class="metric-item" wx:for="{{metrics}}" wx:key="key">
+          <view class="metric-top">
+            <text>{{item.label}}</text>
+            <label wx:if="{{item.change}}">{{item.change > 0 ? '+' : ''}}{{item.change}}%</label>
+          </view>
+          <view class="metric-value">{{item.displayValue}}</view>
+          <view class="metric-mark"></view>
+        </view>
+      </view>
+    </scroll-view>
+
+    <view class="data-section">
+      <view class="data-head">
+        <view><text>7 DAYS</text><label>合作活跃趋势</label></view>
+        <view class="legend"><text class="purple"></text>匹配 <text class="cyan"></text>会话</view>
+      </view>
+      <view class="trend-chart">
+        <view class="trend-day" wx:for="{{trend}}" wx:key="date">
+          <view class="bars">
+            <view class="bar match" style="height: {{item.matchHeight}}rpx"></view>
+            <view class="bar connection" style="height: {{item.connectionHeight}}rpx"></view>
+          </view>
+          <text>{{item.label}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="data-section">
+      <view class="data-head">
+        <view><text>CONVERSION</text><label>合作转化漏斗</label></view>
+        <view class="data-hint">实时业务数据</view>
+      </view>
+      <view class="funnel">
+        <view class="funnel-row" wx:for="{{funnel}}" wx:key="label">
+          <view class="funnel-copy">
+            <text>{{$index + 1}} · {{item.label}}</text>
+            <label>{{item.value}} <text class="conversion">{{item.conversion}}%</text></label>
+          </view>
+          <view class="funnel-bar"><view style="width: {{item.width}}%"></view></view>
+        </view>
+      </view>
+    </view>
+
+    <view class="data-section">
+      <view class="data-head">
+        <view><text>CHANNEL MIX</text><label>合作目标分布</label></view>
+      </view>
+      <view class="channel-empty" wx:if="{{!channels.length}}" bindtap="openPlaza">
+        暂无渠道数据，去完成一次智能匹配 <text>→</text>
+      </view>
+      <view class="channels" wx:else>
+        <view class="channel-row" wx:for="{{channels}}" wx:key="label">
+          <view class="channel-head">
+            <text>{{item.label}}</text>
+            <label>{{item.value}} 次 · {{item.percent}}%</label>
+          </view>
+          <view class="channel-track"><view style="width: {{item.percent}}%"></view></view>
+        </view>
+      </view>
+    </view>
+
+    <view class="agent-explain" bindtap="askAgent">
+      <image src="/assets/images/ai-orb.webp" mode="aspectFit"></image>
+      <view>
+        <text>让 Agent 解读这组数据</text>
+        <label>查询原因、制定策略并创建执行任务</label>
+      </view>
+      <text>↗</text>
+    </view>
+  </block>
+</view>
+<tab-bar active="profile"></tab-bar>

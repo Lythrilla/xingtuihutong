@@ -7,6 +7,7 @@ const state = {
 
 const titles = {
   overview: "运营总览",
+  analytics: "数据驾驶舱",
   partners: "合作方管理",
   songs: "曲库管理",
   plans: "推广方案",
@@ -188,6 +189,12 @@ async function loadView() {
       setServerStatus("online");
       return;
     }
+    if (state.view === "analytics") {
+      renderAnalytics(await api("/api/admin/analytics"));
+      loginLayer.classList.add("hidden");
+      setServerStatus("online");
+      return;
+    }
     const records = await api(`/api/admin/${state.view}`);
     state.records = records;
     renderTable(state.view, records);
@@ -238,6 +245,116 @@ function renderOverview(data) {
         ]),
       )}
     </section>`;
+}
+
+function renderAnalytics(data) {
+  const latest = data.trend[data.trend.length - 1] ?? {};
+  content.innerHTML = `
+    <section class="analytics-hero">
+      <div>
+        <p class="eyebrow">REAL-TIME BUSINESS INTELLIGENCE</p>
+        <h2>增长、转化与 Agent 执行全景</h2>
+        <p>所有指标直接聚合业务数据库，工具调用与执行轨迹同步进入运营视图。</p>
+      </div>
+      <div class="live-signal"><i></i><span>实时数据</span><strong>${formatDate(new Date().toISOString())}</strong></div>
+    </section>
+    <div class="metric-grid analytics-metrics">
+      ${data.metrics
+        .map(
+          (item, index) => `
+          <article class="metric-card tone-${index % 3}">
+            <span>${escapeHtml(item.label)}</span>
+            <strong>${escapeHtml(item.displayValue)}</strong>
+            <small>${item.change ? `${item.change > 0 ? "+" : ""}${item.change}% 较上周期` : "累计实时值"}</small>
+          </article>`,
+        )
+        .join("")}
+    </div>
+    <div class="analytics-grid">
+      <section class="panel trend-panel">
+        <div class="panel-head">
+          <div><p class="eyebrow">14 DAYS</p><h2>核心业务趋势</h2></div>
+          <div class="chart-legend"><span class="violet"></span>匹配 <span class="cyan"></span>会话</div>
+        </div>
+        ${trendChart(data.trend)}
+        <div class="trend-footer">
+          <span>今日新增用户 <strong>${latest.users ?? 0}</strong></span>
+          <span>今日匹配 <strong>${latest.matches ?? 0}</strong></span>
+          <span>今日会话 <strong>${latest.connections ?? 0}</strong></span>
+          <span>今日交易额 <strong>${money(latest.revenue ?? 0)}</strong></span>
+        </div>
+      </section>
+      <section class="panel funnel-panel">
+        <div class="panel-head"><div><p class="eyebrow">CONVERSION</p><h2>业务转化漏斗</h2></div></div>
+        ${distributionBars(data.funnel, "conversion", "%")}
+      </section>
+      <section class="panel">
+        <div class="panel-head"><div><p class="eyebrow">PARTNER MIX</p><h2>合作方构成</h2></div></div>
+        ${distributionBars(data.partnerMix, "percent", "%")}
+      </section>
+      <section class="panel">
+        <div class="panel-head"><div><p class="eyebrow">AGENT TOOL CALLS</p><h2>工具调用分布</h2></div></div>
+        ${data.toolUsage.length ? distributionBars(data.toolUsage, "percent", "%") : '<div class="empty compact">等待首个 Agent 工具调用</div>'}
+      </section>
+    </div>
+    <section class="table-panel agent-runs">
+      <div class="table-head">
+        <div><h2>最近 Agent 运行</h2><span class="muted">监控会话、工具调用量与运行状态</span></div>
+        <span class="agent-runtime">STARCONNECT RUNTIME</span>
+      </div>
+      ${table(
+        ["用户", "会话目标", "工具调用", "状态", "最近运行"],
+        data.recentRuns.map((run) => [
+          escapeHtml(run.userName),
+          escapeHtml(run.title),
+          `<strong>${run.toolCalls}</strong> calls`,
+          badge(run.status === "active" ? "运行中" : run.status, run.status === "active"),
+          formatDate(run.updatedAt),
+        ]),
+        "暂无 Agent 运行记录",
+      )}
+    </section>`;
+}
+
+function trendChart(points) {
+  const maximum = Math.max(1, ...points.flatMap((item) => [item.matches, item.connections]));
+  const width = 720;
+  const height = 210;
+  const x = (index) => (points.length <= 1 ? 0 : (index / (points.length - 1)) * width);
+  const y = (value) => height - (value / maximum) * (height - 20);
+  const line = (key) => points.map((item, index) => `${x(index)},${y(item[key])}`).join(" ");
+  return `
+    <div class="trend-chart">
+      <svg viewBox="0 0 ${width} ${height}" role="img" aria-label="十四天业务趋势">
+        <defs>
+          <linearGradient id="violetArea" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#756bd7" stop-opacity=".26"/>
+            <stop offset="1" stop-color="#756bd7" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <polyline class="chart-area" points="0,${height} ${line("matches")} ${width},${height}" />
+        <polyline class="chart-line violet" points="${line("matches")}" />
+        <polyline class="chart-line cyan" points="${line("connections")}" />
+      </svg>
+      <div class="chart-labels">${points
+        .filter((_, index) => index % 2 === 0 || index === points.length - 1)
+        .map((item) => `<span>${escapeHtml(item.label)}</span>`)
+        .join("")}</div>
+    </div>`;
+}
+
+function distributionBars(items, percentKey, suffix) {
+  const maximum = Math.max(1, ...items.map((item) => item.value));
+  return `<div class="distribution-list">${items
+    .map((item) => {
+      const percent = item[percentKey] ?? Math.round((item.value / maximum) * 100);
+      return `
+        <div class="distribution-row">
+          <div><span>${escapeHtml(item.label)}</span><strong>${item.value} · ${percent}${suffix}</strong></div>
+          <div class="distribution-track"><i style="width:${Math.max(3, Math.min(100, percent))}%"></i></div>
+        </div>`;
+    })
+    .join("")}</div>`;
 }
 
 function renderTable(view, records) {
