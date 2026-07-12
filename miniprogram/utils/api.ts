@@ -122,6 +122,7 @@ function friendlyError(message?: string): string {
     'conversation not found': '该会话不存在或已失效',
     'partner not found': '该合作伙伴已下架',
     'plan not found': '该推广方案已下架',
+    'agent message is too long': '消息过长，请精简后重试',
   }
   return messages[message] || message
 }

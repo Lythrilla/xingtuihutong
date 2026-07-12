@@ -55,11 +55,16 @@ interface ArtifactData {
     score: number
   }>
   saved?: boolean
+  created?: boolean
   status?: string
+  conversationId?: string
+  partnerName?: string
+  actionId?: string
+  planId?: string
 }
 
 interface Artifact {
-  kind: 'metrics' | 'funnel' | 'partners' | 'plans' | 'action'
+  kind: 'metrics' | 'funnel' | 'partners' | 'plans' | 'action' | 'error'
   title: string
   summary: string
   data: ArtifactData | FunnelItem[]
@@ -68,6 +73,8 @@ interface Artifact {
 interface ViewArtifact extends Artifact {
   funnel: FunnelItem[]
   payload: ArtifactData
+  actionLabel: string
+  actionNavigable: boolean
 }
 
 interface BootstrapResponse {
@@ -134,8 +141,7 @@ Component({
     },
     useSuggestion(event: WechatMiniprogram.TouchEvent) {
       const value = event.currentTarget.dataset.value as string
-      this.setData({ input: value })
-      void this.send()
+      this.setData({ input: value }, () => void this.send())
     },
     async send() {
       const message = this.data.input.trim()
@@ -194,16 +200,46 @@ Component({
     openMessages() {
       wx.redirectTo({ url: '/pages/messages/messages' })
     },
+    openAction(event: WechatMiniprogram.TouchEvent) {
+      const conversationId = event.currentTarget.dataset.conversationId as string
+      const partnerName = event.currentTarget.dataset.partnerName as string
+      if (conversationId) {
+        wx.navigateTo({
+          url: `/pages/conversation/conversation?id=${encodeURIComponent(conversationId)}&name=${encodeURIComponent(partnerName || '合作会话')}`,
+        })
+        return
+      }
+      this.openMessages()
+    },
   },
 })
 
 function toViewArtifact(artifact: Artifact): ViewArtifact {
+  const maximum = Array.isArray(artifact.data)
+    ? Math.max(1, ...artifact.data.map((item) => item.value))
+    : 1
   const funnel = Array.isArray(artifact.data)
-    ? artifact.data.map((item, index) => ({ ...item, width: item.value > 0 ? 30 + index * 18 : 4 }))
+    ? artifact.data.map((item) => ({
+        ...item,
+        width: item.value > 0 ? Math.max(4, Math.round((item.value / maximum) * 100)) : 4,
+      }))
     : []
+  const payload = Array.isArray(artifact.data) ? {} : artifact.data
+  const actionNavigable = Boolean(payload.conversationId || payload.actionId)
+  const actionLabel = payload.conversationId
+    ? '前往合作会话'
+    : payload.actionId
+      ? '查看跟进通知'
+      : payload.saved
+        ? payload.created === false
+          ? '方案已在收藏中'
+          : '方案已加入收藏'
+        : '操作已完成'
   return {
     ...artifact,
     funnel,
-    payload: Array.isArray(artifact.data) ? {} : artifact.data,
+    payload,
+    actionLabel,
+    actionNavigable,
   }
 }

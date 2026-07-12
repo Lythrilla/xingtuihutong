@@ -1,13 +1,16 @@
 /* === 平台通知 === */
 .notice-list {
-  padding: 8rpx 28rpx;
+  padding: 0;
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
 }
 
 .notice {
   display: flex;
   align-items: flex-start;
   gap: 20rpx;
-  padding: 28rpx 0;
+  padding: 24rpx 0;
 }
 
 .notice + .notice {
@@ -15,20 +18,20 @@
 }
 
 .notice-icon {
-  width: 72rpx;
-  height: 72rpx;
+  width: 64rpx;
+  height: 64rpx;
   flex: none;
   display: flex;
   align-items: center;
   justify-content: center;
   color: rgba(95, 101, 180, 1);
   background: rgba(237, 239, 253, 1);
-  border-radius: 24rpx;
+  border-radius: 20rpx;
 }
 
 .notice-icon .ui-icon {
-  width: 36rpx;
-  height: 36rpx;
+  width: 32rpx;
+  height: 32rpx;
 }
 
 .notice-main {
@@ -87,20 +90,23 @@
 .notice-desc {
   margin-top: 10rpx;
   color: rgba(118, 121, 143, 1);
-  font-size: 26rpx;
+  font-size: 24rpx;
   line-height: 1.5;
 }
 
 /* === 合作会话 === */
 .chat-list {
-  padding: 8rpx 28rpx;
+  padding: 0;
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
 }
 
 .chat {
   display: flex;
   align-items: center;
   gap: 20rpx;
-  padding: 28rpx 0;
+  padding: 24rpx 0;
 }
 
 .chat + .chat {
@@ -108,17 +114,17 @@
 }
 
 .chat-avatar {
-  width: 88rpx;
-  height: 88rpx;
+  width: 76rpx;
+  height: 76rpx;
   flex: none;
   display: flex;
   align-items: center;
   justify-content: center;
   color: rgba(95, 101, 180, 1);
-  font-size: 32rpx;
+  font-size: 28rpx;
   font-weight: 700;
   background: rgba(237, 239, 253, 1);
-  border-radius: 26rpx;
+  border-radius: 22rpx;
 }
 
 .chat-main {
@@ -156,7 +162,7 @@
   min-width: 0;
   overflow: hidden;
   color: rgba(118, 121, 143, 1);
-  font-size: 26rpx;
+  font-size: 24rpx;
   text-overflow: ellipsis;
   white-space: nowrap;
 }

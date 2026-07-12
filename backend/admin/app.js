@@ -308,7 +308,7 @@ function renderAnalytics(data) {
           escapeHtml(run.userName),
           escapeHtml(run.title),
           `<strong>${run.toolCalls}</strong> calls`,
-          badge(run.status === "active" ? "运行中" : run.status, run.status === "active"),
+          badge(run.status === "active" ? "可继续" : run.status, run.status === "active"),
           formatDate(run.updatedAt),
         ]),
         "暂无 Agent 运行记录",

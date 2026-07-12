@@ -31,7 +31,7 @@
     </view>
 
     <view class="discovery-line">
-      <view>
+      <view class="discovery-copy">
         <view class="discovery-title">为你发现 {{visibleEntries.length}} 位合作伙伴</view>
         <view class="discovery-desc">AI 已按能力、预算与交付表现综合排序</view>
       </view>
@@ -49,7 +49,7 @@
     </view>
 
     <view class="entry-list" wx:if="{{!listLoading && visibleEntries.length}}">
-      <view class="entry" wx:for="{{visibleEntries}}" wx:key="id">
+      <view class="entry {{focusedPartnerId === item.id ? 'focused' : ''}}" wx:for="{{visibleEntries}}" wx:key="id">
         <view class="entry-head">
           <view class="avatar {{item.avatarClass}}">{{item.avatar}}</view>
           <view class="entry-identity">
@@ -66,7 +66,7 @@
             data-id="{{item.id}}"
             catchtap="toggleFavorite"
             aria-label="{{item.favorite ? '取消收藏' : '收藏'}}"
-          >{{item.favorite ? '♥' : '♡'}}</button>
+          ><view class="favorite-heart"></view></button>
         </view>
         <view class="entry-service">{{item.partnerType === 'provider' ? '专业服务' : '合作需求'}} · {{item.description}}</view>
         <view class="tag-row">

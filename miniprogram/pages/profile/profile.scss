@@ -1,21 +1,21 @@
 .profile-hero {
   position: relative;
   overflow: hidden;
-  margin: 30rpx -48rpx 0;
-  padding: 46rpx 48rpx 38rpx;
+  margin: 24rpx -40rpx 0;
+  padding: 36rpx 40rpx 30rpx;
   color: rgba(52, 59, 86, 1);
   background:
     radial-gradient(circle at 82% 10%, rgba(176, 125, 252, 0.44), transparent 38%),
     linear-gradient(135deg, rgba(169, 180, 252, 0.8), rgba(228, 232, 255, 0.76));
-  border-radius: 0 0 64rpx 64rpx;
+  border-radius: 0 0 44rpx 44rpx;
 }
 
 .profile-hero::after {
   position: absolute;
   right: -80rpx;
   bottom: -180rpx;
-  width: 420rpx;
-  height: 420rpx;
+  width: 340rpx;
+  height: 340rpx;
   content: "";
   border: 1rpx solid rgba(255, 255, 255, 0.32);
   border-radius: 50%;
@@ -53,15 +53,15 @@
 }
 
 .profile-avatar {
-  width: 112rpx;
-  height: 112rpx;
+  width: 96rpx;
+  height: 96rpx;
   flex: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: 24rpx;
+  margin-right: 20rpx;
   color: rgba(95, 101, 180, 1);
-  font-size: 40rpx;
+  font-size: 36rpx;
   font-weight: 700;
   background: rgba(255, 255, 255, 0.92);
   border: 4rpx solid rgba(255, 255, 255, 0.72);
@@ -77,7 +77,7 @@
 .profile-name {
   overflow: hidden;
   color: rgba(52, 59, 86, 1);
-  font-size: 36rpx;
+  font-size: 32rpx;
   font-weight: 700;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -127,9 +127,9 @@
 .profile-desc {
   position: relative;
   z-index: 2;
-  margin-top: 24rpx;
+  margin-top: 18rpx;
   color: rgba(52, 59, 86, 0.78);
-  font-size: 26rpx;
+  font-size: 24rpx;
   line-height: 1.55;
 }
 
@@ -137,8 +137,8 @@
   position: relative;
   z-index: 2;
   display: flex;
-  margin-top: 28rpx;
-  padding-top: 24rpx;
+  margin-top: 22rpx;
+  padding-top: 18rpx;
   border-top: 1rpx solid rgba(255, 255, 255, 0.48);
 }
 
@@ -149,21 +149,21 @@
 }
 
 .profile-stat text {
-  font-size: 36rpx;
+  font-size: 32rpx;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
 
 .profile-stat view {
-  margin-top: 8rpx;
+  margin-top: 5rpx;
   color: rgba(52, 59, 86, 0.6);
-  font-size: 24rpx;
+  font-size: 22rpx;
 }
 
 .workspace {
   display: flex;
   justify-content: space-between;
-  margin-top: 38rpx;
+  margin-top: 30rpx;
   padding: 0 4rpx;
 }
 
@@ -178,21 +178,20 @@
 
 .workspace-icon {
   position: relative;
-  width: 78rpx;
-  height: 78rpx;
+  width: 68rpx;
+  height: 68rpx;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 14rpx;
   color: rgba(95, 101, 180, 1);
   background: linear-gradient(145deg, rgba(255, 255, 255, 0.88), rgba(224, 228, 253, 0.7));
-  border-radius: 26rpx;
-  box-shadow: 0 10rpx 24rpx rgba(95, 101, 180, 0.12);
+  border-radius: 22rpx;
 }
 
 .workspace-icon .ui-icon {
-  width: 38rpx;
-  height: 38rpx;
+  width: 34rpx;
+  height: 34rpx;
 }
 
 .workspace-spark {
@@ -222,20 +221,20 @@
 }
 
 .cert-icon {
-  width: 72rpx;
-  height: 72rpx;
+  width: 64rpx;
+  height: 64rpx;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 14rpx;
   color: rgba(95, 101, 180, 1);
   background: rgba(255, 255, 255, 0.55);
-  border-radius: 24rpx;
+  border-radius: 20rpx;
 }
 
 .cert-icon .ui-icon {
-  width: 36rpx;
-  height: 36rpx;
+  width: 32rpx;
+  height: 32rpx;
 }
 
 .cert-title {
@@ -274,7 +273,7 @@
 
 .case-scroll {
   white-space: nowrap;
-  margin-right: -48rpx;
+  margin-right: -40rpx;
 }
 
 .cases {
@@ -284,8 +283,8 @@
 
 .case-card {
   position: relative;
-  width: 280rpx;
-  height: 200rpx;
+  width: 250rpx;
+  height: 176rpx;
   display: inline-flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -293,8 +292,7 @@
   padding: 24rpx;
   color: rgba(52, 59, 86, 1);
   background: linear-gradient(135deg, rgba(137, 154, 248, 0.7), rgba(225, 230, 249, 1));
-  border-radius: 30rpx;
-  box-shadow: 0 12rpx 28rpx rgba(95, 101, 180, 0.12);
+  border-radius: 24rpx;
 }
 
 .case-card::after {

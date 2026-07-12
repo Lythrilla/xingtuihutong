@@ -55,26 +55,26 @@ button[disabled] {
 /* === 通用页面外壳 === */
 .page-shell {
   min-height: 100vh;
-  padding: 0 48rpx calc(144rpx + env(safe-area-inset-bottom));
+  padding: 0 40rpx calc(136rpx + env(safe-area-inset-bottom));
   background: rgba(237, 239, 253, 1);
 }
 
 /* === 通用区块（对齐首页 .section-head 参数） === */
 .section {
-  margin-top: 48rpx;
+  margin-top: 40rpx;
 }
 
 .section-head {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  margin-top: 48rpx;
-  margin-bottom: 40rpx;
+  margin-top: 40rpx;
+  margin-bottom: 26rpx;
 }
 
 .section-title {
   color: rgba(52, 59, 86, 1);
-  font-size: 36rpx;
+  font-size: 32rpx;
   font-weight: 600;
   line-height: 1;
   letter-spacing: 0.5rpx;
@@ -89,7 +89,7 @@ button[disabled] {
 /* === 卡片（对齐首页 .ai-card 圆角） === */
 .card {
   background: rgba(255, 255, 255, 1);
-  border-radius: 48rpx;
+  border-radius: 32rpx;
   box-shadow:
     0 2rpx 6rpx rgba(46, 49, 62, 0.04),
     0 12rpx 28rpx rgba(95, 101, 180, 0.06);

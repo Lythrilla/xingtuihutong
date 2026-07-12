@@ -149,19 +149,19 @@ async fn user_overview(
         .fetch_one(&state.pool)
         .await?;
     let score = (55 + matches * 6 + connections * 8 + saved * 3).clamp(55, 98);
-    let opportunity = if connections == 0 {
-        Opportunity {
-            score,
-            title: "优先建立首个合作会话".into(),
-            description: "高匹配伙伴已经就绪，主动沟通能显著提升方案落地率。".into(),
-            action: "去找合作".into(),
-        }
-    } else if matches == 0 {
+    let opportunity = if matches == 0 {
         Opportunity {
             score,
             title: "生成第一份 AI 推广阵容".into(),
             description: "补充目标和预算后，Agent 可自动查询并组合推广资源。".into(),
             action: "开始 AI 匹配".into(),
+        }
+    } else if connections == 0 {
+        Opportunity {
+            score,
+            title: "优先建立首个合作会话".into(),
+            description: "高匹配伙伴已经就绪，主动沟通能显著提升方案落地率。".into(),
+            action: "去找合作".into(),
         }
     } else {
         Opportunity {
@@ -195,7 +195,7 @@ async fn user_overview(
         ],
         trend,
         funnel: vec![
-            funnel("发现伙伴", discovered, discovered),
+            funnel("可用伙伴池", discovered, discovered),
             funnel("发起匹配", matches, discovered),
             funnel("建立沟通", connections, matches),
             funnel("完成结算", completed, connections),
@@ -220,7 +220,7 @@ fn funnel(label: &str, value: i64, previous: i64) -> FunnelStage {
         label: label.into(),
         value,
         conversion: if previous > 0 {
-            ((value as f64 / previous as f64) * 100.0).round() as i64
+            (((value as f64 / previous as f64) * 100.0).round() as i64).clamp(0, 100)
         } else {
             0
         },
@@ -244,9 +244,15 @@ async fn user_trend(state: &AppState, user_id: &str) -> AppResult<Vec<UserTrendP
     .fetch_all(&state.pool)
     .await?;
     let connection_rows = sqlx::query(
-        "SELECT date(updated_at) AS day, COUNT(*) AS total
-         FROM conversations WHERE user_id = ? AND updated_at >= datetime('now', '-6 days')
-         GROUP BY date(updated_at)",
+        "SELECT date(first_seen) AS day, COUNT(*) AS total FROM (
+           SELECT c.id, COALESCE(MIN(m.created_at), c.updated_at) AS first_seen
+           FROM conversations c
+           LEFT JOIN conversation_messages m ON m.conversation_id = c.id
+           WHERE c.user_id = ?
+           GROUP BY c.id
+         )
+         WHERE first_seen >= datetime('now', '-6 days')
+         GROUP BY date(first_seen)",
     )
     .bind(user_id)
     .fetch_all(&state.pool)
@@ -332,9 +338,20 @@ async fn admin_overview(
     )
     .fetch_one(&state.pool)
     .await?;
-    let completed = count(
+    let engaged_users: i64 = sqlx::query_scalar(
+        "SELECT COUNT(DISTINCT user_id) FROM (
+           SELECT user_id FROM match_requests
+           UNION ALL
+           SELECT user_id FROM conversations
+         )",
+    )
+    .fetch_one(&state.pool)
+    .await?;
+    let connected_users =
+        count(&state, "SELECT COUNT(DISTINCT user_id) FROM conversations").await?;
+    let settled_users = count(
         &state,
-        "SELECT COUNT(*) FROM settlements WHERE status = 'completed'",
+        "SELECT COUNT(DISTINCT user_id) FROM settlements WHERE status = 'completed'",
     )
     .await?;
     let trend = admin_trend(&state).await?;
@@ -382,9 +399,9 @@ async fn admin_overview(
         trend,
         funnel: vec![
             funnel("注册用户", users, users),
-            funnel("发起匹配", matches, users),
-            funnel("建立会话", connections, matches),
-            funnel("完成结算", completed, connections),
+            funnel("产生业务行为", engaged_users, users),
+            funnel("建立会话", connected_users, engaged_users),
+            funnel("完成结算", settled_users, connected_users),
         ],
         partner_mix: distribution(
             partner_rows
@@ -433,8 +450,14 @@ async fn admin_trend(state: &AppState) -> AppResult<Vec<AdminTrendPoint>> {
     .await?;
     let connections = grouped_counts(
         state,
-        "SELECT date(updated_at) AS day, COUNT(*) AS total FROM conversations
-         WHERE updated_at >= datetime('now', '-13 days') GROUP BY date(updated_at)",
+        "SELECT date(first_seen) AS day, COUNT(*) AS total FROM (
+           SELECT c.id, COALESCE(MIN(m.created_at), c.updated_at) AS first_seen
+           FROM conversations c
+           LEFT JOIN conversation_messages m ON m.conversation_id = c.id
+           GROUP BY c.id
+         )
+         WHERE first_seen >= datetime('now', '-13 days')
+         GROUP BY date(first_seen)",
     )
     .await?;
     let revenue_rows = sqlx::query(
@@ -528,4 +551,15 @@ fn tool_label(key: &str) -> &str {
 
 fn format_money(cents: i64) -> String {
     format!("¥{:.2}", cents as f64 / 100.0)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::funnel;
+
+    #[test]
+    fn funnel_conversion_stays_in_percentage_range() {
+        assert_eq!(funnel("建立沟通", 8, 4).conversion, 100);
+        assert_eq!(funnel("建立沟通", 0, 0).conversion, 0);
+    }
 }

@@ -50,7 +50,7 @@
 
     <view class="data-section">
       <view class="data-head">
-        <view><text>CONVERSION</text><label>合作转化漏斗</label></view>
+        <view><text>CONVERSION</text><label>合作进度漏斗</label></view>
         <view class="data-hint">实时业务数据</view>
       </view>
       <view class="funnel">

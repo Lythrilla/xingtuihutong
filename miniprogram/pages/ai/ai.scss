@@ -1,20 +1,20 @@
 .agent-page {
-  padding-bottom: calc(300rpx + env(safe-area-inset-bottom));
+  padding-bottom: calc(276rpx + env(safe-area-inset-bottom));
 }
 
 .agent-hero {
   position: relative;
   overflow: hidden;
-  min-height: 360rpx;
-  margin: 28rpx -20rpx 0;
-  padding: 40rpx;
+  min-height: 292rpx;
+  margin: 22rpx 0 0;
+  padding: 32rpx;
   color: #fff;
   background:
     radial-gradient(circle at 76% 24%, rgba(185, 119, 255, 0.7), transparent 30%),
     radial-gradient(circle at 16% 100%, rgba(89, 215, 255, 0.25), transparent 36%),
     linear-gradient(145deg, #2d3053, #52499f 58%, #695bbe);
-  border-radius: 52rpx;
-  box-shadow: 0 28rpx 70rpx rgba(72, 66, 151, 0.28);
+  border-radius: 36rpx;
+  box-shadow: 0 18rpx 44rpx rgba(72, 66, 151, 0.22);
 }
 
 .hero-grid {
@@ -31,10 +31,10 @@
 
 .agent-orb-wrap {
   position: absolute;
-  top: 42rpx;
-  right: 34rpx;
-  width: 210rpx;
-  height: 210rpx;
+  top: 36rpx;
+  right: 28rpx;
+  width: 156rpx;
+  height: 156rpx;
 }
 
 .agent-orb-halo {
@@ -86,15 +86,19 @@
 }
 
 .agent-title {
-  margin-top: 24rpx;
-  font-size: 40rpx;
+  margin-top: 18rpx;
+  font-size: 32rpx;
   font-weight: 700;
   line-height: 1.34;
   letter-spacing: 1rpx;
 }
 
+.agent-title text {
+  display: block;
+}
+
 .agent-engine {
-  margin-top: 14rpx;
+  margin-top: 10rpx;
   color: rgba(224, 228, 255, 0.7);
   font-size: 21rpx;
 }
@@ -102,7 +106,7 @@
 .hero-actions {
   display: flex;
   gap: 14rpx;
-  margin-top: 38rpx;
+  margin-top: 28rpx;
 }
 
 .hero-actions button {
@@ -133,7 +137,7 @@
 }
 
 .tool-row {
-  min-height: 112rpx;
+  min-height: 96rpx;
   display: flex;
   align-items: center;
   gap: 20rpx;
@@ -191,7 +195,7 @@
   display: flex;
   align-items: flex-start;
   gap: 18rpx;
-  margin-bottom: 28rpx;
+  margin-bottom: 22rpx;
 }
 
 .message.user {
@@ -233,10 +237,10 @@
 }
 
 .message-content {
-  padding: 22rpx 24rpx;
+  padding: 18rpx 22rpx;
   color: #343b56;
   font-size: 26rpx;
-  line-height: 1.65;
+  line-height: 1.55;
   background: rgba(255, 255, 255, 0.66);
   border: 1rpx solid rgba(255, 255, 255, 0.84);
   border-radius: 8rpx 28rpx 28rpx;
@@ -360,6 +364,11 @@
   box-shadow: 0 0 0 3rpx rgba(103, 224, 189, 0.3);
 }
 
+.trace-item.failed .trace-dot {
+  background: #ef8f9d;
+  box-shadow: 0 0 0 3rpx rgba(239, 143, 157, 0.28);
+}
+
 .trace-line {
   width: 1rpx;
   flex: 1;
@@ -393,9 +402,13 @@
   font-size: 17rpx;
 }
 
+.trace-item.failed .trace-meta {
+  color: #ef9ba8;
+}
+
 .artifact {
-  margin-bottom: 28rpx;
-  padding: 28rpx 0;
+  margin-bottom: 22rpx;
+  padding: 22rpx 0;
   border-top: 1rpx solid rgba(95, 101, 180, 0.12);
   border-bottom: 1rpx solid rgba(95, 101, 180, 0.12);
 }
@@ -409,7 +422,7 @@
 
 .artifact-title {
   margin-top: 8rpx;
-  font-size: 31rpx;
+  font-size: 28rpx;
   font-weight: 700;
 }
 
@@ -554,15 +567,15 @@
 
 .plan-item {
   position: relative;
-  width: 270rpx;
-  min-height: 210rpx;
+  width: 244rpx;
+  min-height: 184rpx;
   flex: none;
   padding: 24rpx;
   background:
     radial-gradient(circle at 100% 0, rgba(175, 126, 246, 0.24), transparent 40%),
     rgba(255, 255, 255, 0.7);
   border: 1rpx solid rgba(255, 255, 255, 0.94);
-  border-radius: 28rpx;
+  border-radius: 22rpx;
 }
 
 .plan-score {
@@ -604,6 +617,25 @@
   border-radius: 34rpx;
 }
 
+.action-result.static {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  background: linear-gradient(135deg, #5d70b9, #8b6bc8);
+}
+
+.error-result {
+  margin-top: 22rpx;
+  padding: 22rpx 24rpx;
+  color: #8a5360;
+  font-size: 22rpx;
+  line-height: 1.55;
+  background: rgba(255, 224, 231, 0.72);
+  border-left: 4rpx solid rgba(204, 95, 124, 0.72);
+  border-radius: 8rpx 22rpx 22rpx 8rpx;
+}
+
 .suggestions {
   padding: 10rpx 0 20rpx 72rpx;
 }
@@ -639,14 +671,14 @@
 .agent-composer {
   position: fixed;
   z-index: 40;
-  right: 32rpx;
-  bottom: calc(122rpx + env(safe-area-inset-bottom));
-  left: 32rpx;
-  min-height: 92rpx;
+  right: 40rpx;
+  bottom: calc(112rpx + env(safe-area-inset-bottom));
+  left: 40rpx;
+  min-height: 84rpx;
   display: flex;
   align-items: center;
   gap: 16rpx;
-  padding: 12rpx 14rpx 12rpx 28rpx;
+  padding: 9rpx 11rpx 9rpx 24rpx;
   background: rgba(250, 250, 255, 0.88);
   border: 1rpx solid rgba(255, 255, 255, 0.94);
   border-radius: 50rpx;
@@ -656,15 +688,15 @@
 
 .agent-composer input {
   min-width: 0;
-  height: 68rpx;
+  height: 62rpx;
   flex: 1;
   color: #343b56;
   font-size: 25rpx;
 }
 
 .agent-composer button {
-  width: 66rpx;
-  height: 66rpx;
+  width: 62rpx;
+  height: 62rpx;
   color: #fff;
   font-size: 34rpx;
   font-weight: 600;
