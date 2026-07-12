@@ -35,8 +35,8 @@ Component({
       }
       this.enterApp()
     },
-    toggleAgree() {
-      this.setData({ agreed: !this.data.agreed })
+    toggleAgree(event: WechatMiniprogram.CheckboxGroupChange) {
+      this.setData({ agreed: event.detail.value.includes('agreed') })
     },
     async enterApp() {
       if (this.data.entering) return
