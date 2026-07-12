@@ -17,9 +17,7 @@
         <view class="role-name">我是服务方</view>
         <view class="role-desc">我提供音乐推广、宣发等专业服务</view>
       </view>
-      <view class="role-symbol provider-symbol">
-        <view class="ui-icon icon-briefcase"></view>
-      </view>
+      <image class="role-icon" src="/assets/images/role-service.png" mode="aspectFit"></image>
     </view>
 
     <view class="role-card client {{selectedRole === 'client' ? 'selected' : ''}}" data-role="client" bindtap="chooseRole" hover-class="pressable">
@@ -27,17 +25,18 @@
         <view class="role-name">我是创作者</view>
         <view class="role-desc">我希望宣传我的作品，寻求音乐推广</view>
       </view>
-      <view class="role-symbol client-symbol">
-        <view class="ui-icon icon-audio"></view>
-      </view>
+      <image class="role-icon" src="/assets/images/role-client.png" mode="aspectFit"></image>
     </view>
 
-    <view class="agreement" bindtap="toggleAgree">
-      <view class="agree-box {{agreed ? 'on' : ''}}">
-        <view class="agree-tick" wx:if="{{agreed}}"></view>
-      </view>
-      <view class="agree-text">已阅读并同意 <text class="link">《用户协议》</text>与<text class="link">《隐私政策》</text></view>
-    </view>
+    <checkbox-group class="agreement" bindchange="toggleAgree">
+      <label class="agreement-label">
+        <checkbox class="agree-native" value="agreed" checked="{{agreed}}"></checkbox>
+        <view class="agree-box {{agreed ? 'on' : ''}}">
+          <view class="agree-tick" wx:if="{{agreed}}"></view>
+        </view>
+        <view class="agree-text">已阅读并同意 <text class="link">《用户协议》</text>与<text class="link">《隐私政策》</text></view>
+      </label>
+    </checkbox-group>
   </view>
 
   <view wx:if="{{entering}}" class="entering-overlay">
