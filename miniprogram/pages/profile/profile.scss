@@ -1,24 +1,48 @@
-/* === 主页卡片（与首页 AI 卡片同款渐变） === */
-.profile-card {
+.profile-hero {
   position: relative;
   overflow: hidden;
-  margin-top: 24rpx;
-  padding: 36rpx 32rpx;
+  margin: 30rpx -48rpx 0;
+  padding: 46rpx 48rpx 38rpx;
   color: rgba(52, 59, 86, 1);
-  background: linear-gradient(rgba(137, 154, 248, 1), rgba(225, 230, 249, 1));
-  border-radius: 48rpx;
-  box-shadow: 0 12rpx 30rpx rgba(95, 101, 180, 0.18);
+  background:
+    radial-gradient(circle at 82% 10%, rgba(176, 125, 252, 0.44), transparent 38%),
+    linear-gradient(135deg, rgba(169, 180, 252, 0.8), rgba(228, 232, 255, 0.76));
+  border-radius: 0 0 64rpx 64rpx;
 }
 
-.profile-card::after {
+.profile-hero::after {
   position: absolute;
-  right: -50rpx;
-  bottom: -90rpx;
-  width: 260rpx;
-  height: 260rpx;
+  right: -80rpx;
+  bottom: -180rpx;
+  width: 420rpx;
+  height: 420rpx;
   content: "";
   border: 1rpx solid rgba(255, 255, 255, 0.32);
   border-radius: 50%;
+}
+
+.profile-aura {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(8rpx);
+  animation: profile-float 5s ease-in-out infinite;
+}
+
+.aura-one {
+  top: -80rpx;
+  right: 80rpx;
+  width: 220rpx;
+  height: 220rpx;
+  background: rgba(119, 133, 241, 0.18);
+}
+
+.aura-two {
+  right: -30rpx;
+  bottom: 20rpx;
+  width: 160rpx;
+  height: 160rpx;
+  background: rgba(196, 126, 249, 0.16);
+  animation-delay: -2s;
 }
 
 .profile-head {
@@ -29,8 +53,8 @@
 }
 
 .profile-avatar {
-  width: 104rpx;
-  height: 104rpx;
+  width: 112rpx;
+  height: 112rpx;
   flex: none;
   display: flex;
   align-items: center;
@@ -40,7 +64,8 @@
   font-size: 40rpx;
   font-weight: 700;
   background: rgba(255, 255, 255, 0.92);
-  border-radius: 32rpx;
+  border: 4rpx solid rgba(255, 255, 255, 0.72);
+  border-radius: 50%;
   box-shadow: 0 6rpx 16rpx rgba(95, 101, 180, 0.18);
 }
 
@@ -81,11 +106,11 @@
 }
 
 .edit-button {
-  min-width: 96rpx;
+  min-width: 122rpx;
   height: 56rpx;
   display: flex;
   align-items: center;
-  padding: 0 24rpx;
+  padding: 0 22rpx;
   color: rgba(52, 59, 86, 1);
   font-size: 24rpx;
   font-weight: 600;
@@ -114,7 +139,7 @@
   display: flex;
   margin-top: 28rpx;
   padding-top: 24rpx;
-  border-top: 1rpx solid rgba(95, 101, 180, 0.18);
+  border-top: 1rpx solid rgba(255, 255, 255, 0.48);
 }
 
 .profile-stat {
@@ -135,10 +160,56 @@
   font-size: 24rpx;
 }
 
-/* === 资质认证 === */
+.workspace {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 38rpx;
+  padding: 0 4rpx;
+}
+
+.workspace-item {
+  width: 25%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: rgba(52, 59, 86, 1);
+  font-size: 23rpx;
+}
+
+.workspace-icon {
+  position: relative;
+  width: 78rpx;
+  height: 78rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14rpx;
+  color: rgba(95, 101, 180, 1);
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.88), rgba(224, 228, 253, 0.7));
+  border-radius: 26rpx;
+  box-shadow: 0 10rpx 24rpx rgba(95, 101, 180, 0.12);
+}
+
+.workspace-icon .ui-icon {
+  width: 38rpx;
+  height: 38rpx;
+}
+
+.workspace-spark {
+  position: absolute;
+  top: 8rpx;
+  right: 8rpx;
+  width: 12rpx;
+  height: 12rpx;
+  background: rgba(177, 113, 248, 1);
+  border: 3rpx solid rgba(255, 255, 255, 1);
+  border-radius: 50%;
+}
+
 .certs {
   display: flex;
-  padding: 36rpx 20rpx;
+  padding: 8rpx 0 28rpx;
+  border-bottom: 1rpx solid rgba(95, 101, 180, 0.1);
 }
 
 .cert {
@@ -158,7 +229,7 @@
   justify-content: center;
   margin-bottom: 14rpx;
   color: rgba(95, 101, 180, 1);
-  background: rgba(237, 239, 253, 1);
+  background: rgba(255, 255, 255, 0.55);
   border-radius: 24rpx;
 }
 
@@ -180,25 +251,30 @@
   font-weight: 500;
 }
 
-/* === 能力标签 === */
-.skill-card {
+.skill-line {
   display: flex;
   flex-wrap: wrap;
   gap: 14rpx;
-  padding: 28rpx 24rpx;
+  padding-top: 26rpx;
 }
 
-.skill-card text {
+.skill-line text {
   padding: 10rpx 20rpx;
   color: rgba(95, 101, 180, 1);
   font-size: 24rpx;
-  background: rgba(237, 239, 253, 1);
+  background: rgba(255, 255, 255, 0.52);
   border-radius: 24rpx;
 }
 
-/* === 精选案例 === */
+.skill-empty {
+  padding-top: 24rpx;
+  color: rgba(95, 101, 180, 1);
+  font-size: 24rpx;
+}
+
 .case-scroll {
   white-space: nowrap;
+  margin-right: -48rpx;
 }
 
 .cases {
@@ -217,8 +293,8 @@
   padding: 24rpx;
   color: rgba(52, 59, 86, 1);
   background: linear-gradient(135deg, rgba(137, 154, 248, 0.7), rgba(225, 230, 249, 1));
-  border-radius: 32rpx;
-  box-shadow: 0 6rpx 18rpx rgba(95, 101, 180, 0.14);
+  border-radius: 30rpx;
+  box-shadow: 0 12rpx 28rpx rgba(95, 101, 180, 0.12);
 }
 
 .case-card::after {
@@ -257,12 +333,12 @@
   font-size: 22rpx;
 }
 
-/* === 结算信息 === */
 .wallet {
   display: flex;
   align-items: center;
   gap: 20rpx;
-  padding: 30rpx 28rpx;
+  padding: 4rpx 0 30rpx;
+  border-bottom: 1rpx solid rgba(95, 101, 180, 0.1);
 }
 
 .wallet-icon {
@@ -273,7 +349,7 @@
   align-items: center;
   justify-content: center;
   color: rgba(95, 101, 180, 1);
-  background: rgba(237, 239, 253, 1);
+  background: rgba(255, 255, 255, 0.56);
   border-radius: 24rpx;
 }
 
@@ -314,22 +390,68 @@
   box-shadow: 0 4rpx 12rpx rgba(46, 49, 62, 0.18);
 }
 
-/* === 角色切换（次按钮） === */
-.role-switch {
-  width: 100%;
-  height: 88rpx;
-  margin: 36rpx 0 0;
-  color: rgba(95, 101, 180, 1);
-  font-size: 28rpx;
-  font-weight: 600;
-  line-height: 88rpx;
-  background: rgba(255, 255, 255, 1);
-  border-radius: 48rpx;
-  box-shadow: 0 4rpx 12rpx rgba(95, 101, 180, 0.1);
+.service-list {
+  margin-top: 4rpx;
 }
 
-.role-switch::after {
-  border: 0;
+.service-row {
+  min-height: 112rpx;
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  border-bottom: 1rpx solid rgba(95, 101, 180, 0.1);
+}
+
+.service-icon {
+  width: 62rpx;
+  height: 62rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(95, 101, 180, 1);
+  background: rgba(255, 255, 255, 0.48);
+  border-radius: 20rpx;
+}
+
+.service-icon .ui-icon {
+  width: 30rpx;
+  height: 30rpx;
+}
+
+.service-copy {
+  min-width: 0;
+  flex: 1;
+  color: rgba(52, 59, 86, 1);
+  font-size: 27rpx;
+  font-weight: 550;
+}
+
+.service-copy text {
+  display: block;
+  margin-top: 5rpx;
+  color: rgba(118, 121, 143, 1);
+  font-size: 21rpx;
+  font-weight: 400;
+}
+
+.service-value {
+  color: rgba(118, 121, 143, 1);
+  font-size: 23rpx;
+}
+
+.service-arrow {
+  color: rgba(118, 121, 143, 0.7);
+  font-size: 38rpx;
+}
+
+@keyframes profile-float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(0.92);
+  }
+  50% {
+    transform: translate3d(-20rpx, 18rpx, 0) scale(1.08);
+  }
 }
 
 /* === 底部抽屉 === */

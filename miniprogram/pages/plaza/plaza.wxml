@@ -1,14 +1,28 @@
 <view class="page-shell">
-  <page-header title="合作广场" subtitle="发现值得合作的服务方与版权伙伴"></page-header>
+  <page-header title="合作广场" subtitle="让每一次连接，都更接近理想合作"></page-header>
 
   <data-state loading="{{loading}}" error="{{error}}" bind:action="retry"></data-state>
 
   <block wx:if="{{!loading && !error}}">
+    <view class="plaza-tabs">
+      <block wx:for="{{types}}" wx:key="key">
+        <view
+          wx:if="{{item.key !== 'latest'}}"
+          class="plaza-tab {{activeType === item.key || (activeType === 'latest' && previousType === item.key) ? 'active' : ''}}"
+          data-key="{{item.key}}"
+          bindtap="changeType"
+        >
+          <text>{{item.key === 'all' ? '广场' : item.key === 'provider' ? '找服务' : '找需求'}}</text>
+          <view class="tab-line"></view>
+        </view>
+      </block>
+    </view>
+
     <view class="search">
       <view class="ui-icon icon-search search-icon"></view>
       <input
         value="{{query}}"
-        placeholder="搜索名称、身份或能力标签"
+        placeholder="搜索服务、技能或合作需求"
         placeholder-class="placeholder"
         confirm-type="search"
         bindinput="updateSearch"
@@ -16,50 +30,55 @@
       <button wx:if="{{query}}" class="search-clear" bindtap="clearSearch" aria-label="清空搜索">×</button>
     </view>
 
-    <scroll-view class="filter-scroll" scroll-x enhanced show-scrollbar="{{false}}">
-      <view class="filters">
-        <view
-          wx:for="{{types}}"
-          wx:key="key"
-          class="filter {{activeType === item.key ? 'active' : ''}}"
-          data-key="{{item.key}}"
-          bindtap="changeType"
-        >
-          {{item.label}}
-        </view>
-      </view>
-    </scroll-view>
-
-    <view class="plaza-tip">
-      <view class="plaza-tip-icon"><view class="ui-icon icon-spark"></view></view>
+    <view class="discovery-line">
       <view>
-        <view class="plaza-tip-title">AI 已为你筛选优质伙伴</view>
-        <view class="plaza-tip-desc">根据合作偏好、预算和历史交付综合排序</view>
+        <view class="discovery-title">为你发现 {{visibleEntries.length}} 位合作伙伴</view>
+        <view class="discovery-desc">AI 已按能力、预算与交付表现综合排序</view>
+      </view>
+      <view class="discovery-actions">
+        <button
+          class="favorite-filter {{favoritesOnly ? 'active' : ''}}"
+          bindtap="toggleFavoritesOnly"
+        >{{favoritesOnly ? '只看收藏' : '收藏'}}</button>
+        <button
+          class="sort-button {{activeType === 'latest' ? 'active' : ''}}"
+          disabled="{{listLoading}}"
+          bindtap="toggleLatest"
+        >{{activeType === 'latest' ? '最新发布' : '智能排序'}}⌄</button>
       </view>
     </view>
 
     <view class="entry-list" wx:if="{{!listLoading && visibleEntries.length}}">
-      <view class="entry card" wx:for="{{visibleEntries}}" wx:key="id">
+      <view class="entry" wx:for="{{visibleEntries}}" wx:key="id">
         <view class="entry-head">
           <view class="avatar {{item.avatarClass}}">{{item.avatar}}</view>
           <view class="entry-identity">
-            <view class="entry-name">{{item.name}}</view>
-            <view class="verified">
-              <view class="verify-dot">✓</view>{{item.identity}}
+            <view class="entry-name-line">
+              <view class="entry-name">{{item.name}}</view>
+              <view class="verified" wx:if="{{item.matchScore >= 85}}">
+                <view class="verify-dot">✓</view>优选
+              </view>
             </view>
+            <view class="entry-role">{{item.identity}}</view>
           </view>
-          <view class="match-score">
-            <text>{{item.matchScore}}</text>
-            <text class="score-suffix">%</text>
-            <view>匹配度</view>
-          </view>
+          <button
+            class="favorite-button {{item.favorite ? 'active' : ''}}"
+            data-id="{{item.id}}"
+            catchtap="toggleFavorite"
+            aria-label="{{item.favorite ? '取消收藏' : '收藏'}}"
+          >{{item.favorite ? '♥' : '♡'}}</button>
         </view>
-        <view class="entry-description">{{item.description}}</view>
+        <view class="entry-service">{{item.partnerType === 'provider' ? '专业服务' : '合作需求'}} · {{item.description}}</view>
         <view class="tag-row">
           <text class="tag" wx:for="{{item.tags}}" wx:key="*this" wx:for-item="tag">{{tag}}</text>
         </view>
         <view class="entry-foot">
-          <text class="entry-result">{{item.resultText}}</text>
+          <view class="entry-proof">
+            <text class="match-number">{{item.matchScore}}%</text>
+            <text>匹配度</text>
+            <view class="proof-dot"></view>
+            <text>{{item.resultText}}</text>
+          </view>
           <button
             class="connect-button"
             data-id="{{item.id}}"
@@ -74,11 +93,21 @@
     <data-state
       wx:else
       empty="{{true}}"
-      empty-title="{{query ? '没有匹配结果' : '暂无合作伙伴'}}"
-      empty-description="{{query ? '换个名称或标签试试' : '内容上线后会在这里展示'}}"
-      action-text="{{query ? '清空搜索' : '重新加载'}}"
+      empty-title="{{query ? '没有匹配结果' : favoritesOnly ? '还没有收藏伙伴' : '暂无合作伙伴'}}"
+      empty-description="{{query ? '换个名称或标签试试' : favoritesOnly ? '返回广场发现值得合作的人' : '内容上线后会在这里展示'}}"
+      action-text="{{query ? '清空搜索' : favoritesOnly ? '查看全部' : '重新加载'}}"
       bind:action="handleEmptyAction"
     ></data-state>
+
+    <view class="ai-invite" bindtap="openAI" hover-class="pressable">
+      <view class="ai-invite-glow"></view>
+      <image class="ai-invite-orb" src="/assets/images/ai-orb.webp" mode="aspectFit"></image>
+      <view class="ai-invite-copy">
+        <view>还没找到理想伙伴？</view>
+        <text>告诉 AI 你的目标，生成专属合作阵容</text>
+      </view>
+      <view class="ai-invite-arrow">→</view>
+    </view>
   </block>
 </view>
 <tab-bar active="plaza"></tab-bar>
