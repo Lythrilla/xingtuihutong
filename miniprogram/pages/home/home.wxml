@@ -21,7 +21,7 @@
   </view>
 
   <view class="recommend-list" wx:if="{{recommendations.length}}">
-    <view class="recommend-card" wx:for="{{recommendations}}" wx:key="id">
+    <view class="recommend-item" wx:for="{{recommendations}}" wx:key="id">
       <image
         wx:if="{{item.avatar && (item.avatar.indexOf('http') === 0 || item.avatar.indexOf('/') === 0)}}"
         class="recommend-avatar"
@@ -35,21 +35,15 @@
       <view class="recommend-main">
         <view class="recommend-head">
           <text class="recommend-title">{{item.title}}</text>
-          <view class="tags" wx:if="{{item.verified || item.preferred}}">
-            <view class="tag tag-verified" wx:if="{{item.verified}}">官方认证</view>
-            <view class="tag tag-preferred" wx:if="{{item.preferred}}">优选服务商</view>
-          </view>
-          <view class="recommend-score">综合评分 {{item.score}}</view>
+          <view class="tag" wx:if="{{item.preferred || item.verified}}">优质服务商</view>
         </view>
-        <view class="recommend-subtitle">擅长：{{item.subtitle}}</view>
+        <view class="recommend-subtitle">{{item.subtitle}}</view>
       </view>
-      <button
+      <view
         class="cooperate"
         data-id="{{item.id}}"
-        disabled="{{connectingId !== ''}}"
-        loading="{{connectingId === item.id}}"
         bindtap="contactPartner"
-      >{{connectingId === item.id ? '正在进入' : '沟通'}}</button>
+      >沟通</view>
     </view>
   </view>
   <view wx:else class="inline-empty">暂无伙伴推荐，可前往合作广场主动发现。</view>

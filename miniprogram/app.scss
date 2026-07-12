@@ -61,7 +61,7 @@ button[disabled] {
 
 .page-shell {
   min-height: 100vh;
-  padding: 0 28rpx calc(204rpx + env(safe-area-inset-bottom));
+  padding: 0 28rpx calc(110rpx + env(safe-area-inset-bottom));
   background: #f7f8fa;
 }
 
@@ -205,6 +205,7 @@ page {
   min-height: 100vh;
   padding-right: 30rpx;
   padding-left: 30rpx;
+  padding-bottom: calc(110rpx + env(safe-area-inset-bottom));
   background:
     linear-gradient(180deg, rgba(214, 241, 236, 0.34) 0, rgba(246, 247, 249, 0) 360rpx),
     #f6f7f9;

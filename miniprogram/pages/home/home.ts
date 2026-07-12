@@ -44,11 +44,15 @@ Component({
       this.setData({ loading: true, error: '' })
       try {
         const response = await apiRequest<HomeResponse>('/api/home')
-        const recommendations = (response.recommendations || []).map((item) => ({
-          ...item,
-          verified: item.verified ?? true,
-          preferred: item.preferred ?? true,
-        }))
+        const recommendations = (response.recommendations || []).map((item) => {
+          const hasImageAvatar = item.avatar && (item.avatar.indexOf('http') === 0 || item.avatar.indexOf('/') === 0)
+          return {
+            ...item,
+            avatar: hasImageAvatar ? item.avatar : (item.title ? item.title.charAt(0) : ''),
+            verified: item.verified ?? true,
+            preferred: item.preferred ?? true,
+          }
+        })
         this.setData({ ...response, recommendations, loading: false })
       } catch (error) {
         this.setData({
