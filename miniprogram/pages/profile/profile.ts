@@ -46,13 +46,14 @@ Component({
     tagsInput: '',
     withdrawInput: '',
     quickActions: [
-      { key: 'match', label: 'AI 匹配', icon: 'spark' },
+      { key: 'agent', label: 'AI Agent', icon: 'spark' },
+      { key: 'analytics', label: '数据洞察', icon: 'target' },
       { key: 'plaza', label: '找合作', icon: 'target' },
       { key: 'messages', label: '合作会话', icon: 'audio' },
-      { key: 'edit', label: '完善资料', icon: 'briefcase' },
     ],
     serviceActions: [
-      { key: 'ai', label: 'AI 推荐方案', description: '查看为你生成的推广策略', icon: 'spark' },
+      { key: 'ai', label: 'AI Agent 工作台', description: '查询、调用工具并执行合作任务', icon: 'spark' },
+      { key: 'analytics', label: '我的数据洞察', description: '趋势、转化漏斗与渠道分布', icon: 'target' },
       { key: 'favorites', label: '我的收藏', description: '回看感兴趣的合作伙伴', icon: 'target' },
       { key: 'role', label: '合作身份', description: '切换服务方或被服务方', icon: 'refresh' },
       { key: 'edit', label: '主页设置', description: '名称、简介与能力标签', icon: 'briefcase' },
@@ -142,7 +143,8 @@ Component({
         return
       }
       const routes: Record<string, string> = {
-        match: '/pages/match/match',
+        agent: '/pages/ai/ai',
+        analytics: '/pages/analytics/analytics',
         plaza: '/pages/plaza/plaza',
         messages: '/pages/messages/messages',
       }
@@ -159,7 +161,13 @@ Component({
         this.editProfile()
         return
       }
-      wx.redirectTo({ url: key === 'ai' ? '/pages/ai/ai' : '/pages/plaza/plaza' })
+      const routes: Record<string, string> = {
+        ai: '/pages/ai/ai',
+        analytics: '/pages/analytics/analytics',
+        favorites: '/pages/plaza/plaza',
+      }
+      const url = routes[key]
+      if (url) wx.redirectTo({ url })
     },
     async saveProfile() {
       const organization = this.data.organizationInput.trim()

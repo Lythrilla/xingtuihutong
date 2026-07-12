@@ -38,7 +38,7 @@
       >
         <view class="workspace-icon">
           <view class="ui-icon icon-{{item.icon}}"></view>
-          <view wx:if="{{item.key === 'match'}}" class="workspace-spark"></view>
+          <view wx:if="{{item.key === 'agent'}}" class="workspace-spark"></view>
         </view>
         <text>{{item.label}}</text>
       </view>

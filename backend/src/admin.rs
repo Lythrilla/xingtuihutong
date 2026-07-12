@@ -32,6 +32,7 @@ pub fn routes() -> Router<AppState> {
         .route("/conversations", get(conversations))
         .route("/settlements", get(settlements))
         .route("/settlements/{id}", put(update_settlement))
+        .nest("/analytics", crate::analytics::admin_routes())
 }
 
 async fn login(
@@ -505,7 +506,7 @@ async fn load_settlement(state: &AppState, id: &str) -> AppResult<AdminSettlemen
     .await?)
 }
 
-async fn require_admin(state: &AppState, headers: &HeaderMap) -> AppResult<()> {
+pub(crate) async fn require_admin(state: &AppState, headers: &HeaderMap) -> AppResult<()> {
     let token = admin_cookie(headers).ok_or(AppError::Unauthorized)?;
     let exists: bool = sqlx::query_scalar(
         "SELECT EXISTS(

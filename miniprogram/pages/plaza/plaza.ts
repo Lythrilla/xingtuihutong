@@ -147,7 +147,7 @@ Component({
       })
     },
     openAI() {
-      wx.redirectTo({ url: '/pages/match/match' })
+      wx.redirectTo({ url: '/pages/ai/ai' })
     },
     async connect(event: WechatMiniprogram.TouchEvent) {
       const partnerId = event.currentTarget.dataset.id as string

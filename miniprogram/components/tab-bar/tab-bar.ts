@@ -12,7 +12,7 @@ Component({
     items: [
       { key: 'home', label: '首页', iconClass: 'home', url: '/pages/home/home' },
       { key: 'plaza', label: '广场', iconClass: 'plaza', url: '/pages/plaza/plaza' },
-      { key: 'match', label: 'AI', iconClass: 'match', url: '/pages/match/match' },
+      { key: 'match', label: 'AI', iconClass: 'match', url: '/pages/ai/ai' },
       { key: 'messages', label: '消息', iconClass: 'messages', url: '/pages/messages/messages' },
       { key: 'profile', label: '我的', iconClass: 'profile', url: '/pages/profile/profile' },
     ],

@@ -5,6 +5,7 @@
     "pages/plaza/plaza",
     "pages/match/match",
     "pages/ai/ai",
+    "pages/analytics/analytics",
     "pages/messages/messages",
     "pages/conversation/conversation",
     "pages/profile/profile"
