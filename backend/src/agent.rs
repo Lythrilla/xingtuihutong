@@ -2,7 +2,7 @@ use crate::{
     analytics::track_event,
     api::{current_user, establish_partner_connection},
     error::{AppError, AppResult},
-    models::UserRow,
+    models::{AgentSettings, AgentTool, UserRow},
     state::AppState,
 };
 use axum::{
@@ -53,7 +53,7 @@ struct AgentMessage {
 
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
-struct AgentResponse {
+pub(crate) struct AgentResponse {
     session_id: String,
     message: AgentMessage,
     tool_calls: Vec<ToolCallView>,
@@ -64,10 +64,10 @@ struct AgentResponse {
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
 struct ToolDefinition {
-    name: &'static str,
-    label: &'static str,
-    description: &'static str,
-    mode: &'static str,
+    name: String,
+    label: String,
+    description: String,
+    mode: String,
 }
 
 #[derive(Serialize)]
@@ -96,21 +96,67 @@ struct ToolExecution {
     artifact: Artifact,
 }
 
+#[derive(Clone, Debug)]
+struct RuntimeTool {
+    name: String,
+    label: String,
+    description: String,
+    mode: String,
+    keywords: Vec<String>,
+    blocked_keywords: Vec<String>,
+    keyword_groups: Vec<Vec<String>>,
+    required_tools: Vec<String>,
+}
+
+async fn load_runtime_tools(state: &AppState) -> AppResult<Vec<RuntimeTool>> {
+    let rows = sqlx::query_as::<_, AgentTool>(
+        "SELECT name, enabled, label, description, mode, keywords, blocked_keywords, keyword_groups, required_tools, sort_order
+         FROM agent_tools WHERE enabled = 1 ORDER BY sort_order, name",
+    )
+    .fetch_all(&state.pool)
+    .await?;
+    Ok(rows.into_iter().map(into_runtime_tool).collect())
+}
+
+fn into_runtime_tool(row: AgentTool) -> RuntimeTool {
+    RuntimeTool {
+        name: row.name,
+        label: row.label,
+        description: row.description,
+        mode: row.mode,
+        keywords: parse_string_list(&row.keywords),
+        blocked_keywords: parse_string_list(&row.blocked_keywords),
+        keyword_groups: parse_string_groups(&row.keyword_groups),
+        required_tools: parse_string_list(&row.required_tools),
+    }
+}
+
+fn parse_string_list(json: &str) -> Vec<String> {
+    serde_json::from_str::<Vec<String>>(json).unwrap_or_default()
+}
+
+fn parse_string_groups(json: &str) -> Vec<Vec<String>> {
+    serde_json::from_str::<Vec<Vec<String>>>(json).unwrap_or_default()
+}
+
 async fn bootstrap(
     State(state): State<AppState>,
     headers: HeaderMap,
 ) -> AppResult<Json<AgentBootstrap>> {
     let user = current_user(&state, &headers).await?;
-    let session_id = latest_or_create_session(&state, &user).await?;
-    let messages = load_messages(&state, &session_id).await?;
-    let recent_tool_calls = load_tool_calls(&state, &session_id).await?;
+    let settings = load_agent_settings(&state).await?;
+    let session_id = latest_or_create_session(&state, &user, &settings).await?;
+    let messages = load_messages(&state, &session_id, settings.max_history).await?;
+    let runtime_tools = load_runtime_tools(&state).await?;
+    let recent_tool_calls = load_tool_calls(&state, &session_id, &runtime_tools).await?;
+    let engine = settings.engine.clone();
     Ok(Json(AgentBootstrap {
         session_id,
-        engine: "StarConnect Agent Runtime · Data Grounded".into(),
+        engine,
         messages,
         recent_tool_calls,
-        suggestions: default_suggestions(),
-        tools: tool_definitions(),
+        suggestions: default_suggestions_from(&settings),
+        tools: tool_definitions(&runtime_tools),
     }))
 }
 
@@ -120,20 +166,35 @@ async fn query(
     Json(input): Json<AgentQuery>,
 ) -> AppResult<Json<AgentResponse>> {
     let user = current_user(&state, &headers).await?;
-    let prompt = input.message.trim();
+    Ok(Json(query_for_user(&state, &user, &input.message, input.session_id).await?))
+}
+
+pub(crate) async fn query_for_user(
+    state: &AppState,
+    user: &UserRow,
+    message: &str,
+    session_id: Option<String>,
+) -> AppResult<AgentResponse> {
+    let settings = load_agent_settings(state).await?;
+    if !settings.enabled {
+        return Err(AppError::BadRequest("agent 已暂停服务".into()));
+    }
+    let prompt = message.trim();
     if prompt.is_empty() {
         return Err(AppError::BadRequest("agent message is required".into()));
     }
     if prompt.chars().count() > 1000 {
         return Err(AppError::BadRequest("agent message is too long".into()));
     }
-    let session_id = match input.session_id {
+    let runtime_tools = load_runtime_tools(state).await?;
+    let session_id = match session_id {
         Some(id) => {
-            ensure_session_owner(&state, &id, &user.id).await?;
+            ensure_session_owner(state, &id, &user.id).await?;
             id
         }
-        None => latest_or_create_session(&state, &user).await?,
+        None => latest_or_create_session(state, user, &settings).await?,
     };
+    let max_tool_calls = settings.max_tool_calls.max(1);
     let user_message_id = Uuid::new_v4().to_string();
     sqlx::query(
         "INSERT INTO agent_messages (id, session_id, role, content)
@@ -145,17 +206,20 @@ async fn query(
     .execute(&state.pool)
     .await?;
 
-    let tools = select_tools(prompt);
+    let tools = select_tools(&runtime_tools, prompt)
+        .into_iter()
+        .take(max_tool_calls as usize)
+        .collect::<Vec<_>>();
     let mut tool_calls = Vec::new();
     let mut artifacts = Vec::new();
     for tool_name in tools {
         let started = Instant::now();
         match execute_tool(
-            &state,
-            &user,
+            state,
+            user,
             &session_id,
             &user_message_id,
-            tool_name,
+            &tool_name,
             prompt,
         )
         .await
@@ -163,10 +227,11 @@ async fn query(
             Ok(execution) => {
                 let duration_ms = started.elapsed().as_millis() as i64;
                 let tool_call = persist_tool_call(
-                    &state,
+                    state,
                     &session_id,
                     &user_message_id,
-                    tool_name,
+                    &runtime_tools,
+                    &tool_name,
                     "completed",
                     json!({ "query": prompt }),
                     execution.output.clone(),
@@ -181,10 +246,11 @@ async fn query(
                 let message = safe_tool_error(&error);
                 let output = json!({ "error": message });
                 let tool_call = persist_tool_call(
-                    &state,
+                    state,
                     &session_id,
                     &user_message_id,
-                    tool_name,
+                    &runtime_tools,
+                    &tool_name,
                     "failed",
                     json!({ "query": prompt }),
                     output,
@@ -194,7 +260,7 @@ async fn query(
                 tool_calls.push(tool_call);
                 artifacts.push(Artifact {
                     kind: "error".into(),
-                    title: format!("{}未完成", tool_label(tool_name)),
+                    title: format!("{}未完成", tool_label(&runtime_tools, &tool_name)),
                     summary: message,
                     data: json!({ "tool": tool_name }),
                 });
@@ -202,7 +268,7 @@ async fn query(
         }
     }
 
-    let reply = compose_reply(prompt, &tool_calls);
+    let reply = compose_reply(prompt, &tool_calls, &settings);
     let assistant_id = Uuid::new_v4().to_string();
     sqlx::query(
         "INSERT INTO agent_messages (id, session_id, role, content)
@@ -222,7 +288,7 @@ async fn query(
     .execute(&state.pool)
     .await?;
     let _ = track_event(
-        &state,
+        state,
         Some(&user.id),
         "agent_query_completed",
         Some("agent_session"),
@@ -236,16 +302,20 @@ async fn query(
     .bind(assistant_id)
     .fetch_one(&state.pool)
     .await?;
-    Ok(Json(AgentResponse {
+    Ok(AgentResponse {
         session_id,
         message,
         tool_calls,
         artifacts,
-        suggestions: follow_up_suggestions(prompt),
-    }))
+        suggestions: follow_up_suggestions_from(&settings, prompt),
+    })
 }
 
-async fn latest_or_create_session(state: &AppState, user: &UserRow) -> AppResult<String> {
+async fn latest_or_create_session(
+    state: &AppState,
+    user: &UserRow,
+    settings: &AgentSettings,
+) -> AppResult<String> {
     let existing: Option<String> = sqlx::query_scalar(
         "SELECT id FROM agent_sessions
          WHERE user_id = ? AND status = 'active'
@@ -264,10 +334,9 @@ async fn latest_or_create_session(state: &AppState, user: &UserRow) -> AppResult
         .bind(&user.id)
         .execute(&mut *transaction)
         .await?;
-    let welcome = format!(
-        "你好，{}。我可以直接查询业务数据、检索合作伙伴、推荐方案，并执行收藏或创建跟进任务。",
-        user.organization
-    );
+    let welcome = settings
+        .welcome_message
+        .replace("{organization}", &user.organization);
     sqlx::query(
         "INSERT INTO agent_messages (id, session_id, role, content)
          VALUES (?, ?, 'assistant', ?)",
@@ -295,12 +364,13 @@ async fn ensure_session_owner(state: &AppState, session_id: &str, user_id: &str)
     Ok(())
 }
 
-async fn load_messages(state: &AppState, session_id: &str) -> AppResult<Vec<AgentMessage>> {
+async fn load_messages(state: &AppState, session_id: &str, max_history: i64) -> AppResult<Vec<AgentMessage>> {
     Ok(sqlx::query_as::<_, AgentMessage>(
         "SELECT id, role, content, created_at FROM agent_messages
-         WHERE session_id = ? ORDER BY created_at DESC, rowid DESC LIMIT 30",
+         WHERE session_id = ? ORDER BY created_at DESC, rowid DESC LIMIT ?",
     )
     .bind(session_id)
+    .bind(max_history)
     .fetch_all(&state.pool)
     .await?
     .into_iter()
@@ -308,7 +378,33 @@ async fn load_messages(state: &AppState, session_id: &str) -> AppResult<Vec<Agen
     .collect())
 }
 
-async fn load_tool_calls(state: &AppState, session_id: &str) -> AppResult<Vec<ToolCallView>> {
+async fn load_agent_settings(state: &AppState) -> AppResult<AgentSettings> {
+    let row = sqlx::query_as::<_, AgentSettings>(
+        "SELECT id, enabled, engine, model, welcome_message, system_prompt, max_tokens, temperature, max_tool_calls, max_history, fallback_reply, suggestion_count, default_suggestions, follow_up_suggestions
+         FROM agent_settings WHERE id = 'default'",
+    )
+    .fetch_optional(&state.pool)
+    .await?;
+    if let Some(row) = row {
+        return Ok(row);
+    }
+    sqlx::query("INSERT INTO agent_settings (id) VALUES ('default')")
+        .execute(&state.pool)
+        .await?;
+    sqlx::query_as::<_, AgentSettings>(
+        "SELECT id, enabled, engine, model, welcome_message, system_prompt, max_tokens, temperature, max_tool_calls, max_history, fallback_reply, suggestion_count, default_suggestions, follow_up_suggestions
+         FROM agent_settings WHERE id = 'default'",
+    )
+    .fetch_one(&state.pool)
+    .await
+    .map_err(|e| e.into())
+}
+
+async fn load_tool_calls(
+    state: &AppState,
+    session_id: &str,
+    runtime_tools: &[RuntimeTool],
+) -> AppResult<Vec<ToolCallView>> {
     let rows = sqlx::query(
         "SELECT id, tool_name, input_json, output_json, status, duration_ms
          FROM agent_tool_calls WHERE session_id = ?
@@ -323,7 +419,7 @@ async fn load_tool_calls(state: &AppState, session_id: &str) -> AppResult<Vec<To
             let name: String = row.get("tool_name");
             ToolCallView {
                 id: row.get("id"),
-                label: tool_label(&name).into(),
+                label: tool_label(runtime_tools, &name),
                 name,
                 status: row.get("status"),
                 input: parse_json(row.get("input_json")),
@@ -338,6 +434,7 @@ async fn persist_tool_call(
     state: &AppState,
     session_id: &str,
     message_id: &str,
+    runtime_tools: &[RuntimeTool],
     tool_name: &str,
     status: &str,
     input: Value,
@@ -363,7 +460,7 @@ async fn persist_tool_call(
     Ok(ToolCallView {
         id,
         name: tool_name.into(),
-        label: tool_label(tool_name).into(),
+        label: tool_label(runtime_tools, tool_name),
         status: status.into(),
         input,
         output,
@@ -371,104 +468,52 @@ async fn persist_tool_call(
     })
 }
 
-fn select_tools(prompt: &str) -> Vec<&'static str> {
-    let mut tools = Vec::new();
-    if contains_any(prompt, &["数据", "统计", "趋势", "表现", "多少", "收益"]) {
-        push_tool(&mut tools, "query_business_metrics");
-        push_tool(&mut tools, "inspect_collaboration_pipeline");
+fn select_tools(tools: &[RuntimeTool], prompt: &str) -> Vec<String> {
+    let mut selected: Vec<String> = Vec::new();
+    for tool in tools {
+        if !tool_matches(tool, prompt) {
+            continue;
+        }
+        for required in &tool.required_tools {
+            if let Some(req) = tools.iter().find(|t| t.name == *required) {
+                push_tool_string(&mut selected, &req.name);
+            }
+        }
+        push_tool_string(&mut selected, &tool.name);
     }
-    if contains_any(prompt, &["找", "伙伴", "服务", "需求", "达人", "合作方"]) {
-        push_tool(&mut tools, "search_partners");
+    if selected.is_empty() {
+        for tool in tools.iter().filter(|t| t.mode == "read") {
+            push_tool_string(&mut selected, &tool.name);
+        }
     }
-    if contains_any(prompt, &["方案", "推广", "预算", "推荐", "投放"]) {
-        push_tool(&mut tools, "recommend_plans");
+    selected
+}
+
+fn tool_matches(tool: &RuntimeTool, prompt: &str) -> bool {
+    if contains_any(prompt, &tool.blocked_keywords) {
+        return false;
     }
-    if contains_any(
-        prompt,
-        &[
-            "帮我联系",
-            "请联系",
-            "直接联系",
-            "立即联系",
-            "联系最佳",
-            "联系最合适",
-            "联系第一",
-            "联系伙伴",
-            "联系合作方",
-            "发起合作",
-            "开始沟通",
-            "立即沟通",
-            "和第一位沟通",
-            "与第一位沟通",
-            "建立会话",
-            "帮我对接",
-            "直接对接",
-        ],
-    ) && !action_is_blocked(
-        prompt,
-        &["联系", "沟通", "合作", "会话", "对接"],
-        &[
-            "联系过",
-            "已联系",
-            "联系记录",
-            "联系状态",
-            "沟通数据",
-            "沟通记录",
-        ],
-    ) {
-        push_tool(&mut tools, "search_partners");
-        push_tool(&mut tools, "connect_partner");
+    if tool.mode == "read" && contains_any(prompt, &tool.keywords) {
+        return true;
     }
-    if contains_any(
-        prompt,
-        &[
-            "帮我收藏",
-            "请收藏",
-            "收藏最佳",
-            "收藏这个",
-            "收藏推荐",
-            "收藏方案",
-            "保存方案",
-            "保存这个",
-            "加入收藏",
-        ],
-    ) && !action_is_blocked(
-        prompt,
-        &["收藏", "保存"],
-        &[
-            "取消收藏",
-            "已收藏",
-            "收藏了",
-            "收藏多少",
-            "收藏数据",
-            "收藏记录",
-        ],
-    ) {
-        push_tool(&mut tools, "recommend_plans");
-        push_tool(&mut tools, "save_recommended_plan");
+    if tool.mode == "read" {
+        for group in &tool.keyword_groups {
+            if !group.is_empty() && group.iter().all(|keyword| prompt.contains(keyword)) {
+                return true;
+            }
+        }
+        return false;
     }
-    let task_requested = contains_any(
-        prompt,
-        &["提醒我", "安排跟进", "执行方案", "开始执行", "直接执行"],
-    ) || (contains_any(prompt, &["创建", "生成", "添加"])
-        && contains_any(prompt, &["任务", "跟进"]));
-    if task_requested
-        && !action_is_blocked(
-            prompt,
-            &["创建", "生成", "添加", "安排", "提醒", "执行"],
-            &["任务记录", "已有任务", "有哪些任务", "执行情况", "执行数据"],
-        )
-    {
-        push_tool(&mut tools, "create_follow_up_task");
+    // Write tools use keyword groups for intent and action_is_blocked for safety.
+    for group in &tool.keyword_groups {
+        if !group.is_empty() && group.iter().all(|keyword| prompt.contains(keyword)) {
+            if action_is_blocked(prompt, &tool.keywords, &tool.blocked_keywords) {
+                return false;
+            }
+            return true;
+        }
     }
-    if tools.is_empty() {
-        tools.extend([
-            "query_business_metrics",
-            "search_partners",
-            "recommend_plans",
-        ]);
-    }
-    tools
+    false
 }
 
 async fn execute_tool(
@@ -937,7 +982,7 @@ async fn user_count(state: &AppState, query: &str, user_id: &str) -> AppResult<i
         .await?)
 }
 
-fn compose_reply(prompt: &str, tool_calls: &[ToolCallView]) -> String {
+fn compose_reply(prompt: &str, tool_calls: &[ToolCallView], settings: &AgentSettings) -> String {
     let failed = tool_calls
         .iter()
         .filter(|call| call.status == "failed")
@@ -948,7 +993,7 @@ fn compose_reply(prompt: &str, tool_calls: &[ToolCallView]) -> String {
         .collect::<Vec<_>>()
         .join("、");
     if tool_calls.is_empty() {
-        return "我暂时没有找到需要调用的工具，请换一种方式描述目标。".into();
+        return settings.fallback_reply.clone();
     }
     if failed > 0 {
         return format!(
@@ -979,11 +1024,11 @@ fn parse_json_array(value: String) -> Value {
         .unwrap_or_else(|_| json!([]))
 }
 
-fn contains_any(value: &str, keywords: &[&str]) -> bool {
+fn contains_any(value: &str, keywords: &[String]) -> bool {
     keywords.iter().any(|keyword| value.contains(keyword))
 }
 
-fn action_is_blocked(prompt: &str, verbs: &[&str], informational: &[&str]) -> bool {
+fn action_is_blocked(prompt: &str, verbs: &[String], informational: &[String]) -> bool {
     if contains_any(prompt, informational) {
         return true;
     }
@@ -998,33 +1043,21 @@ fn action_is_blocked(prompt: &str, verbs: &[&str], informational: &[&str]) -> bo
                 .chars()
                 .rev()
                 .collect::<String>();
-            contains_any(
-                &recent,
-                &[
-                    "不要",
-                    "别",
-                    "无需",
-                    "不必",
-                    "暂不",
-                    "先不",
-                    "请勿",
-                    "禁止",
-                    "取消",
-                    "怎么",
-                    "如何",
-                    "能否",
-                    "是否",
-                    "可否",
-                    "该不该",
-                ],
-            ) || recent.ends_with('不')
+            let negations: Vec<String> = [
+                "不要", "别", "无需", "不必", "暂不", "先不", "请勿", "禁止", "取消",
+                "怎么", "如何", "能否", "是否", "可否", "该不该",
+            ]
+            .into_iter()
+            .map(String::from)
+            .collect();
+            contains_any(&recent, &negations) || recent.ends_with('不')
         })
     })
 }
 
-fn push_tool(tools: &mut Vec<&'static str>, tool: &'static str) {
-    if !tools.contains(&tool) {
-        tools.push(tool);
+fn push_tool_string(tools: &mut Vec<String>, tool: &str) {
+    if !tools.iter().any(|t| t == tool) {
+        tools.push(tool.into());
     }
 }
 
@@ -1036,103 +1069,38 @@ fn safe_tool_error(error: &AppError) -> String {
     }
 }
 
-fn tool_definitions() -> Vec<ToolDefinition> {
-    vec![
-        tool(
-            "query_business_metrics",
-            "业务数据查询",
-            "读取实时匹配、会话、收藏与收益",
-            "read",
-        ),
-        tool(
-            "inspect_collaboration_pipeline",
-            "合作漏斗分析",
-            "分析发现、匹配、沟通与结算转化",
-            "read",
-        ),
-        tool(
-            "search_partners",
-            "合作伙伴检索",
-            "按身份、能力和匹配度查询伙伴",
-            "read",
-        ),
-        tool(
-            "recommend_plans",
-            "推广方案推荐",
-            "结合预算与目标查询可执行方案",
-            "read",
-        ),
-        tool(
-            "connect_partner",
-            "发起合作会话",
-            "连接检索结果中的最佳伙伴并建立会话",
-            "write",
-        ),
-        tool(
-            "save_recommended_plan",
-            "收藏推荐方案",
-            "将推荐方案写入用户收藏",
-            "write",
-        ),
-        tool(
-            "create_follow_up_task",
-            "创建跟进任务",
-            "生成任务并发送到消息中心",
-            "write",
-        ),
-    ]
+fn tool_definitions(tools: &[RuntimeTool]) -> Vec<ToolDefinition> {
+    tools
+        .iter()
+        .map(|tool| ToolDefinition {
+            name: tool.name.clone(),
+            label: tool.label.clone(),
+            description: tool.description.clone(),
+            mode: tool.mode.clone(),
+        })
+        .collect()
 }
 
-fn tool(
-    name: &'static str,
-    label: &'static str,
-    description: &'static str,
-    mode: &'static str,
-) -> ToolDefinition {
-    ToolDefinition {
-        name,
-        label,
-        description,
-        mode,
-    }
+fn tool_label(tools: &[RuntimeTool], name: &str) -> String {
+    tools
+        .iter()
+        .find(|tool| tool.name == name)
+        .map(|tool| tool.label.clone())
+        .unwrap_or_else(|| name.into())
 }
 
-fn tool_label(name: &str) -> &str {
-    match name {
-        "query_business_metrics" => "业务数据查询",
-        "inspect_collaboration_pipeline" => "合作漏斗分析",
-        "search_partners" => "伙伴检索",
-        "recommend_plans" => "方案推荐",
-        "connect_partner" => "发起合作会话",
-        "save_recommended_plan" => "收藏方案",
-        "create_follow_up_task" => "创建跟进任务",
-        _ => name,
-    }
+fn default_suggestions_from(settings: &AgentSettings) -> Vec<String> {
+    parse_string_list(&settings.default_suggestions)
+        .into_iter()
+        .take(settings.suggestion_count.max(1) as usize)
+        .collect()
 }
 
-fn default_suggestions() -> Vec<String> {
-    vec![
-        "查询我最近 7 天的合作数据".into(),
-        "帮我找短视频推广服务方".into(),
-        "推荐 2 万元内的推广方案".into(),
-        "分析当前合作转化漏斗".into(),
-    ]
-}
-
-fn follow_up_suggestions(prompt: &str) -> Vec<String> {
-    if contains_any(prompt, &["数据", "趋势", "漏斗"]) {
-        vec![
-            "找出最值得提升的转化环节".into(),
-            "推荐适合当前数据表现的方案".into(),
-            "创建本周跟进任务".into(),
-        ]
-    } else {
-        vec![
-            "查询这些伙伴的匹配依据".into(),
-            "推荐可执行的推广方案".into(),
-            "收藏最佳方案".into(),
-        ]
-    }
+fn follow_up_suggestions_from(settings: &AgentSettings, _prompt: &str) -> Vec<String> {
+    parse_string_list(&settings.follow_up_suggestions)
+        .into_iter()
+        .take(settings.suggestion_count.max(1) as usize)
+        .collect()
 }
 
 fn format_money(cents: i64) -> String {
@@ -1141,12 +1109,140 @@ fn format_money(cents: i64) -> String {
 
 #[cfg(test)]
 mod tests {
-    use super::select_tools;
+    use super::{select_tools, RuntimeTool};
+
+    fn test_tool(
+        name: &str,
+        keywords: &[&str],
+        blocked: &[&str],
+        groups: &[&[&str]],
+        required: &[&str],
+        mode: &str,
+    ) -> RuntimeTool {
+        RuntimeTool {
+            name: name.into(),
+            label: name.into(),
+            description: "".into(),
+            mode: mode.into(),
+            keywords: keywords.iter().map(|s| (*s).into()).collect(),
+            blocked_keywords: blocked.iter().map(|s| (*s).into()).collect(),
+            keyword_groups: groups
+                .iter()
+                .map(|g| g.iter().map(|s| (*s).into()).collect())
+                .collect(),
+            required_tools: required.iter().map(|s| (*s).into()).collect(),
+        }
+    }
+
+    fn default_tools() -> Vec<RuntimeTool> {
+        vec![
+            test_tool(
+                "query_business_metrics",
+                &["数据", "统计", "趋势", "表现", "多少", "收益"],
+                &[],
+                &[],
+                &[],
+                "read",
+            ),
+            test_tool(
+                "inspect_collaboration_pipeline",
+                &["漏斗", "转化", "pipeline"],
+                &[],
+                &[],
+                &[],
+                "read",
+            ),
+            test_tool(
+                "search_partners",
+                &["找", "伙伴", "服务", "需求", "达人", "合作方"],
+                &[],
+                &[],
+                &[],
+                "read",
+            ),
+            test_tool(
+                "recommend_plans",
+                &["方案", "推广", "预算", "推荐", "投放"],
+                &[],
+                &[],
+                &[],
+                "read",
+            ),
+            test_tool(
+                "connect_partner",
+                &["联系", "沟通", "合作", "会话", "对接"],
+                &["联系过", "已联系", "联系记录", "联系状态", "沟通数据", "沟通记录"],
+                &[
+                    &["帮我联系"],
+                    &["请联系"],
+                    &["直接联系"],
+                    &["立即联系"],
+                    &["联系最佳"],
+                    &["联系最合适"],
+                    &["联系第一"],
+                    &["联系伙伴"],
+                    &["联系合作方"],
+                    &["发起合作"],
+                    &["开始沟通"],
+                    &["立即沟通"],
+                    &["和第一位沟通"],
+                    &["与第一位沟通"],
+                    &["建立会话"],
+                    &["帮我对接"],
+                    &["直接对接"],
+                ],
+                &["search_partners"],
+                "write",
+            ),
+            test_tool(
+                "save_recommended_plan",
+                &["收藏", "保存"],
+                &["取消收藏", "已收藏", "收藏了", "收藏多少", "收藏数据", "收藏记录"],
+                &[
+                    &["帮我收藏"],
+                    &["请收藏"],
+                    &["收藏最佳"],
+                    &["收藏这个"],
+                    &["收藏推荐"],
+                    &["收藏方案"],
+                    &["保存方案"],
+                    &["保存这个"],
+                    &["加入收藏"],
+                ],
+                &["recommend_plans"],
+                "write",
+            ),
+            test_tool(
+                "create_follow_up_task",
+                &["创建", "生成", "添加", "安排", "提醒", "执行"],
+                &["任务记录", "已有任务", "有哪些任务", "执行情况", "执行数据"],
+                &[
+                    &["提醒我"],
+                    &["安排跟进"],
+                    &["执行方案"],
+                    &["开始执行"],
+                    &["直接执行"],
+                    &["创建", "任务"],
+                    &["创建", "跟进"],
+                    &["生成", "任务"],
+                    &["生成", "跟进"],
+                    &["添加", "任务"],
+                    &["添加", "跟进"],
+                ],
+                &[],
+                "write",
+            ),
+        ]
+    }
+
+    fn select(prompt: &str) -> Vec<String> {
+        select_tools(&default_tools(), prompt)
+    }
 
     #[test]
     fn selects_query_tools_for_data_questions() {
         assert_eq!(
-            select_tools("分析一下最近数据趋势和合作漏斗"),
+            select("分析一下最近数据趋势和合作漏斗"),
             vec!["query_business_metrics", "inspect_collaboration_pipeline"]
         );
     }
@@ -1154,32 +1250,29 @@ mod tests {
     #[test]
     fn keeps_read_tools_before_dependent_actions() {
         assert_eq!(
-            select_tools("帮我找短视频服务方并联系最佳伙伴"),
+            select("帮我找短视频服务方并联系最佳伙伴"),
             vec!["search_partners", "connect_partner"]
         );
         assert_eq!(
-            select_tools("推荐一个推广方案并保存方案"),
+            select("推荐一个推广方案并保存方案"),
             vec!["recommend_plans", "save_recommended_plan"]
         );
         assert_eq!(
-            select_tools("直接联系最合适的人"),
+            select("直接联系最合适的人"),
             vec!["search_partners", "connect_partner"]
         );
     }
 
     #[test]
     fn does_not_execute_negated_or_informational_write_intents() {
-        assert_eq!(
-            select_tools("帮我找伙伴，但不要联系"),
-            vec!["search_partners"]
-        );
-        assert_eq!(select_tools("推荐方案但不要收藏"), vec!["recommend_plans"]);
-        assert_eq!(select_tools("如何联系这些合作方"), vec!["search_partners"]);
-        assert!(!select_tools("请不要帮我联系任何人").contains(&"connect_partner"));
-        assert!(!select_tools("分析沟通数据").contains(&"connect_partner"));
-        assert!(!select_tools("我收藏了几个方案").contains(&"save_recommended_plan"));
-        assert!(!select_tools("先不保存这个方案").contains(&"save_recommended_plan"));
-        assert!(!select_tools("有哪些任务").contains(&"create_follow_up_task"));
-        assert!(select_tools("请创建本周跟进任务").contains(&"create_follow_up_task"));
+        assert_eq!(select("帮我找伙伴，但不要联系"), vec!["search_partners"]);
+        assert_eq!(select("推荐方案但不要收藏"), vec!["recommend_plans"]);
+        assert_eq!(select("如何联系这些合作方"), vec!["search_partners"]);
+        assert!(!select("请不要帮我联系任何人").contains(&"connect_partner".into()));
+        assert!(!select("分析沟通数据").contains(&"connect_partner".into()));
+        assert!(!select("我收藏了几个方案").contains(&"save_recommended_plan".into()));
+        assert!(!select("先不保存这个方案").contains(&"save_recommended_plan".into()));
+        assert!(!select("有哪些任务").contains(&"create_follow_up_task".into()));
+        assert!(select("请创建本周跟进任务").contains(&"create_follow_up_task".into()));
     }
 }

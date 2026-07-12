@@ -14,9 +14,11 @@ const titles = {
   users: "用户管理",
   conversations: "合作会话",
   settlements: "结算记录",
+  agent: "Agent 设置",
 };
 
 const editableViews = new Set(["partners", "songs", "plans"]);
+state.agent = { settings: null, tools: [], toolEditing: null, tab: "settings", sessions: [], sessionDetail: null, users: [] };
 const content = document.querySelector("#content");
 const loginLayer = document.querySelector("#loginLayer");
 const modalLayer = document.querySelector("#modalLayer");
@@ -191,6 +193,18 @@ async function loadView() {
     }
     if (state.view === "analytics") {
       renderAnalytics(await api("/api/admin/analytics"));
+      loginLayer.classList.add("hidden");
+      setServerStatus("online");
+      return;
+    }
+    if (state.view === "agent") {
+      const [settings, tools] = await Promise.all([
+        api("/api/admin/agent/settings"),
+        api("/api/admin/agent/tools"),
+      ]);
+      state.agent.settings = settings;
+      state.agent.tools = tools;
+      renderAgent(settings, tools);
       loginLayer.classList.add("hidden");
       setServerStatus("online");
       return;
@@ -782,5 +796,7 @@ function toast(message) {
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => element.classList.remove("visible"), 1800);
 }
+
+// Agent UI and handlers are in /admin/agent.js
 
 switchView(state.view, false);
