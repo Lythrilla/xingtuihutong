@@ -1,51 +1,45 @@
-<view class="home-page">
-  <view class="home-status" style="height: {{statusBarHeight}}px;"></view>
+<view class="page-shell">
+  <page-header title="Hi，{{greeting}}" subtitle="用音乐连接更多种可能"></page-header>
 
-  <view class="greeting">Hi，{{greeting}}</view>
-  <view class="greeting-sub">用音乐连接更多种可能</view>
+  <data-state loading="{{loading}}" error="{{error}}" bind:action="retry"></data-state>
 
-  <view class="ai-card" bindtap="openAI" hover-class="pressable">
-    <view class="ai-copy">
-      <view class="ai-title">选择不清晰？来问问 AI！</view>
-      <view class="ai-desc">精准匹配，高效连接</view>
-      <view class="ai-enter">
-        <text>从此进入 →</text>
+  <block wx:if="{{!loading && !error}}">
+    <view class="ai-card" bindtap="openAI" hover-class="pressable">
+      <view class="ai-copy">
+        <view class="ai-title">选择不清晰？来问问 AI！</view>
+        <view class="ai-desc">精准匹配，高效连接</view>
+        <view class="ai-enter"><text>从此进入 →</text></view>
       </view>
+      <image class="ai-illustration" src="/assets/images/ai-illustration.png" mode="aspectFit"></image>
     </view>
-    <image class="ai-illustration" src="/assets/images/ai-illustration.png" mode="aspectFit"></image>
-  </view>
 
-  <view class="section-head">
-    <text class="section-title">精选推广</text>
-    <text class="section-action" bindtap="openPlaza">更多 ></text>
-  </view>
+    <view class="section">
+      <view class="section-head">
+        <text class="section-title">精选推广</text>
+        <text class="section-action" bindtap="openPlaza">更多 ></text>
+      </view>
 
-  <view class="recommend-list" wx:if="{{recommendations.length}}">
-    <view class="recommend-item" wx:for="{{recommendations}}" wx:key="id">
-      <image
-        wx:if="{{item.avatar && (item.avatar.indexOf('http') === 0 || item.avatar.indexOf('/') === 0)}}"
-        class="recommend-avatar"
-        src="{{item.avatar}}"
-        mode="aspectFill"
-      ></image>
-      <view
-        wx:else
-        class="recommend-avatar {{item.avatarClass}}"
-      >{{item.avatar}}</view>
-      <view class="recommend-main">
-        <view class="recommend-head">
-          <text class="recommend-title">{{item.title}}</text>
-          <view class="tag" wx:if="{{item.preferred || item.verified}}">优质服务商</view>
+      <view class="recommend-list" wx:if="{{recommendations.length}}">
+        <view class="recommend-item" wx:for="{{recommendations}}" wx:key="id">
+          <image
+            wx:if="{{item.avatarIsImage}}"
+            class="recommend-avatar"
+            src="{{item.avatar}}"
+            mode="aspectFill"
+          ></image>
+          <view wx:else class="recommend-avatar {{item.avatarClass}}">{{item.avatar}}</view>
+          <view class="recommend-main">
+            <view class="recommend-head">
+              <text class="recommend-title">{{item.title}}</text>
+              <view class="pill" wx:if="{{item.preferred || item.verified}}">优质服务商</view>
+            </view>
+            <view class="recommend-subtitle">{{item.subtitle}}</view>
+          </view>
+          <view class="cooperate" data-id="{{item.id}}" bindtap="contactPartner">沟通</view>
         </view>
-        <view class="recommend-subtitle">{{item.subtitle}}</view>
       </view>
-      <view
-        class="cooperate"
-        data-id="{{item.id}}"
-        bindtap="contactPartner"
-      >沟通</view>
+      <view wx:else class="inline-empty">暂无伙伴推荐，可前往合作广场主动发现。</view>
     </view>
-  </view>
-  <view wx:else class="inline-empty">暂无伙伴推荐，可前往合作广场主动发现。</view>
+  </block>
 </view>
 <tab-bar active="home"></tab-bar>

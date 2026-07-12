@@ -12,7 +12,7 @@
       <view class="panel-subtitle">我们为您提供专属的服务体验</view>
     </view>
 
-    <view class="role-card provider" data-role="provider" bindtap="chooseRole">
+    <view class="role-card provider {{selectedRole === 'provider' ? 'selected' : ''}}" data-role="provider" bindtap="chooseRole" hover-class="pressable">
       <view class="role-info">
         <view class="role-name">我是服务方</view>
         <view class="role-desc">我提供音乐推广、宣发等专业服务</view>
@@ -20,7 +20,7 @@
       <image class="role-icon" src="/assets/images/role-service.png" mode="aspectFit"></image>
     </view>
 
-    <view class="role-card client" data-role="client" bindtap="chooseRole">
+    <view class="role-card client {{selectedRole === 'client' ? 'selected' : ''}}" data-role="client" bindtap="chooseRole" hover-class="pressable">
       <view class="role-info">
         <view class="role-name">我是创作者</view>
         <view class="role-desc">我希望宣传我的作品，寻求音乐推广</view>
@@ -34,5 +34,10 @@
       </view>
       <view class="agree-text">已阅读并同意 <text class="link">《用户协议》</text>与<text class="link">《隐私政策》</text></view>
     </view>
+  </view>
+
+  <view wx:if="{{entering}}" class="entering-overlay">
+    <view class="entering-spinner"></view>
+    <view class="entering-text">正在进入…</view>
   </view>
 </view>

@@ -1,91 +1,93 @@
-<view class="page-shell profile-page">
+<view class="page-shell">
   <page-header title="我的主页" subtitle="完善档案，让优质合作主动找到你"></page-header>
 
-  <data-state loading="{{loading}}" error="{{error}}" bind:action="loadProfile"></data-state>
+  <data-state loading="{{loading}}" error="{{error}}" bind:action="retry"></data-state>
 
   <block wx:if="{{!loading && !error}}">
-  <view class="profile-card">
-    <view class="profile-head">
-      <view class="profile-avatar">{{user.avatar}}</view>
-      <view class="profile-main">
-        <view class="profile-name">{{user.organization}}</view>
-        <view class="profile-role">
-          <view class="role-check" wx:if="{{user.verified}}">✓</view>
-          {{user.verified ? '已认证' : '未认证'}}{{roleLabel}}
+    <view class="profile-card">
+      <view class="profile-head">
+        <view class="profile-avatar">{{user.avatar}}</view>
+        <view class="profile-main">
+          <view class="profile-name">{{user.organization}}</view>
+          <view class="profile-role">
+            <view class="role-check" wx:if="{{user.verified}}">✓</view>
+            <text>{{user.verified ? '已认证' : '未认证'}} · {{roleLabel}}</text>
+          </view>
+        </view>
+        <button class="edit-button" disabled="{{actionLoading}}" bindtap="editProfile">编辑</button>
+      </view>
+      <view class="profile-desc">{{user.description}}</view>
+      <view class="profile-stats">
+        <view class="profile-stat" wx:for="{{stats}}" wx:key="label">
+          <text>{{item.value}}</text>
+          <view>{{item.label}}</view>
         </view>
       </view>
-      <button class="edit-button" disabled="{{actionLoading}}" bindtap="editProfile">编辑</button>
     </view>
-    <view class="profile-desc">{{user.description}}</view>
-    <view class="profile-stats">
-      <view class="profile-stat" wx:for="{{stats}}" wx:key="label">
-        <text>{{item.value}}</text>
-        <view>{{item.label}}</view>
+
+    <view class="section">
+      <view class="section-head">
+        <text class="section-title">资质认证</text>
       </view>
-    </view>
-  </view>
-
-  <view class="section">
-    <view class="section-head">
-      <text class="section-title">资质认证</text>
-    </view>
-    <view class="certs card" wx:if="{{certifications.length}}">
-      <view class="cert" wx:for="{{certifications}}" wx:key="id">
-        <view class="cert-icon {{item.colorClass}}"><view class="ui-icon icon-{{item.iconClass}}"></view></view>
-        <text>{{item.title}}</text>
-        <view>{{item.status}}</view>
-      </view>
-    </view>
-    <view wx:else class="card inline-empty">暂无认证信息</view>
-  </view>
-
-  <view class="section">
-    <view class="section-head">
-      <text class="section-title">能力标签</text>
-    </view>
-    <view class="skill-card card" wx:if="{{tags.length}}">
-      <text wx:for="{{tags}}" wx:key="*this">{{item}}</text>
-    </view>
-    <view wx:else class="card inline-empty" bindtap="editProfile">添加能力标签，让推荐更准确</view>
-  </view>
-
-  <view class="section">
-    <view class="section-head">
-      <text class="section-title">精选案例</text>
-    </view>
-    <scroll-view wx:if="{{cases.length}}" class="case-scroll" scroll-x enhanced show-scrollbar="{{false}}">
-      <view class="cases">
-        <view class="case-card {{item.colorClass}}" wx:for="{{cases}}" wx:key="id">
-          <view class="case-type">{{item.caseType}}</view>
-          <view class="case-name">{{item.name}}</view>
-          <view class="case-result">{{item.resultText}}</view>
+      <view class="certs card" wx:if="{{certifications.length}}">
+        <view class="cert" wx:for="{{certifications}}" wx:key="id">
+          <view class="cert-icon {{item.colorClass}}">
+            <view class="ui-icon icon-{{item.iconClass}}"></view>
+          </view>
+          <text class="cert-title">{{item.title}}</text>
+          <view class="cert-status">{{item.status}}</view>
         </view>
       </view>
-    </scroll-view>
-    <view wx:else class="card inline-empty">暂无精选案例</view>
-  </view>
-
-  <view class="section">
-    <view class="section-head">
-      <text class="section-title">结算信息</text>
+      <view wx:else class="card inline-empty">暂无认证信息</view>
     </view>
-    <view class="wallet card">
-      <view class="wallet-icon"><view class="ui-icon icon-wallet"></view></view>
-      <view class="wallet-main">
-        <view class="wallet-label">可提现余额</view>
-        <view class="wallet-value">{{walletBalance}}</view>
+
+    <view class="section">
+      <view class="section-head">
+        <text class="section-title">能力标签</text>
       </view>
-      <button
-        class="wallet-button"
-        disabled="{{actionLoading || walletBalanceCents <= 0}}"
-        bindtap="withdraw"
-      >提现</button>
+      <view class="skill-card card" wx:if="{{tags.length}}">
+        <text wx:for="{{tags}}" wx:key="*this">{{item}}</text>
+      </view>
+      <view wx:else class="card inline-empty" bindtap="editProfile">添加能力标签，让推荐更准确</view>
     </view>
-  </view>
 
-  <button class="role-switch" disabled="{{actionLoading}}" loading="{{actionLoading}}" bindtap="switchRole">
-    {{actionLoading ? '正在处理' : '切换为'}}{{actionLoading ? '' : (isProvider ? '被服务方' : '服务方')}}
-  </button>
+    <view class="section">
+      <view class="section-head">
+        <text class="section-title">精选案例</text>
+      </view>
+      <scroll-view wx:if="{{cases.length}}" class="case-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+        <view class="cases">
+          <view class="case-card {{item.colorClass}}" wx:for="{{cases}}" wx:key="id">
+            <view class="case-type">{{item.caseType}}</view>
+            <view class="case-name">{{item.name}}</view>
+            <view class="case-result">{{item.resultText}}</view>
+          </view>
+        </view>
+      </scroll-view>
+      <view wx:else class="card inline-empty">暂无精选案例</view>
+    </view>
+
+    <view class="section">
+      <view class="section-head">
+        <text class="section-title">结算信息</text>
+      </view>
+      <view class="wallet card">
+        <view class="wallet-icon"><view class="ui-icon icon-wallet"></view></view>
+        <view class="wallet-main">
+          <view class="wallet-label">可提现余额</view>
+          <view class="wallet-value">{{walletBalance}}</view>
+        </view>
+        <button
+          class="wallet-button"
+          disabled="{{actionLoading || walletBalanceCents <= 0}}"
+          bindtap="withdraw"
+        >提现</button>
+      </view>
+    </view>
+
+    <button class="role-switch" disabled="{{actionLoading}}" loading="{{actionLoading}}" bindtap="switchRole">
+      {{actionLoading ? '正在处理' : '切换为'}}{{actionLoading ? '' : (isProvider ? '被服务方' : '服务方')}}
+    </button>
   </block>
 </view>
 <tab-bar active="profile"></tab-bar>

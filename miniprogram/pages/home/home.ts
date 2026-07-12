@@ -6,6 +6,7 @@ interface Recommendation {
   id: string
   avatar: string
   avatarClass: string
+  avatarIsImage: boolean
   verified: boolean
   preferred: boolean
   title: string
@@ -15,7 +16,6 @@ interface Recommendation {
 }
 
 interface HomeResponse {
-  name: string
   recommendations: Recommendation[]
 }
 
@@ -24,36 +24,34 @@ Component({
     loading: true,
     error: '',
     greeting: '早上好',
-    statusBarHeight: 20,
-    name: '',
     recommendations: [] as Recommendation[],
     connectingId: '',
   },
   lifetimes: {
     attached() {
-      const systemInfo = wx.getSystemInfoSync()
-      this.setData({
-        greeting: greetingForHour(new Date().getHours()),
-        statusBarHeight: systemInfo.statusBarHeight || 20,
-      })
+      this.setData({ greeting: greetingForHour(new Date().getHours()) })
       this.loadHome()
     },
   },
   methods: {
+    retry() {
+      return this.loadHome()
+    },
     async loadHome() {
       this.setData({ loading: true, error: '' })
       try {
         const response = await apiRequest<HomeResponse>('/api/home')
         const recommendations = (response.recommendations || []).map((item) => {
-          const hasImageAvatar = item.avatar && (item.avatar.indexOf('http') === 0 || item.avatar.indexOf('/') === 0)
+          const hasImageAvatar = !!item.avatar && (item.avatar.indexOf('http') === 0 || item.avatar.indexOf('/') === 0)
           return {
             ...item,
             avatar: hasImageAvatar ? item.avatar : (item.title ? item.title.charAt(0) : ''),
+            avatarIsImage: hasImageAvatar,
             verified: item.verified ?? true,
             preferred: item.preferred ?? true,
           }
         })
-        this.setData({ ...response, recommendations, loading: false })
+        this.setData({ recommendations, loading: false })
       } catch (error) {
         this.setData({
           loading: false,

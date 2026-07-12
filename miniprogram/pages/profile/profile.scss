@@ -1,14 +1,13 @@
+/* === 主页卡片（与首页 AI 卡片同款渐变） === */
 .profile-card {
   position: relative;
   overflow: hidden;
-  margin-top: 30rpx;
-  padding: 28rpx;
-  color: #ffffff;
-  background: linear-gradient(135deg, #167f74, #22a390);
-  border-radius: 14rpx;
-  box-shadow:
-    0 1rpx 2rpx rgba(30, 51, 58, 0.06),
-    0 14rpx 30rpx rgba(23, 135, 123, 0.16);
+  margin-top: 24rpx;
+  padding: 36rpx 32rpx;
+  color: rgba(52, 59, 86, 1);
+  background: linear-gradient(rgba(137, 154, 248, 1), rgba(225, 230, 249, 1));
+  border-radius: 48rpx;
+  box-shadow: 0 12rpx 30rpx rgba(95, 101, 180, 0.18);
 }
 
 .profile-card::after {
@@ -18,7 +17,7 @@
   width: 260rpx;
   height: 260rpx;
   content: "";
-  border: 1rpx solid rgba(255, 255, 255, 0.16);
+  border: 1rpx solid rgba(255, 255, 255, 0.32);
   border-radius: 50%;
 }
 
@@ -30,18 +29,19 @@
 }
 
 .profile-avatar {
-  width: 96rpx;
-  height: 96rpx;
+  width: 104rpx;
+  height: 104rpx;
   flex: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: 22rpx;
-  color: #17877b;
-  font-size: 38rpx;
+  margin-right: 24rpx;
+  color: rgba(95, 101, 180, 1);
+  font-size: 40rpx;
   font-weight: 700;
-  background: #ffffff;
-  border-radius: 12rpx;
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 32rpx;
+  box-shadow: 0 6rpx 16rpx rgba(95, 101, 180, 0.18);
 }
 
 .profile-main {
@@ -51,7 +51,8 @@
 
 .profile-name {
   overflow: hidden;
-  font-size: 32rpx;
+  color: rgba(52, 59, 86, 1);
+  font-size: 36rpx;
   font-weight: 700;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -60,50 +61,51 @@
 .profile-role {
   display: flex;
   align-items: center;
-  gap: 8rpx;
-  margin-top: 8rpx;
-  color: rgba(255, 255, 255, 0.82);
-  font-size: 22rpx;
+  gap: 10rpx;
+  margin-top: 10rpx;
+  color: rgba(52, 59, 86, 0.7);
+  font-size: 24rpx;
 }
 
 .role-check {
-  width: 24rpx;
-  height: 24rpx;
+  width: 28rpx;
+  height: 28rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #17877b;
-  font-size: 16rpx;
+  color: rgba(255, 255, 255, 1);
+  font-size: 18rpx;
   line-height: 1;
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 7rpx;
+  background: rgba(95, 101, 180, 1);
+  border-radius: 8rpx;
 }
 
 .edit-button {
-  min-width: 88rpx;
-  height: 52rpx;
+  min-width: 96rpx;
+  height: 56rpx;
   display: flex;
   align-items: center;
-  padding: 0 18rpx;
-  color: #ffffff;
-  font-size: 22rpx;
-  background: rgba(255, 255, 255, 0.14);
-  border: 1rpx solid rgba(255, 255, 255, 0.28);
-  border-radius: 9rpx;
+  padding: 0 24rpx;
+  color: rgba(52, 59, 86, 1);
+  font-size: 24rpx;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 48rpx;
+  box-shadow: 0 4rpx 12rpx rgba(95, 101, 180, 0.18);
 }
 
 .edit-button[disabled] {
-  color: rgba(255, 255, 255, 0.56);
-  background: rgba(255, 255, 255, 0.1);
+  color: rgba(52, 59, 86, 0.5);
+  background: rgba(255, 255, 255, 0.72);
 }
 
 .profile-desc {
   position: relative;
   z-index: 2;
   margin-top: 24rpx;
-  color: rgba(255, 255, 255, 0.86);
-  font-size: 23rpx;
-  line-height: 1.5;
+  color: rgba(52, 59, 86, 0.78);
+  font-size: 26rpx;
+  line-height: 1.55;
 }
 
 .profile-stats {
@@ -112,12 +114,13 @@
   display: flex;
   margin-top: 28rpx;
   padding-top: 24rpx;
-  border-top: 1rpx solid rgba(255, 255, 255, 0.18);
+  border-top: 1rpx solid rgba(95, 101, 180, 0.18);
 }
 
 .profile-stat {
   width: 33.333%;
   text-align: center;
+  color: rgba(52, 59, 86, 1);
 }
 
 .profile-stat text {
@@ -127,14 +130,15 @@
 }
 
 .profile-stat view {
-  margin-top: 12rpx;
-  color: rgba(255, 255, 255, 0.72);
-  font-size: 21rpx;
+  margin-top: 8rpx;
+  color: rgba(52, 59, 86, 0.6);
+  font-size: 24rpx;
 }
 
+/* === 资质认证 === */
 .certs {
   display: flex;
-  padding: 24rpx 12rpx;
+  padding: 36rpx 20rpx;
 }
 
 .cert {
@@ -142,81 +146,79 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  color: #617478;
-  font-size: 22rpx;
+  color: rgba(52, 59, 86, 1);
+  font-size: 24rpx;
 }
 
 .cert-icon {
-  width: 56rpx;
-  height: 56rpx;
+  width: 72rpx;
+  height: 72rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 12rpx;
-  border-radius: 10rpx;
+  margin-bottom: 14rpx;
+  color: rgba(95, 101, 180, 1);
+  background: rgba(237, 239, 253, 1);
+  border-radius: 24rpx;
 }
 
 .cert-icon .ui-icon {
-  width: 28rpx;
-  height: 28rpx;
+  width: 36rpx;
+  height: 36rpx;
 }
 
-.cert view:last-child {
-  margin-top: 8rpx;
-  color: #17877b;
-  font-size: 21rpx;
+.cert-title {
+  color: rgba(52, 59, 86, 1);
+  font-size: 24rpx;
+  font-weight: 500;
 }
 
-.mint {
-  color: #17877b;
-  background: #eaf6f3;
+.cert-status {
+  margin-top: 6rpx;
+  color: rgba(95, 101, 180, 1);
+  font-size: 22rpx;
+  font-weight: 500;
 }
 
-.blue {
-  color: #3d6ea8;
-  background: #e9f1f9;
-}
-
-.gold {
-  color: #a3782e;
-  background: #f8f0e3;
-}
-
+/* === 能力标签 === */
 .skill-card {
   display: flex;
   flex-wrap: wrap;
-  gap: 12rpx;
-  padding: 24rpx;
+  gap: 14rpx;
+  padding: 28rpx 24rpx;
 }
 
 .skill-card text {
-  padding: 10rpx 16rpx;
-  color: #617478;
-  font-size: 22rpx;
-  background: #f1f4f4;
-  border-radius: 8rpx;
+  padding: 10rpx 20rpx;
+  color: rgba(95, 101, 180, 1);
+  font-size: 24rpx;
+  background: rgba(237, 239, 253, 1);
+  border-radius: 24rpx;
 }
 
+/* === 精选案例 === */
 .case-scroll {
   white-space: nowrap;
 }
 
 .cases {
   display: inline-flex;
-  gap: 16rpx;
+  gap: 18rpx;
 }
 
 .case-card {
   position: relative;
   width: 280rpx;
-  height: 192rpx;
+  height: 200rpx;
   display: inline-flex;
   flex-direction: column;
   justify-content: flex-end;
   overflow: hidden;
   padding: 24rpx;
-  color: #ffffff;
-  border-radius: 13rpx;
+  color: rgba(52, 59, 86, 1);
+  background: linear-gradient(135deg, rgba(137, 154, 248, 0.7), rgba(225, 230, 249, 1));
+  border-radius: 32rpx;
+  box-shadow: 0 6rpx 18rpx rgba(95, 101, 180, 0.14);
 }
 
 .case-card::after {
@@ -226,20 +228,8 @@
   width: 150rpx;
   height: 150rpx;
   content: "";
-  border: 1rpx solid rgba(255, 255, 255, 0.2);
+  border: 1rpx solid rgba(255, 255, 255, 0.5);
   border-radius: 50%;
-}
-
-.sunset {
-  background: linear-gradient(135deg, #3d9b8c, #24766c);
-}
-
-.ocean {
-  background: linear-gradient(135deg, #4d9d9b, #2d7474);
-}
-
-.violet {
-  background: linear-gradient(135deg, #5c937d, #3b6b5b);
 }
 
 .case-type,
@@ -250,43 +240,46 @@
 }
 
 .case-type {
-  color: rgba(255, 255, 255, 0.72);
-  font-size: 21rpx;
+  color: rgba(52, 59, 86, 0.7);
+  font-size: 22rpx;
 }
 
 .case-name {
   margin-top: 8rpx;
+  color: rgba(52, 59, 86, 1);
   font-size: 28rpx;
   font-weight: 700;
 }
 
 .case-result {
   margin-top: 8rpx;
+  color: rgba(52, 59, 86, 0.78);
   font-size: 22rpx;
 }
 
+/* === 结算信息 === */
 .wallet {
   display: flex;
   align-items: center;
-  gap: 18rpx;
-  padding: 24rpx;
+  gap: 20rpx;
+  padding: 30rpx 28rpx;
 }
 
 .wallet-icon {
-  width: 66rpx;
-  height: 66rpx;
+  width: 72rpx;
+  height: 72rpx;
   flex: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #17877b;
-  background: #eaf6f3;
-  border-radius: 10rpx;
+  color: rgba(95, 101, 180, 1);
+  background: rgba(237, 239, 253, 1);
+  border-radius: 24rpx;
 }
 
 .wallet-icon .ui-icon {
-  width: 31rpx;
-  height: 31rpx;
+  width: 36rpx;
+  height: 36rpx;
 }
 
 .wallet-main {
@@ -295,93 +288,68 @@
 }
 
 .wallet-label {
-  color: #8b999d;
-  font-size: 22rpx;
+  color: rgba(118, 121, 143, 1);
+  font-size: 24rpx;
 }
 
 .wallet-value {
   margin-top: 6rpx;
-  color: #263b40;
-  font-size: 34rpx;
+  color: rgba(52, 59, 86, 1);
+  font-size: 36rpx;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
 
 .wallet-button {
-  min-width: 104rpx;
-  height: 56rpx;
+  min-width: 128rpx;
+  height: 64rpx;
   display: flex;
   align-items: center;
-  padding: 0 22rpx;
-  color: #ffffff;
-  font-size: 23rpx;
-  font-weight: 700;
-  background: linear-gradient(135deg, #17877b, #22a390);
-  border-radius: 10rpx;
+  padding: 0 28rpx;
+  color: rgba(255, 255, 255, 1);
+  font-size: 26rpx;
+  font-weight: 600;
+  background: rgba(46, 49, 62, 1);
+  border-radius: 48rpx;
+  box-shadow: 0 4rpx 12rpx rgba(46, 49, 62, 0.18);
 }
 
-.menu {
-  overflow: hidden;
-  padding: 0 24rpx;
-}
-
-.menu-item {
-  min-height: 88rpx;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  color: #617478;
-  font-size: 25rpx;
-}
-
-.menu-item + .menu-item {
-  border-top: 1rpx solid #edf1f2;
-}
-
-.menu-chevron {
-  width: 14rpx;
-  height: 14rpx;
-  color: #8b999d;
-  border-top: 2rpx solid currentColor;
-  border-right: 2rpx solid currentColor;
-  transform: rotate(45deg);
-}
-
+/* === 角色切换（次按钮） === */
 .role-switch {
   width: 100%;
-  height: 76rpx;
-  margin: 24rpx 0 0;
-  color: #17877b;
-  font-size: 24rpx;
-  font-weight: 700;
-  line-height: 76rpx;
-  background: #ffffff;
-  border: 1rpx solid rgba(23, 135, 123, 0.18);
-  border-radius: 11rpx;
-  box-shadow: 0 6rpx 20rpx rgba(30, 51, 58, 0.04);
+  height: 88rpx;
+  margin: 36rpx 0 0;
+  color: rgba(95, 101, 180, 1);
+  font-size: 28rpx;
+  font-weight: 600;
+  line-height: 88rpx;
+  background: rgba(255, 255, 255, 1);
+  border-radius: 48rpx;
+  box-shadow: 0 4rpx 12rpx rgba(95, 101, 180, 0.1);
 }
 
 .role-switch::after {
   border: 0;
 }
 
+/* === 底部抽屉 === */
 .sheet-layer {
   position: fixed;
   z-index: 60;
   inset: 0;
   display: flex;
   align-items: flex-end;
-  background: rgba(20, 35, 41, 0.34);
+  background: rgba(46, 49, 62, 0.4);
 }
 
 .sheet-card {
   width: 100%;
   max-height: 88vh;
   overflow-y: auto;
-  padding: 30rpx 28rpx calc(32rpx + env(safe-area-inset-bottom));
-  background: #ffffff;
-  border-radius: 16rpx 16rpx 0 0;
-  box-shadow: 0 -8rpx 30rpx rgba(30, 51, 58, 0.1);
+  padding: 36rpx 32rpx calc(36rpx + env(safe-area-inset-bottom));
+  background: rgba(255, 255, 255, 1);
+  border-radius: 32rpx 32rpx 0 0;
+  box-shadow: 0 -12rpx 30rpx rgba(46, 49, 62, 0.16);
 }
 
 .sheet-head {
@@ -392,128 +360,129 @@
 }
 
 .sheet-title {
-  color: #263b40;
-  font-size: 32rpx;
+  color: rgba(52, 59, 86, 1);
+  font-size: 34rpx;
   font-weight: 700;
 }
 
 .sheet-description {
   margin-top: 8rpx;
-  color: #829196;
-  font-size: 22rpx;
+  color: rgba(118, 121, 143, 1);
+  font-size: 24rpx;
 }
 
 .sheet-close {
-  width: 54rpx;
-  height: 54rpx;
-  color: #6d7d81;
+  width: 56rpx;
+  height: 56rpx;
+  color: rgba(118, 121, 143, 1);
   font-size: 38rpx;
-  background: #f0f4f4;
-  border-radius: 10rpx;
+  background: rgba(237, 239, 253, 1);
+  border-radius: 28rpx;
 }
 
 .field {
   display: block;
-  margin-top: 26rpx;
+  margin-top: 28rpx;
 }
 
 .field > text {
-  color: #52666b;
-  font-size: 23rpx;
-  font-weight: 700;
+  color: rgba(52, 59, 86, 1);
+  font-size: 26rpx;
+  font-weight: 600;
 }
 
 .field input,
 .field textarea,
 .amount-input {
   width: 100%;
-  margin-top: 12rpx;
-  color: #263b40;
-  font-size: 26rpx;
-  background: #f5f7f7;
-  border: 1rpx solid #e0e7e8;
-  border-radius: 10rpx;
+  margin-top: 14rpx;
+  color: rgba(52, 59, 86, 1);
+  font-size: 28rpx;
+  background: rgba(237, 239, 253, 1);
+  border-radius: 24rpx;
 }
 
 .field input {
-  height: 76rpx;
-  padding: 0 22rpx;
+  height: 84rpx;
+  padding: 0 24rpx;
 }
 
 .field textarea {
-  min-height: 168rpx;
-  padding: 20rpx 22rpx;
+  min-height: 180rpx;
+  padding: 22rpx 24rpx;
   line-height: 1.55;
 }
 
 .field-hint {
   margin-top: 8rpx;
-  color: #96a3a6;
-  font-size: 20rpx;
+  color: rgba(118, 121, 143, 1);
+  font-size: 22rpx;
   text-align: right;
 }
 
 .sheet-primary {
   width: 100%;
-  height: 78rpx;
-  margin-top: 30rpx;
-  color: #ffffff;
-  font-size: 26rpx;
-  font-weight: 700;
-  background: linear-gradient(135deg, #17877b, #22a390);
-  border-radius: 11rpx;
+  height: 88rpx;
+  margin-top: 36rpx;
+  color: rgba(255, 255, 255, 1);
+  font-size: 28rpx;
+  font-weight: 600;
+  background: rgba(46, 49, 62, 1);
+  border-radius: 48rpx;
+  box-shadow: 0 8rpx 20rpx rgba(46, 49, 62, 0.2);
 }
 
 .balance-summary {
-  margin-top: 26rpx;
-  padding: 24rpx;
-  background: #eaf6f3;
-  border-radius: 11rpx;
+  margin-top: 28rpx;
+  padding: 28rpx;
+  background: rgba(237, 239, 253, 1);
+  border-radius: 24rpx;
 }
 
 .balance-summary view {
-  color: #6d7b81;
-  font-size: 22rpx;
+  color: rgba(118, 121, 143, 1);
+  font-size: 24rpx;
 }
 
 .balance-summary text {
   display: block;
-  margin-top: 6rpx;
-  color: #17877b;
-  font-size: 38rpx;
+  margin-top: 8rpx;
+  color: rgba(95, 101, 180, 1);
+  font-size: 40rpx;
   font-weight: 700;
 }
 
 .amount-input {
-  height: 82rpx;
+  height: 88rpx;
   display: flex;
   align-items: center;
-  padding-left: 22rpx;
+  padding-left: 24rpx;
 }
 
 .amount-input > text {
-  color: #35454c;
-  font-size: 32rpx;
+  color: rgba(52, 59, 86, 1);
+  font-size: 36rpx;
   font-weight: 700;
 }
 
 .amount-input input {
   min-width: 0;
-  height: 80rpx;
+  height: 84rpx;
   flex: 1;
   margin: 0;
-  padding: 0 14rpx;
-  font-size: 34rpx;
+  padding: 0 16rpx;
+  font-size: 36rpx;
   background: transparent;
   border: 0;
 }
 
 .amount-input button {
-  height: 52rpx;
-  margin-right: 12rpx;
-  padding: 0 18rpx;
-  color: #17877b;
-  font-size: 23rpx;
-  background: #ffffff;
-  border-radius: 8rpx;
+  height: 56rpx;
+  margin-right: 14rpx;
+  padding: 0 22rpx;
+  color: rgba(95, 101, 180, 1);
+  font-size: 24rpx;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 1);
+  border-radius: 28rpx;
 }

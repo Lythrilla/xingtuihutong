@@ -1,11 +1,10 @@
 .header-shell {
   width: 100%;
+  background: rgba(237, 239, 253, 1);
 }
 
 .header-inner {
-  display: flex;
-  align-items: center;
-  padding-top: 8rpx;
+  padding-top: 42rpx;
 }
 
 .header-copy {
@@ -14,21 +13,22 @@
 
 .header-title {
   overflow: hidden;
-  color: #20333a;
-  font-size: 42rpx;
+  color: rgba(52, 59, 86, 1);
+  font-size: 44rpx;
   font-weight: 700;
-  line-height: 1.12;
-  letter-spacing: -1.2rpx;
+  line-height: 1.2;
+  text-align: left;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .header-subtitle {
   overflow: hidden;
-  margin-top: 12rpx;
-  color: #829196;
-  font-size: 23rpx;
-  line-height: 1.35;
+  margin-top: 24rpx;
+  color: rgba(118, 121, 143, 1);
+  font-size: 32rpx;
+  line-height: 1.2;
+  text-align: left;
   text-overflow: ellipsis;
   white-space: nowrap;
 }

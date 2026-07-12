@@ -1,0 +1,138 @@
+page {
+  height: 100%;
+  background: rgba(237, 239, 253, 1);
+}
+
+.page {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* === 状态条 === */
+.conversation-status {
+  flex: none;
+  padding: 14rpx 28rpx;
+  color: rgba(118, 121, 143, 1);
+  font-size: 24rpx;
+  text-align: center;
+  background: rgba(237, 239, 253, 1);
+  border-top: 1rpx solid rgba(95, 101, 180, 0.08);
+  border-bottom: 1rpx solid rgba(95, 101, 180, 0.08);
+}
+
+/* === 消息列表 === */
+.messages {
+  flex: 1;
+  box-sizing: border-box;
+  padding: 32rpx 28rpx;
+}
+
+.conversation-empty {
+  max-width: 560rpx;
+  margin: 120rpx auto 0;
+  padding: 48rpx 36rpx;
+  text-align: center;
+  background: rgba(255, 255, 255, 1);
+  border-radius: 32rpx;
+  box-shadow:
+    0 2rpx 6rpx rgba(46, 49, 62, 0.04),
+    0 12rpx 28rpx rgba(95, 101, 180, 0.06);
+}
+
+.empty-title {
+  color: rgba(52, 59, 86, 1);
+  font-size: 30rpx;
+  font-weight: 600;
+}
+
+.empty-description {
+  margin-top: 14rpx;
+  color: rgba(118, 121, 143, 1);
+  font-size: 26rpx;
+  line-height: 1.55;
+}
+
+.message-row {
+  display: flex;
+  margin-bottom: 20rpx;
+}
+
+.message-row.mine {
+  justify-content: flex-end;
+}
+
+.message {
+  max-width: 74%;
+  padding: 20rpx 26rpx 16rpx;
+  color: rgba(52, 59, 86, 1);
+  font-size: 28rpx;
+  line-height: 1.5;
+  background: rgba(255, 255, 255, 1);
+  border-radius: 24rpx 24rpx 24rpx 8rpx;
+  box-shadow:
+    0 2rpx 6rpx rgba(46, 49, 62, 0.04),
+    0 6rpx 16rpx rgba(95, 101, 180, 0.06);
+}
+
+.mine .message {
+  color: rgba(255, 255, 255, 1);
+  background: linear-gradient(135deg, rgba(137, 154, 248, 1), rgba(95, 101, 180, 1));
+  border-radius: 24rpx 24rpx 8rpx 24rpx;
+  box-shadow: 0 8rpx 20rpx rgba(95, 101, 180, 0.22);
+}
+
+.time {
+  display: block;
+  margin-top: 8rpx;
+  color: rgba(118, 121, 143, 1);
+  font-size: 22rpx;
+}
+
+.mine .time {
+  color: rgba(255, 255, 255, 0.78);
+}
+
+/* === 输入栏 === */
+.composer {
+  display: flex;
+  gap: 16rpx;
+  padding: 20rpx 28rpx calc(20rpx + env(safe-area-inset-bottom));
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(20px);
+  border-top: 1rpx solid rgba(95, 101, 180, 0.08);
+}
+
+.composer input {
+  min-width: 0;
+  flex: 1;
+  height: 80rpx;
+  padding: 0 28rpx;
+  color: rgba(52, 59, 86, 1);
+  font-size: 28rpx;
+  background: rgba(237, 239, 253, 1);
+  border-radius: 48rpx;
+}
+
+.composer button {
+  width: 132rpx;
+  height: 80rpx;
+  margin: 0;
+  color: rgba(255, 255, 255, 1);
+  font-size: 26rpx;
+  font-weight: 600;
+  line-height: 80rpx;
+  background: rgba(46, 49, 62, 1);
+  border-radius: 48rpx;
+  box-shadow: 0 4rpx 12rpx rgba(46, 49, 62, 0.18);
+}
+
+.composer button[disabled] {
+  color: rgba(118, 121, 143, 1);
+  background: rgba(237, 239, 253, 1);
+  box-shadow: none;
+}
+
+.composer button::after {
+  border: 0;
+}

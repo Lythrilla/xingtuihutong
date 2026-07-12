@@ -3,7 +3,7 @@
   z-index: 100;
   overflow: hidden;
   flex: none;
-  color: #20333a;
+  color: rgba(52, 59, 86, 1);
 }
 
 .weui-navigation-bar__inner {
@@ -17,8 +17,8 @@
   padding-top: env(safe-area-inset-top);
   width: 100%;
   box-sizing: border-box;
-  background: #ffffff;
-  box-shadow: 0 8rpx 30rpx rgba(30, 51, 58, 0.06);
+  background: rgba(255, 255, 255, 1);
+  box-shadow: 0 8rpx 30rpx rgba(46, 49, 62, 0.06);
   transition: box-shadow 0.25s ease, background-color 0.25s ease;
 }
 
@@ -30,7 +30,7 @@
   right: 0;
   bottom: 0;
   height: 2rpx;
-  background: linear-gradient(90deg, rgba(23, 135, 123, 0), rgba(23, 135, 123, 0.55) 50%, rgba(34, 163, 144, 0));
+  background: linear-gradient(90deg, rgba(95, 101, 180, 0), rgba(95, 101, 180, 0.55) 50%, rgba(137, 154, 248, 0));
 }
 
 /* 毛玻璃模式（默认） */
@@ -38,14 +38,14 @@
   background: rgba(255, 255, 255, 0.72) !important;
   -webkit-backdrop-filter: saturate(180%) blur(20px);
   backdrop-filter: saturate(180%) blur(20px);
-  box-shadow: 0 8rpx 30rpx rgba(30, 51, 58, 0.05);
+  box-shadow: 0 8rpx 30rpx rgba(46, 49, 62, 0.05);
 }
 
 /* 品牌渐变模式 */
 .weui-navigation-bar__inner.is-brand {
-  background: linear-gradient(135deg, #17877b, #22a390) !important;
-  color: #ffffff;
-  box-shadow: 0 10rpx 30rpx rgba(23, 135, 123, 0.18);
+  background: linear-gradient(135deg, rgba(137, 154, 248, 1), rgba(95, 101, 180, 1)) !important;
+  color: rgba(255, 255, 255, 1);
+  box-shadow: 0 10rpx 30rpx rgba(95, 101, 180, 0.18);
 }
 .weui-navigation-bar__inner.is-brand::after {
   background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.5) 50%, rgba(255, 255, 255, 0));
@@ -81,7 +81,7 @@
 }
 
 .nav-btn--active {
-  background-color: rgba(23, 135, 123, 0.1);
+  background-color: rgba(95, 101, 180, 0.1);
 }
 
 .nav-btn__icon {
@@ -138,7 +138,7 @@
   width: 16px;
   height: 16px;
   display: block;
-  background: transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80px' height='80px' viewBox='0 0 80 80'%3E%3Ccircle cx='40' cy='40' r='34' fill='none' stroke='%2317877b' stroke-width='8' stroke-dasharray='110 110'/%3E%3C/svg%3E") no-repeat;
+  background: transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80px' height='80px' viewBox='0 0 80 80'%3E%3Ccircle cx='40' cy='40' r='34' fill='none' stroke='%235f65b4' stroke-width='8' stroke-dasharray='110 110'/%3E%3C/svg%3E") no-repeat;
   background-size: 100%;
   animation: loading linear infinite 1s;
 }
@@ -165,7 +165,7 @@
 }
 
 .weui-navigation-bar__right .nav-action--active {
-  background-color: rgba(23, 135, 123, 0.1);
+  background-color: rgba(95, 101, 180, 0.1);
 }
 
 @keyframes loading {

@@ -12,7 +12,7 @@ page {
   background: linear-gradient(180deg, rgba(237, 239, 253, 1) 0%, rgba(251, 251, 254, 1) 100%);
 }
 
-/* 顶部：标题 + 副标题 + 插画 */
+/* === 顶部：标题 + 副标题 + 插画 === */
 .hero {
   flex: 1;
   display: flex;
@@ -24,7 +24,7 @@ page {
 
 .brand-title {
   margin-top: 24rpx;
-  color: #343B56;
+  color: rgba(52, 59, 86, 1);
   font-size: 78rpx;
   font-weight: 700;
   text-align: center;
@@ -34,7 +34,7 @@ page {
 .brand-subtitle {
   margin-top: 18rpx;
   max-width: 560rpx;
-  color: #75798F;
+  color: rgba(118, 121, 143, 1);
   font-size: 30rpx;
   text-align: center;
   line-height: 1.5;
@@ -48,20 +48,20 @@ page {
   opacity: 0.7;
 }
 
-/* 底部白色圆角面板 */
+/* === 底部白色圆角面板 === */
 .panel {
   display: flex;
   flex-direction: column;
   margin-top: 36rpx;
   padding: 44rpx 40rpx calc(48rpx + env(safe-area-inset-bottom));
-  background: #FFFFFF;
+  background: rgba(255, 255, 255, 1);
   border-top-left-radius: 48rpx;
   border-top-right-radius: 48rpx;
   box-shadow: 0 -10rpx 40rpx rgba(120, 130, 180, 0.08);
 }
 
 .panel-title {
-  color: #2E313E;
+  color: rgba(46, 49, 62, 1);
   font-size: 44rpx;
   font-weight: 700;
   text-align: center;
@@ -69,12 +69,12 @@ page {
 
 .panel-subtitle {
   margin-top: 14rpx;
-  color: #76798F;
+  color: rgba(118, 121, 143, 1);
   font-size: 30rpx;
   text-align: center;
 }
 
-/* 角色卡片 */
+/* === 角色卡片 === */
 .role-card {
   position: relative;
   display: flex;
@@ -82,7 +82,8 @@ page {
   justify-content: space-between;
   margin-top: 32rpx;
   padding: 30rpx 32rpx;
-  background: #F0F3FD;
+  background: rgba(240, 243, 253, 1);
+  transition: background 0.2s ease, box-shadow 0.2s ease;
 }
 
 .role-card.provider {
@@ -96,20 +97,25 @@ page {
   border-bottom-right-radius: 48rpx;
 }
 
+.role-card.selected {
+  background: rgba(255, 255, 255, 1);
+  box-shadow: 0 6rpx 20rpx rgba(95, 101, 180, 0.12);
+}
+
 .role-info {
   flex: 1;
   min-width: 0;
 }
 
 .role-name {
-  color: #2E313E;
+  color: rgba(46, 49, 62, 1);
   font-size: 32rpx;
   font-weight: 700;
 }
 
 .role-desc {
   margin-top: 12rpx;
-  color: #76798F;
+  color: rgba(118, 121, 143, 1);
   font-size: 24rpx;
   line-height: 1.5;
 }
@@ -121,7 +127,7 @@ page {
   margin-left: 18rpx;
 }
 
-/* 协议勾选 */
+/* === 协议勾选 === */
 .agreement {
   display: flex;
   align-items: center;
@@ -135,14 +141,14 @@ page {
   flex: none;
   margin-right: 16rpx;
   border-radius: 8rpx;
-  border: 2rpx solid #C9CFE0;
-  background: #FFFFFF;
+  border: 2rpx solid rgba(201, 207, 224, 1);
+  background: rgba(255, 255, 255, 1);
   transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
 .agree-box.on {
-  border-color: #718CFF;
-  background: #718CFF;
+  border-color: rgba(137, 154, 248, 1);
+  background: rgba(137, 154, 248, 1);
 }
 
 .agree-tick {
@@ -151,17 +157,52 @@ page {
   left: 11rpx;
   width: 8rpx;
   height: 16rpx;
-  border-right: 3rpx solid #FFFFFF;
-  border-bottom: 3rpx solid #FFFFFF;
+  border-right: 3rpx solid rgba(255, 255, 255, 1);
+  border-bottom: 3rpx solid rgba(255, 255, 255, 1);
   transform: rotate(45deg);
 }
 
 .agree-text {
-  color: #76798F;
+  color: rgba(118, 121, 143, 1);
   font-size: 24rpx;
   line-height: 1.4;
 }
 
 .link {
-  color: #718CFF;
+  color: rgba(137, 154, 248, 1);
+}
+
+/* === 进入中遮罩 === */
+.entering-overlay {
+  position: fixed;
+  z-index: 100;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24rpx;
+  background: rgba(46, 49, 62, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.entering-spinner {
+  width: 56rpx;
+  height: 56rpx;
+  border: 4rpx solid rgba(255, 255, 255, 0.3);
+  border-top-color: rgba(255, 255, 255, 1);
+  border-radius: 50%;
+  animation: entering-spin 0.8s linear infinite;
+}
+
+.entering-text {
+  color: rgba(255, 255, 255, 1);
+  font-size: 28rpx;
+}
+
+@keyframes entering-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }

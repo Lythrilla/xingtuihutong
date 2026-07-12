@@ -1,7 +1,7 @@
 <view class="page">
-  <navigation-bar title="{{partnerName || '合作会话'}}" background="#ffffff" color="#1c2b33" blur="{{true}}"></navigation-bar>
+  <navigation-bar title="{{partnerName || '合作会话'}}" background="rgba(237, 239, 253, 0.92)" color="rgba(52, 59, 86, 1)" blur="{{true}}"></navigation-bar>
   <view class="conversation-status">合作沟通 · 消息会被安全保存</view>
-  <data-state loading="{{loading}}" error="{{error}}" bind:action="loadMessages"></data-state>
+  <data-state loading="{{loading}}" error="{{error}}" bind:action="retry"></data-state>
   <scroll-view
     wx:if="{{!loading && !error}}"
     class="messages"

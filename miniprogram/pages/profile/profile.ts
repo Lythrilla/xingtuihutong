@@ -52,6 +52,9 @@ Component({
     },
   },
   methods: {
+    retry() {
+      return this.loadProfile()
+    },
     async loadProfile() {
       this.setData({ loading: true, error: '' })
       try {

@@ -1,131 +1,133 @@
-.hero {
+/* === Hero 渐变卡片（与首页 ai-card 同款渐变） === */
+.ai-hero {
   position: relative;
-  height: 246rpx;
-  display: flex;
-  align-items: center;
   overflow: hidden;
-  margin-top: 30rpx;
-  padding: 26rpx 24rpx;
-  background: linear-gradient(135deg, #ffffff, #eef8f5);
-  border: 1rpx solid rgba(23, 135, 123, 0.1);
-  border-radius: 14rpx;
-  box-shadow:
-    0 1rpx 2rpx rgba(30, 51, 58, 0.04),
-    0 12rpx 32rpx rgba(30, 51, 58, 0.055);
+  margin-top: 24rpx;
+  height: 280rpx;
+  padding: 40rpx 30rpx 0 36rpx;
+  background: linear-gradient(rgba(137, 154, 248, 1), rgba(225, 230, 249, 1));
+  border-radius: 48rpx;
+  box-shadow: 0 12rpx 30rpx rgba(95, 101, 180, 0.18);
 }
 
-.hero-copy {
-  width: 58%;
-  min-width: 0;
+.ai-hero-copy {
+  max-width: 360rpx;
 }
 
-.hero-kicker {
-  color: #17877b;
-  font-size: 21rpx;
+.ai-hero-kicker {
+  display: inline-block;
+  padding: 6rpx 16rpx;
+  color: rgba(95, 101, 180, 1);
+  font-size: 22rpx;
+  font-weight: 600;
+  letter-spacing: 2rpx;
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 20rpx;
+}
+
+.ai-hero-title {
+  margin-top: 18rpx;
+  color: rgba(52, 59, 86, 1);
+  font-size: 36rpx;
   font-weight: 700;
-  letter-spacing: 3rpx;
+  line-height: 1.3;
+  letter-spacing: 0.5rpx;
 }
 
-.hero-title {
+.ai-hero-desc {
   margin-top: 12rpx;
-  color: #20333a;
-  font-size: 30rpx;
-  font-weight: 700;
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 24rpx;
   line-height: 1.4;
 }
 
-.hero-desc {
-  margin-top: 10rpx;
-  color: #7a898d;
-  font-size: 21rpx;
-  line-height: 1.5;
-}
-
-.hero-visual {
+.ai-hero-image {
   position: absolute;
-  top: 22rpx;
-  right: 22rpx;
-  bottom: 22rpx;
-  width: 224rpx;
+  top: 30rpx;
+  right: 30rpx;
+  width: 200rpx;
+  height: 220rpx;
+}
+
+/* === Tabs 胶囊 === */
+.ai-tabs {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  background: rgba(255, 255, 255, 0.68);
-  border-radius: 12rpx;
+  gap: 14rpx;
+  margin-top: 32rpx;
+  padding: 6rpx;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 24rpx;
 }
 
-.hero-image {
-  width: 210rpx;
-  height: 210rpx;
-}
-
-.tabs {
-  display: flex;
-  margin-top: 24rpx;
-  padding: 5rpx;
-  background: #e9eeee;
-  border-radius: 10rpx;
-}
-
-.tab {
-  height: 62rpx;
+.ai-tab {
+  height: 64rpx;
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #66777b;
-  font-size: 23rpx;
-  border-radius: 8rpx;
+  color: rgba(118, 121, 143, 1);
+  font-size: 26rpx;
+  font-weight: 500;
+  border-radius: 20rpx;
+  transition: color 0.2s ease, background 0.2s ease;
 }
 
-.tab.active {
-  color: #263b40;
-  font-weight: 700;
-  background: #ffffff;
-  box-shadow: 0 4rpx 12rpx rgba(30, 51, 58, 0.06);
+.ai-tab.active {
+  color: rgba(255, 255, 255, 1);
+  font-weight: 600;
+  background: rgba(46, 49, 62, 1);
+  box-shadow: 0 4rpx 12rpx rgba(46, 49, 62, 0.2);
 }
 
+/* === AI 洞察 === */
 .ai-insight {
   display: flex;
-  gap: 18rpx;
+  gap: 20rpx;
   margin-top: 24rpx;
-  padding: 20rpx 22rpx;
-  background: #eaf6f3;
-  border: 1rpx solid rgba(23, 135, 123, 0.08);
-  border-radius: 12rpx;
+  padding: 24rpx 26rpx;
+  background: rgba(255, 255, 255, 1);
+  border-radius: 32rpx;
+  box-shadow:
+    0 2rpx 6rpx rgba(46, 49, 62, 0.04),
+    0 12rpx 28rpx rgba(95, 101, 180, 0.06);
 }
 
-.insight-icon {
-  width: 56rpx;
-  height: 56rpx;
+.ai-insight-icon {
+  width: 64rpx;
+  height: 64rpx;
   flex: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #ffffff;
-  background: linear-gradient(135deg, #17877b, #22a390);
-  border-radius: 10rpx;
+  color: rgba(255, 255, 255, 1);
+  background: linear-gradient(135deg, rgba(137, 154, 248, 1), rgba(95, 101, 180, 1));
+  border-radius: 20rpx;
 }
 
-.insight-icon .ui-icon {
-  width: 28rpx;
-  height: 28rpx;
+.ai-insight-icon .ui-icon {
+  width: 32rpx;
+  height: 32rpx;
 }
 
-.insight-title {
-  color: #294046;
-  font-size: 25rpx;
-  font-weight: 700;
+.ai-insight-copy {
+  min-width: 0;
+  flex: 1;
 }
 
-.insight-desc {
+.ai-insight-title {
+  color: rgba(52, 59, 86, 1);
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+.ai-insight-desc {
   margin-top: 8rpx;
-  color: #64767a;
-  font-size: 21rpx;
+  color: rgba(118, 121, 143, 1);
+  font-size: 24rpx;
   line-height: 1.5;
 }
 
+/* === 方案列表 === */
 .plan-list {
   display: flex;
   flex-direction: column;
@@ -134,7 +136,7 @@
 }
 
 .plan {
-  padding: 24rpx;
+  padding: 30rpx 28rpx;
 }
 
 .plan-head {
@@ -143,34 +145,21 @@
 }
 
 .plan-icon {
-  width: 66rpx;
-  height: 66rpx;
+  width: 72rpx;
+  height: 72rpx;
   flex: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: 18rpx;
-  border-radius: 11rpx;
+  margin-right: 20rpx;
+  color: rgba(95, 101, 180, 1);
+  background: rgba(237, 239, 253, 1);
+  border-radius: 22rpx;
 }
 
 .plan-icon .ui-icon {
-  width: 31rpx;
-  height: 31rpx;
-}
-
-.aqua {
-  color: #17877b;
-  background: #eaf6f3;
-}
-
-.violet {
-  color: #665ea8;
-  background: #efedf8;
-}
-
-.blue {
-  color: #3d6ea8;
-  background: #e9f1f9;
+  width: 34rpx;
+  height: 34rpx;
 }
 
 .plan-name {
@@ -180,59 +169,61 @@
 
 .plan-title {
   overflow: hidden;
-  color: #263b40;
-  font-size: 28rpx;
-  font-weight: 700;
+  color: rgba(52, 59, 86, 1);
+  font-size: 30rpx;
+  font-weight: 600;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .plan-type {
   display: inline-flex;
-  margin-top: 8rpx;
-  padding: 6rpx 12rpx;
-  color: #17877b;
-  font-size: 21rpx;
-  background: #edf7f5;
-  border-radius: 8rpx;
+  margin-top: 10rpx;
+  padding: 4rpx 14rpx;
+  color: rgba(95, 101, 180, 1);
+  font-size: 22rpx;
+  background: rgba(237, 239, 253, 1);
+  border-radius: 16rpx;
 }
 
 .plan-score {
-  width: 76rpx;
-  color: #17877b;
+  width: 96rpx;
   text-align: center;
+  color: rgba(95, 101, 180, 1);
 }
 
 .plan-score text {
-  font-size: 38rpx;
+  font-size: 40rpx;
   font-weight: 700;
+  font-variant-numeric: tabular-nums;
 }
 
 .plan-score view {
   margin-top: 4rpx;
-  color: #8b999d;
-  font-size: 21rpx;
+  color: rgba(118, 121, 143, 1);
+  font-size: 22rpx;
 }
 
 .plan-desc {
   margin-top: 20rpx;
-  color: #64767a;
-  font-size: 23rpx;
+  color: rgba(118, 121, 143, 1);
+  font-size: 26rpx;
   line-height: 1.55;
 }
 
 .plan-tags {
   display: flex;
-  gap: 10rpx;
-  margin-top: 16rpx;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  margin-top: 18rpx;
 }
 
 .plan-tags text {
-  padding: 8rpx 14rpx;
-  color: #617478;
-  font-size: 21rpx;
-  background: #f1f4f4;
-  border-radius: 8rpx;
+  padding: 8rpx 18rpx;
+  color: rgba(118, 121, 143, 1);
+  font-size: 22rpx;
+  background: rgba(237, 239, 253, 1);
+  border-radius: 16rpx;
 }
 
 .plan-foot {
@@ -241,56 +232,59 @@
   justify-content: space-between;
   margin-top: 24rpx;
   padding-top: 20rpx;
-  border-top: 1rpx solid #edf1f2;
+  border-top: 1rpx solid rgba(95, 101, 180, 0.08);
 }
 
 .budget-label {
-  color: #8b999d;
-  font-size: 21rpx;
+  color: rgba(118, 121, 143, 1);
+  font-size: 22rpx;
 }
 
 .budget-value {
   margin-top: 4rpx;
-  color: #17877b;
-  font-size: 28rpx;
+  color: rgba(52, 59, 86, 1);
+  font-size: 30rpx;
   font-weight: 700;
 }
 
 .plan-button {
-  min-width: 128rpx;
-  height: 56rpx;
-  display: flex;
-  align-items: center;
-  padding: 0 20rpx;
-  color: #ffffff;
-  font-size: 23rpx;
-  font-weight: 700;
-  background: linear-gradient(135deg, #17877b, #22a390);
-  border-radius: 10rpx;
-}
-
-.plan-button.saved {
-  color: #17877b;
-  background: #eaf6f3;
-}
-
-.refresh {
+  min-width: 156rpx;
   height: 64rpx;
   display: flex;
   align-items: center;
+  padding: 0 28rpx;
+  color: rgba(255, 255, 255, 1);
+  font-size: 26rpx;
+  font-weight: 600;
+  background: rgba(46, 49, 62, 1);
+  border-radius: 48rpx;
+  box-shadow: 0 4rpx 12rpx rgba(46, 49, 62, 0.18);
+}
+
+.plan-button.saved {
+  color: rgba(118, 121, 143, 1);
+  background: rgba(237, 239, 253, 1);
+  box-shadow: none;
+}
+
+.refresh {
+  height: 72rpx;
+  display: flex;
+  align-items: center;
   justify-content: center;
-  gap: 12rpx;
-  margin-top: 30rpx;
-  color: #617478;
-  font-size: 23rpx;
+  gap: 14rpx;
+  margin-top: 36rpx;
+  color: rgba(95, 101, 180, 1);
+  font-size: 26rpx;
+  font-weight: 500;
 }
 
 .refresh[disabled] {
-  color: #8b999d;
+  color: rgba(118, 121, 143, 0.6);
   background: transparent;
 }
 
 .refresh .ui-icon {
-  width: 28rpx;
-  height: 28rpx;
+  width: 30rpx;
+  height: 30rpx;
 }

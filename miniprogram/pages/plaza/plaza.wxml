@@ -1,78 +1,84 @@
-<view class="page-shell plaza-page">
+<view class="page-shell">
   <page-header title="合作广场" subtitle="发现值得合作的服务方与版权伙伴"></page-header>
 
   <data-state loading="{{loading}}" error="{{error}}" bind:action="retry"></data-state>
 
   <block wx:if="{{!loading && !error}}">
-  <view class="search">
-    <view class="ui-icon icon-search search-icon"></view>
-    <input
-      value="{{query}}"
-      placeholder="搜索名称、身份或能力标签"
-      placeholder-class="placeholder"
-      confirm-type="search"
-      bindinput="updateSearch"
-    ></input>
-    <button wx:if="{{query}}" class="search-clear" bindtap="clearSearch" aria-label="清空搜索">×</button>
-  </view>
-
-  <scroll-view class="filter-scroll" scroll-x enhanced show-scrollbar="{{false}}">
-    <view class="filters">
-      <view
-        wx:for="{{types}}"
-        wx:key="key"
-        class="filter {{activeType === item.key ? 'active' : ''}}"
-        data-key="{{item.key}}"
-        bindtap="changeType"
-      >
-        {{item.label}}
-      </view>
+    <view class="search">
+      <view class="ui-icon icon-search search-icon"></view>
+      <input
+        value="{{query}}"
+        placeholder="搜索名称、身份或能力标签"
+        placeholder-class="placeholder"
+        confirm-type="search"
+        bindinput="updateSearch"
+      ></input>
+      <button wx:if="{{query}}" class="search-clear" bindtap="clearSearch" aria-label="清空搜索">×</button>
     </view>
-  </scroll-view>
 
-  <view class="plaza-tip">
-    <view class="tip-icon"><view class="ui-icon icon-spark"></view></view>
-    <view>
-      <view class="tip-title">AI 已为你筛选优质伙伴</view>
-      <view class="tip-desc">根据合作偏好、预算和历史交付综合排序</view>
-    </view>
-  </view>
-
-  <view class="entry-list" wx:if="{{!listLoading && visibleEntries.length}}">
-    <view class="entry-card card" wx:for="{{visibleEntries}}" wx:key="id">
-      <view class="entry-head">
-        <view class="avatar {{item.avatarClass}}">{{item.avatar}}</view>
-        <view class="entry-identity">
-          <view class="entry-name">{{item.name}}</view>
-          <view class="verified"><view class="verify-dot">✓</view>{{item.identity}}</view>
+    <scroll-view class="filter-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+      <view class="filters">
+        <view
+          wx:for="{{types}}"
+          wx:key="key"
+          class="filter {{activeType === item.key ? 'active' : ''}}"
+          data-key="{{item.key}}"
+          bindtap="changeType"
+        >
+          {{item.label}}
         </view>
-        <view class="match-score">{{item.matchScore}}<text>%</text></view>
       </view>
-      <view class="entry-description">{{item.description}}</view>
-      <view class="tag-row">
-        <text class="tag" wx:for="{{item.tags}}" wx:key="*this" wx:for-item="tag">{{tag}}</text>
-      </view>
-      <view class="entry-foot">
-        <text class="entry-result">{{item.resultText}}</text>
-        <button
-          class="connect-button"
-          data-id="{{item.id}}"
-          disabled="{{connectingId !== ''}}"
-          loading="{{connectingId === item.id}}"
-          bindtap="connect"
-        >{{connectingId === item.id ? '正在进入' : '沟通合作'}}</button>
+    </scroll-view>
+
+    <view class="plaza-tip">
+      <view class="plaza-tip-icon"><view class="ui-icon icon-spark"></view></view>
+      <view>
+        <view class="plaza-tip-title">AI 已为你筛选优质伙伴</view>
+        <view class="plaza-tip-desc">根据合作偏好、预算和历史交付综合排序</view>
       </view>
     </view>
-  </view>
-  <data-state wx:elif="{{listLoading}}" loading="{{true}}"></data-state>
-  <data-state
-    wx:else
-    empty="{{true}}"
-    empty-title="{{query ? '没有匹配结果' : '暂无合作伙伴'}}"
-    empty-description="{{query ? '换个名称或标签试试' : '内容上线后会在这里展示'}}"
-    action-text="{{query ? '清空搜索' : '重新加载'}}"
-    bind:action="handleEmptyAction"
-  ></data-state>
+
+    <view class="entry-list" wx:if="{{!listLoading && visibleEntries.length}}">
+      <view class="entry card" wx:for="{{visibleEntries}}" wx:key="id">
+        <view class="entry-head">
+          <view class="avatar {{item.avatarClass}}">{{item.avatar}}</view>
+          <view class="entry-identity">
+            <view class="entry-name">{{item.name}}</view>
+            <view class="verified">
+              <view class="verify-dot">✓</view>{{item.identity}}
+            </view>
+          </view>
+          <view class="match-score">
+            <text>{{item.matchScore}}</text>
+            <text class="score-suffix">%</text>
+            <view>匹配度</view>
+          </view>
+        </view>
+        <view class="entry-description">{{item.description}}</view>
+        <view class="tag-row">
+          <text class="tag" wx:for="{{item.tags}}" wx:key="*this" wx:for-item="tag">{{tag}}</text>
+        </view>
+        <view class="entry-foot">
+          <text class="entry-result">{{item.resultText}}</text>
+          <button
+            class="connect-button"
+            data-id="{{item.id}}"
+            disabled="{{connectingId !== ''}}"
+            loading="{{connectingId === item.id}}"
+            bindtap="connect"
+          >{{connectingId === item.id ? '正在进入' : '沟通合作'}}</button>
+        </view>
+      </view>
+    </view>
+    <data-state wx:elif="{{listLoading}}" loading="{{true}}"></data-state>
+    <data-state
+      wx:else
+      empty="{{true}}"
+      empty-title="{{query ? '没有匹配结果' : '暂无合作伙伴'}}"
+      empty-description="{{query ? '换个名称或标签试试' : '内容上线后会在这里展示'}}"
+      action-text="{{query ? '清空搜索' : '重新加载'}}"
+      bind:action="handleEmptyAction"
+    ></data-state>
   </block>
 </view>
 <tab-bar active="plaza"></tab-bar>

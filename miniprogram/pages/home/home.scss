@@ -1,36 +1,4 @@
-.home-page {
-  min-height: 100vh;
-  padding: 0 48rpx calc(110rpx + env(safe-area-inset-bottom));
-  background: rgba(237, 239, 253, 1);
-}
-
-.home-status {
-  width: 100%;
-}
-
-/* 内容容器：两侧 25px=48rpx 已在外层 padding 处理 */
-
-/* Hi，早上好 — 原稿 top:41(从屏幕顶)，减去状态栏由 home-status 占位，故余量≈ (41-20)=21px → 42rpx */
-.greeting {
-  margin-top: 42rpx;
-  color: rgba(52, 59, 86, 1);
-  font-size: 44rpx;
-  font-weight: 700;
-  line-height: 1.2;
-  text-align: left;
-}
-
-/* 用音乐连接更多种可能 — 原稿 top:75，距问候顶 34px，减字高22 ≈ 12px → 24rpx */
-.greeting-sub {
-  margin-top: 24rpx;
-  color: rgba(118, 121, 143, 1);
-  font-size: 32rpx;
-  line-height: 1.2;
-  text-align: left;
-}
-
-/* 渐变卡片 — 352x161 圆角24，渐变向下 #899AF8->#E1E6F9 */
-/* 原稿 top:145，距副标题顶(75) 70px，减副标题字高16 ≈ 54px → 108rpx */
+/* === AI 入口卡片 === */
 .ai-card {
   position: relative;
   margin-top: 108rpx;
@@ -45,7 +13,6 @@
   max-width: 400rpx;
 }
 
-/* 选择不清晰？来问问 AI！ — 卡内 top:34，padding-top:34，故 margin 0 */
 .ai-title {
   color: rgba(255, 255, 255, 1);
   font-size: 32rpx;
@@ -55,7 +22,6 @@
   text-align: left;
 }
 
-/* 精准匹配，高效连接 — 卡内 top:56，距标题顶(34) 22px，减标题字高16 ≈ 6px → 12rpx */
 .ai-desc {
   margin-top: 12rpx;
   color: rgba(237, 237, 237, 1);
@@ -64,8 +30,6 @@
   text-align: left;
 }
 
-/* 黑色按钮 — 98x28 原稿，圆角24 #2E313E */
-/* 卡内 top:100，距副文案顶(56) 44px，减副字高12 ≈ 32px → 64rpx */
 .ai-enter {
   display: inline-flex;
   align-items: center;
@@ -80,7 +44,6 @@
   border-radius: 48rpx;
 }
 
-/* 右侧插画 — 112x114 原稿，卡内 top:24 距右15px */
 .ai-illustration {
   position: absolute;
   top: 48rpx;
@@ -89,34 +52,7 @@
   height: 228rpx;
 }
 
-/* 精选推广 / 更多 > */
-.section-head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  margin-top: 48rpx;
-  margin-bottom: 40rpx;
-}
-
-.section-title {
-  color: rgba(52, 59, 86, 1);
-  font-size: 36rpx;
-  font-weight: 600;
-  line-height: 1;
-  letter-spacing: 0.5rpx;
-}
-
-.section-action {
-  color: rgba(118, 121, 143, 1);
-  font-size: 24rpx;
-  line-height: 1;
-}
-
-/* ========== 精选推广列表 — flexbox 布局 ==========
-   头像 140rpx | 间距 28rpx | 文字 flex:1 | 间距 20rpx | 按钮 108rpx
-   总计 140+28+flex+20+108 = 654rpx（内容区宽度）
-*/
-
+/* === 精选推广列表 === */
 .recommend-list {
   display: flex;
   flex-direction: column;
@@ -128,7 +64,6 @@
   align-items: flex-start;
 }
 
-/* 头像 */
 .recommend-avatar {
   flex: none;
   width: 140rpx;
@@ -143,21 +78,20 @@
 }
 
 .recommend-avatar.aqua {
-  color: #17877b;
-  background: #eaf6f3;
+  color: rgba(23, 135, 123, 1);
+  background: rgba(234, 246, 243, 1);
 }
 
 .recommend-avatar.violet {
-  color: #665ea8;
-  background: #efedf8;
+  color: rgba(102, 94, 168, 1);
+  background: rgba(239, 237, 248, 1);
 }
 
 .recommend-avatar.blue {
-  color: #3d6ea8;
-  background: #e9f1f9;
+  color: rgba(61, 110, 168, 1);
+  background: rgba(233, 241, 249, 1);
 }
 
-/* 文字区 — flex:1 填充剩余空间 */
 .recommend-main {
   flex: 1;
   min-width: 0;
@@ -166,7 +100,6 @@
   padding-top: 6rpx;
 }
 
-/* 名称 + 标签同行 */
 .recommend-head {
   display: flex;
   align-items: center;
@@ -179,18 +112,6 @@
   line-height: 1;
 }
 
-/* 优质服务商标签 */
-.tag {
-  margin-left: 14rpx;
-  padding: 4rpx 12rpx;
-  color: rgba(255, 255, 255, 1);
-  font-size: 20rpx;
-  line-height: 1.2;
-  background: rgba(95, 101, 180, 1);
-  border-radius: 14rpx;
-}
-
-/* 擅长 */
 .recommend-subtitle {
   margin-top: 20rpx;
   color: rgba(118, 121, 143, 1);
@@ -201,7 +122,6 @@
   white-space: nowrap;
 }
 
-/* 沟通按钮 — 用 view 避免 button 默认宽度，固定 108rpx */
 .cooperate {
   flex: none;
   align-self: flex-start;
@@ -216,11 +136,4 @@
   font-weight: 400;
   background: rgba(46, 49, 62, 1);
   border-radius: 48rpx;
-}
-
-.inline-empty {
-  padding: 48rpx 32rpx;
-  color: rgba(118, 121, 143, 1);
-  font-size: 26rpx;
-  text-align: center;
 }

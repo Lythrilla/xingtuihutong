@@ -7,9 +7,11 @@
   margin-top: 26rpx;
   padding: 56rpx 32rpx;
   text-align: center;
-  background: rgba(255, 255, 255, 0.68);
-  border: 1rpx solid rgba(38, 64, 71, 0.06);
-  border-radius: 14rpx;
+  background: rgba(255, 255, 255, 1);
+  border-radius: 32rpx;
+  box-shadow:
+    0 2rpx 6rpx rgba(46, 49, 62, 0.04),
+    0 12rpx 28rpx rgba(95, 101, 180, 0.06);
 }
 
 .state-shell.compact {
@@ -21,55 +23,57 @@
   width: 44rpx;
   height: 44rpx;
   margin-bottom: 22rpx;
-  border: 4rpx solid #dcebe8;
-  border-top-color: #17877b;
+  border: 4rpx solid rgba(137, 154, 248, 0.3);
+  border-top-color: rgba(95, 101, 180, 1);
   border-radius: 50%;
   animation: state-spin 0.8s linear infinite;
 }
 
 .state-symbol {
-  width: 58rpx;
-  height: 58rpx;
+  width: 64rpx;
+  height: 64rpx;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 18rpx;
-  color: #17877b;
-  font-size: 25rpx;
+  color: rgba(95, 101, 180, 1);
+  font-size: 26rpx;
   font-weight: 700;
-  background: #eaf6f3;
-  border-radius: 12rpx;
+  background: rgba(237, 239, 253, 1);
+  border-radius: 24rpx;
 }
 
 .empty-symbol {
-  color: #788a8f;
-  background: #eef1f3;
+  color: rgba(118, 121, 143, 1);
+  background: rgba(255, 255, 255, 1);
+  border: 1rpx solid rgba(118, 121, 143, 0.15);
 }
 
 .state-title {
-  color: #263a40;
-  font-size: 28rpx;
-  font-weight: 700;
+  color: rgba(52, 59, 86, 1);
+  font-size: 30rpx;
+  font-weight: 600;
 }
 
 .state-description {
   max-width: 520rpx;
-  margin-top: 10rpx;
-  color: #829196;
-  font-size: 23rpx;
+  margin-top: 12rpx;
+  color: rgba(118, 121, 143, 1);
+  font-size: 26rpx;
   line-height: 1.55;
 }
 
 .state-action {
-  min-width: 168rpx;
-  height: 64rpx;
-  margin-top: 24rpx;
-  padding: 0 26rpx;
-  color: #17877b;
-  font-size: 24rpx;
+  min-width: 200rpx;
+  height: 72rpx;
+  margin-top: 28rpx;
+  padding: 0 32rpx;
+  color: rgba(255, 255, 255, 1);
+  font-size: 26rpx;
   font-weight: 600;
-  background: #eaf6f3;
-  border-radius: 10rpx;
+  background: rgba(46, 49, 62, 1);
+  border-radius: 48rpx;
+  box-shadow: 0 6rpx 14rpx rgba(46, 49, 62, 0.18);
 }
 
 @keyframes state-spin {

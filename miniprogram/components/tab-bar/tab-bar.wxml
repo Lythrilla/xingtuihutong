@@ -8,12 +8,12 @@
     hover-class="tab-pressed"
     hover-stay-time="80"
   >
-    <view class="tab-active-bg"></view>
-    <view wx:if="{{item.key === 'match'}}" class="match-circle">
-      <view class="plus-h"></view>
-      <view class="plus-v"></view>
+    <view wx:if="{{item.key === 'match'}}" class="fab-wrap">
+      <view class="fab-core">
+        <view class="fab-icon"></view>
+      </view>
     </view>
     <view wx:else class="tab-icon icon-{{item.iconClass}}"></view>
-    <text class="tab-label">{{item.label}}</text>
+    <text wx:if="{{item.key !== 'match'}}" class="tab-label">{{item.label}}</text>
   </view>
 </view>

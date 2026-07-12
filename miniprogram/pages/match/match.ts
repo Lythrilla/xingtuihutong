@@ -48,6 +48,9 @@ Component({
     },
   },
   methods: {
+    retry() {
+      return this.loadOptions()
+    },
     async loadOptions() {
       this.setData({ loading: true, error: '' })
       try {

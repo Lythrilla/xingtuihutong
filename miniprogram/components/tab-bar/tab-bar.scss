@@ -1,54 +1,41 @@
-/* ====== 导航栏 — 贴底贴边 ====== */
+/* ====== 导航栏 — iOS 浮动胶囊 ====== */
 
 .tab-shell {
   position: fixed;
   z-index: 30;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  right: 32rpx;
+  bottom: calc(28rpx + env(safe-area-inset-bottom));
+  left: 32rpx;
+  height: 96rpx;
   display: flex;
-  align-items: stretch;
-  padding: 0 8rpx calc(env(safe-area-inset-bottom));
-  height: calc(90rpx + env(safe-area-inset-bottom));
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  box-shadow: 0 -1rpx 0 rgba(0, 0, 0, 0.04);
+  align-items: center;
+  padding: 8rpx;
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  border: 1rpx solid rgba(255, 255, 255, 0.5);
+  border-radius: 48rpx;
+  box-shadow:
+    0 2rpx 8rpx rgba(0, 0, 0, 0.04),
+    0 16rpx 40rpx rgba(22, 40, 50, 0.12);
 }
 
 /* --- Tab 项 --- */
 .tab-item {
-  position: relative;
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 4rpx;
-  color: #b0bec2;
-}
-
-/* --- 活跃态药丸背景 --- */
-.tab-active-bg {
-  position: absolute;
-  inset: 8rpx 6rpx;
-  background: transparent;
-  border-radius: 14rpx;
-  transition: background 0.25s ease;
-  z-index: 0;
-}
-
-.tab-item.active .tab-active-bg {
-  background: rgba(23, 135, 123, 0.07);
+  color: rgba(184, 188, 200, 1);
+  transition: color 0.2s ease;
 }
 
 /* --- 图标 --- */
 .tab-icon {
-  position: relative;
-  z-index: 1;
-  width: 38rpx;
-  height: 38rpx;
-  flex: none;
+  width: 32rpx;
+  height: 32rpx;
   background-color: currentColor;
   -webkit-mask-position: center;
   -webkit-mask-repeat: no-repeat;
@@ -56,103 +43,102 @@
   mask-position: center;
   mask-repeat: no-repeat;
   mask-size: contain;
-  transition: transform 0.2s ease;
+  transition: color 0.2s ease, transform 0.2s ease;
 }
 
 .tab-item.active .tab-icon {
   transform: scale(1.08);
 }
 
-/* --- 图标定义 --- */
+/* --- 图标定义（iOS SF Symbols 风格） --- */
 .icon-home {
-  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m3 10 9-7 9 7v10H4a1 1 0 0 1-1-1z'/%3E%3Cpath d='M9 20v-7h6v7'/%3E%3C/svg%3E");
-  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m3 10 9-7 9 7v10H4a1 1 0 0 1-1-1z'/%3E%3Cpath d='M9 20v-7h6v7'/%3E%3C/svg%3E");
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 10.5L12 3l9 7.5V20a1 1 0 01-1 1h-5v-7h-6v7H4a1 1 0 01-1-1v-9.5z'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 10.5L12 3l9 7.5V20a1 1 0 01-1 1h-5v-7h-6v7H4a1 1 0 01-1-1v-9.5z'/%3E%3C/svg%3E");
 }
 
 .icon-plaza {
-  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='9' cy='8' r='3'/%3E%3Ccircle cx='17' cy='10' r='2.5'/%3E%3Cpath d='M3 20c.4-4 2.4-6 6-6s5.6 2 6 6M15 15c3.4 0 5.3 1.7 5.8 5'/%3E%3C/svg%3E");
-  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='9' cy='8' r='3'/%3E%3Ccircle cx='17' cy='10' r='2.5'/%3E%3Cpath d='M3 20c.4-4 2.4-6 6-6s5.6 2 6 6M15 15c3.4 0 5.3 1.7 5.8 5'/%3E%3C/svg%3E");
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='6' cy='6' r='2.5'/%3E%3Ccircle cx='18' cy='6' r='2.5'/%3E%3Ccircle cx='6' cy='18' r='2.5'/%3E%3Ccircle cx='18' cy='18' r='2.5'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='6' cy='6' r='2.5'/%3E%3Ccircle cx='18' cy='6' r='2.5'/%3E%3Ccircle cx='6' cy='18' r='2.5'/%3E%3Ccircle cx='18' cy='18' r='2.5'/%3E%3C/svg%3E");
 }
 
 .icon-messages {
-  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linejoin='round'%3E%3Cpath d='M4 4h16v13H9l-5 4z'/%3E%3Cpath d='M8 9h8M8 13h5'/%3E%3C/svg%3E");
-  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linejoin='round'%3E%3Cpath d='M4 4h16v13H9l-5 4z'/%3E%3Cpath d='M8 9h8M8 13h5'/%3E%3C/svg%3E");
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 12c0 4.4-4 8-9 8-1.4 0-2.7-.3-3.9-.8L3 21l1.8-4.5C3.7 15.2 3 13.7 3 12c0-4.4 4-8 9-8s9 3.6 9 8z'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 12c0 4.4-4 8-9 8-1.4 0-2.7-.3-3.9-.8L3 21l1.8-4.5C3.7 15.2 3 13.7 3 12c0-4.4 4-8 9-8s9 3.6 9 8z'/%3E%3C/svg%3E");
 }
 
 .icon-profile {
-  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round'%3E%3Ccircle cx='12' cy='8' r='4'/%3E%3Cpath d='M4 21c.6-5 3.2-7 8-7s7.4 2 8 7'/%3E%3C/svg%3E");
-  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round'%3E%3Ccircle cx='12' cy='8' r='4'/%3E%3Cpath d='M4 21c.6-5 3.2-7 8-7s7.4 2 8 7'/%3E%3C/svg%3E");
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='8' r='4.2'/%3E%3Cpath d='M4 21c0-4 3.6-7 8-7s8 3 8 7'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='8' r='4.2'/%3E%3Cpath d='M4 21c0-4 3.6-7 8-7s8 3 8 7'/%3E%3C/svg%3E");
 }
 
 /* --- 标签 --- */
 .tab-label {
-  position: relative;
-  z-index: 1;
   font-size: 18rpx;
-  font-weight: 500;
   line-height: 1;
-  transition: color 0.2s ease;
+  font-weight: 500;
+  letter-spacing: 0.3rpx;
 }
 
 /* --- 活跃态 --- */
 .tab-item.active {
-  color: #17877b;
+  color: rgba(95, 101, 180, 1);
 }
 
 .tab-item.active .tab-label {
-  font-weight: 700;
+  font-weight: 600;
 }
 
 /* --- 按压 --- */
 .tab-pressed {
-  opacity: 0.6;
+  opacity: 0.5;
 }
 
-/* --- 匹配按钮 --- */
+/* --- FAB 按钮 --- */
 .tab-item.match {
-  position: relative;
-}
-
-.match-circle {
-  position: relative;
-  z-index: 1;
-  width: 60rpx;
-  height: 60rpx;
   flex: none;
+  width: 96rpx;
+  height: 80rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(145deg, #15897d, #20b299);
+  position: relative;
+  z-index: 2;
+}
+
+.fab-wrap {
+  position: relative;
+  width: 64rpx;
+  height: 64rpx;
+  margin-top: -28rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fab-core {
+  width: 100%;
+  height: 100%;
   border-radius: 50%;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 1) 0%, rgba(240, 242, 255, 1) 100%);
   box-shadow:
-    0 2rpx 6rpx rgba(23, 135, 123, 0.2),
-    0 4rpx 12rpx rgba(23, 135, 123, 0.08);
+    inset 0 1rpx 2rpx rgba(255, 255, 255, 0.6),
+    0 2rpx 4rpx rgba(95, 101, 180, 0.12),
+    0 6rpx 16rpx rgba(95, 101, 180, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.plus-h,
-.plus-v {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  background: #ffffff;
-  border-radius: 2rpx;
-  transform: translate(-50%, -50%);
-}
-
-.plus-h {
-  width: 22rpx;
-  height: 3rpx;
-}
-
-.plus-v {
-  width: 3rpx;
-  height: 22rpx;
-}
-
-.tab-item.match .tab-active-bg {
-  display: none;
-}
-
-.tab-item.match .tab-label {
-  margin-top: 2rpx;
+.fab-icon {
+  width: 32rpx;
+  height: 32rpx;
+  background: linear-gradient(135deg, rgba(137, 154, 248, 1), rgba(95, 101, 180, 1));
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black'%3E%3Cpath d='M12 2l1.8 5.5L19 9l-5.2 1.5L12 16l-1.8-5.5L5 9l5.2-1.5L12 2zM19 14l.9 2.6L22 17.5l-2.1.9L19 21l-.9-2.6L16 17.5l2.1-.9L19 14zM5 14l.9 2.6L8 17.5l-2.1.9L5 21l-.9-2.6L2 17.5l2.1-.9L5 14z'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black'%3E%3Cpath d='M12 2l1.8 5.5L19 9l-5.2 1.5L12 16l-1.8-5.5L5 9l5.2-1.5L12 2zM19 14l.9 2.6L22 17.5l-2.1.9L19 21l-.9-2.6L16 17.5l2.1-.9L19 14zM5 14l.9 2.6L8 17.5l-2.1.9L5 21l-.9-2.6L2 17.5l2.1-.9L5 14z'/%3E%3C/svg%3E");
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  mask-position: center;
+  mask-repeat: no-repeat;
+  mask-size: contain;
 }

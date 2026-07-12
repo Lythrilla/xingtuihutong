@@ -1,78 +1,86 @@
-.steps {
+/* === 步骤条 === */
+.match-steps {
   display: flex;
   align-items: flex-start;
-  margin: 30rpx 10rpx 28rpx;
+  margin: 28rpx 6rpx 24rpx;
 }
 
 .step {
   display: flex;
   flex-direction: column;
   align-items: center;
-  color: #9aa6a9;
-  font-size: 21rpx;
-}
-
-.step-number {
-  width: 48rpx;
-  height: 48rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 8rpx;
-  color: #88989c;
+  color: rgba(118, 121, 143, 1);
   font-size: 22rpx;
-  font-weight: 700;
-  background: #e8edef;
-  border-radius: 11rpx;
 }
 
 .step.active {
-  color: #17877b;
+  color: rgba(52, 59, 86, 1);
   font-weight: 600;
 }
 
+.step-number {
+  width: 56rpx;
+  height: 56rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10rpx;
+  color: rgba(118, 121, 143, 1);
+  font-size: 24rpx;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 1);
+  border-radius: 50%;
+  box-shadow: 0 4rpx 12rpx rgba(95, 101, 180, 0.08);
+}
+
 .step.active .step-number {
-  color: #ffffff;
-  background: linear-gradient(135deg, #17877b, #22a390);
+  color: rgba(255, 255, 255, 1);
+  background: rgba(46, 49, 62, 1);
+  box-shadow: 0 4rpx 12rpx rgba(46, 49, 62, 0.18);
 }
 
 .step.done .step-number {
+  color: rgba(255, 255, 255, 1);
+  background: rgba(95, 101, 180, 1);
   font-size: 0;
 }
 
 .step.done .step-number::after {
   content: "✓";
-  font-size: 22rpx;
+  font-size: 26rpx;
 }
 
 .step-line {
-  height: 2rpx;
+  height: 4rpx;
   flex: 1;
-  margin: 24rpx 12rpx 0;
-  background: #e1e7e8;
+  margin: 26rpx 14rpx 0;
+  background: rgba(95, 101, 180, 0.15);
+  border-radius: 2rpx;
 }
 
 .step-line.active {
-  background: #83c6bd;
+  background: rgba(95, 101, 180, 1);
 }
 
+/* === 表单卡片 === */
 .form-section {
-  margin-bottom: 18rpx;
-  padding: 26rpx 24rpx;
+  margin-bottom: 24rpx;
+  padding: 30rpx 28rpx;
 }
 
 .form-title {
-  color: #263b40;
-  font-size: 29rpx;
+  color: rgba(52, 59, 86, 1);
+  font-size: 30rpx;
   font-weight: 700;
 }
 
 .form-desc {
   margin-top: 8rpx;
-  color: #849297;
-  font-size: 22rpx;
+  color: rgba(118, 121, 143, 1);
+  font-size: 24rpx;
 }
 
+/* === 歌曲卡片 === */
 .song-scroll {
   margin-top: 24rpx;
   white-space: nowrap;
@@ -80,56 +88,52 @@
 
 .song-row {
   display: inline-flex;
-  gap: 16rpx;
+  gap: 18rpx;
 }
 
 .song-card {
   position: relative;
-  width: 184rpx;
+  width: 196rpx;
   display: inline-flex;
   flex-direction: column;
-  padding: 10rpx 10rpx 18rpx;
-  background: #f7f9fa;
+  padding: 12rpx 12rpx 20rpx;
+  background: rgba(237, 239, 253, 1);
   border: 2rpx solid transparent;
-  border-radius: 11rpx;
+  border-radius: 24rpx;
+  transition: all 0.2s ease;
 }
 
 .song-card.selected {
-  background: #eaf6f3;
-  border-color: #17877b;
+  background: rgba(255, 255, 255, 1);
+  border-color: rgba(95, 101, 180, 1);
+  box-shadow: 0 6rpx 18rpx rgba(95, 101, 180, 0.16);
 }
 
 .song-cover {
   position: relative;
-  height: 128rpx;
+  height: 136rpx;
   overflow: hidden;
-  border-radius: 9rpx;
+  border-radius: 20rpx;
 }
 
-.sunset {
-  background: linear-gradient(135deg, #3d9b8c, #24766c);
-}
-
-.ocean {
-  background: linear-gradient(135deg, #4d9d9b, #2d7474);
-}
-
+.sunset,
+.ocean,
 .violet {
-  background: linear-gradient(135deg, #5c937d, #3b6b5b);
+  background: linear-gradient(135deg, rgba(137, 154, 248, 0.7), rgba(225, 230, 249, 1));
 }
 
 .disc {
   position: absolute;
   z-index: 2;
   top: 28rpx;
-  left: 46rpx;
-  width: 70rpx;
-  height: 70rpx;
+  left: 50rpx;
+  width: 76rpx;
+  height: 76rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.22);
-  border: 1rpx solid rgba(255, 255, 255, 0.55);
+  background: rgba(255, 255, 255, 0.32);
+  border: 1rpx solid rgba(255, 255, 255, 0.6);
   border-radius: 50%;
 }
 
@@ -137,7 +141,7 @@
 .disc::after {
   position: absolute;
   content: "";
-  border: 1rpx solid rgba(255, 255, 255, 0.45);
+  border: 1rpx solid rgba(255, 255, 255, 0.5);
   border-radius: 50%;
 }
 
@@ -152,147 +156,158 @@
 .disc-center {
   width: 12rpx;
   height: 12rpx;
-  background: #ffffff;
+  background: rgba(255, 255, 255, 1);
   border-radius: 50%;
 }
 
 .song-name {
   margin-top: 16rpx;
-  color: #263b40;
-  font-size: 25rpx;
-  font-weight: 700;
+  color: rgba(52, 59, 86, 1);
+  font-size: 26rpx;
+  font-weight: 600;
 }
 
 .song-artist {
   margin-top: 6rpx;
-  color: #8b999d;
-  font-size: 21rpx;
+  color: rgba(118, 121, 143, 1);
+  font-size: 22rpx;
 }
 
 .song-check {
   position: absolute;
   top: 18rpx;
   right: 18rpx;
-  width: 34rpx;
-  height: 34rpx;
+  width: 36rpx;
+  height: 36rpx;
   display: none;
   align-items: center;
   justify-content: center;
-  color: #ffffff;
-  font-size: 18rpx;
-  background: #17877b;
-  border: 4rpx solid #ffffff;
-  border-radius: 9rpx;
+  color: rgba(255, 255, 255, 1);
+  font-size: 20rpx;
+  background: rgba(95, 101, 180, 1);
+  border: 4rpx solid rgba(255, 255, 255, 1);
+  border-radius: 50%;
+  box-shadow: 0 4rpx 10rpx rgba(95, 101, 180, 0.3);
 }
 
 .song-card.selected .song-check {
   display: flex;
 }
 
+/* === 推广对象网格 === */
 .target-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 14rpx;
+  gap: 16rpx;
   margin-top: 24rpx;
 }
 
 .target-card {
-  min-height: 160rpx;
-  padding: 20rpx;
-  background: #f7f9fa;
+  min-height: 176rpx;
+  padding: 24rpx;
+  background: rgba(237, 239, 253, 1);
   border: 2rpx solid transparent;
-  border-radius: 11rpx;
+  border-radius: 24rpx;
+  transition: all 0.2s ease;
 }
 
 .target-card.selected {
-  background: #eaf6f3;
-  border-color: #17877b;
+  background: rgba(255, 255, 255, 1);
+  border-color: rgba(95, 101, 180, 1);
+  box-shadow: 0 6rpx 18rpx rgba(95, 101, 180, 0.14);
 }
 
 .target-icon {
-  width: 50rpx;
-  height: 50rpx;
+  width: 64rpx;
+  height: 64rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #17877b;
-  background: #e2f2ee;
-  border-radius: 10rpx;
+  color: rgba(95, 101, 180, 1);
+  background: rgba(255, 255, 255, 1);
+  border-radius: 20rpx;
 }
 
 .target-icon .ui-icon {
-  width: 27rpx;
-  height: 27rpx;
+  width: 32rpx;
+  height: 32rpx;
+}
+
+.target-card.selected .target-icon {
+  background: rgba(95, 101, 180, 1);
+  color: rgba(255, 255, 255, 1);
 }
 
 .target-title {
-  margin-top: 14rpx;
-  color: #263b40;
-  font-size: 25rpx;
-  font-weight: 700;
+  margin-top: 16rpx;
+  color: rgba(52, 59, 86, 1);
+  font-size: 28rpx;
+  font-weight: 600;
 }
 
 .target-desc {
   margin-top: 8rpx;
-  color: #849297;
-  font-size: 21rpx;
+  color: rgba(118, 121, 143, 1);
+  font-size: 22rpx;
   line-height: 1.45;
 }
 
+/* === 预算 === */
 .budget-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 14rpx;
+  gap: 16rpx;
   margin-top: 24rpx;
 }
 
 .budget {
-  width: calc(50% - 7rpx);
-  height: 68rpx;
+  width: calc(50% - 8rpx);
+  height: 80rpx;
   display: flex;
   align-items: center;
-  gap: 16rpx;
-  padding: 0 18rpx;
-  color: #627478;
-  font-size: 23rpx;
-  background: #f7f9fa;
-  border: 1rpx solid transparent;
-  border-radius: 10rpx;
-}
-
-.radio {
-  width: 20rpx;
-  height: 20rpx;
-  background: #d9e1e3;
-  border: 4rpx solid #ffffff;
-  border-radius: 50%;
-  box-shadow: 0 0 0 2rpx #d9e1e3;
+  gap: 18rpx;
+  padding: 0 24rpx;
+  color: rgba(118, 121, 143, 1);
+  font-size: 26rpx;
+  background: rgba(237, 239, 253, 1);
+  border: 2rpx solid transparent;
+  border-radius: 24rpx;
 }
 
 .budget.selected {
-  color: #17877b;
-  background: #eaf6f3;
-  border-color: rgba(23, 135, 123, 0.2);
+  color: rgba(95, 101, 180, 1);
+  font-weight: 600;
+  background: rgba(255, 255, 255, 1);
+  border-color: rgba(95, 101, 180, 1);
+  box-shadow: 0 4rpx 12rpx rgba(95, 101, 180, 0.14);
+}
+
+.radio {
+  width: 24rpx;
+  height: 24rpx;
+  background: rgba(255, 255, 255, 1);
+  border: 4rpx solid rgba(118, 121, 143, 0.4);
+  border-radius: 50%;
 }
 
 .budget.selected .radio {
-  background: #17877b;
-  box-shadow: 0 0 0 2rpx #17877b;
-}
-
-.match-button {
-  gap: 12rpx;
-  margin: 26rpx 0 8rpx;
+  border-width: 8rpx;
+  border-color: rgba(95, 101, 180, 1);
 }
 
 .selection-summary {
-  margin: 28rpx 0 12rpx;
+  margin: 30rpx 0 14rpx;
   overflow: hidden;
-  color: #75858a;
-  font-size: 22rpx;
+  color: rgba(118, 121, 143, 1);
+  font-size: 24rpx;
   text-align: center;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.match-button {
+  gap: 14rpx;
+  margin: 30rpx 0 12rpx;
 }
 
 .match-button[disabled] .button-icon {
@@ -300,6 +315,7 @@
 }
 
 .button-icon {
-  width: 24rpx;
-  height: 24rpx;
+  width: 28rpx;
+  height: 28rpx;
+  color: rgba(255, 255, 255, 1);
 }
