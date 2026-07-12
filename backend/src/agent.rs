@@ -1,6 +1,6 @@
 use crate::{
     analytics::track_event,
-    api::current_user,
+    api::{current_user, establish_partner_connection},
     error::{AppError, AppResult},
     models::UserRow,
     state::AppState,
@@ -11,6 +11,7 @@ use axum::{
     routing::{get, post},
     Json, Router,
 };
+use chrono::Utc;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use sqlx::{FromRow, Row};
@@ -123,6 +124,9 @@ async fn query(
     if prompt.is_empty() {
         return Err(AppError::BadRequest("agent message is required".into()));
     }
+    if prompt.chars().count() > 1000 {
+        return Err(AppError::BadRequest("agent message is too long".into()));
+    }
     let session_id = match input.session_id {
         Some(id) => {
             ensure_session_owner(&state, &id, &user.id).await?;
@@ -146,20 +150,56 @@ async fn query(
     let mut artifacts = Vec::new();
     for tool_name in tools {
         let started = Instant::now();
-        let execution = execute_tool(&state, &user, &session_id, tool_name, prompt).await?;
-        let duration_ms = started.elapsed().as_millis() as i64;
-        let tool_call = persist_tool_call(
+        match execute_tool(
             &state,
+            &user,
             &session_id,
             &user_message_id,
             tool_name,
-            json!({ "query": prompt }),
-            execution.output.clone(),
-            duration_ms,
+            prompt,
         )
-        .await?;
-        tool_calls.push(tool_call);
-        artifacts.push(execution.artifact);
+        .await
+        {
+            Ok(execution) => {
+                let duration_ms = started.elapsed().as_millis() as i64;
+                let tool_call = persist_tool_call(
+                    &state,
+                    &session_id,
+                    &user_message_id,
+                    tool_name,
+                    "completed",
+                    json!({ "query": prompt }),
+                    execution.output.clone(),
+                    duration_ms,
+                )
+                .await?;
+                tool_calls.push(tool_call);
+                artifacts.push(execution.artifact);
+            }
+            Err(error) => {
+                let duration_ms = started.elapsed().as_millis() as i64;
+                let message = safe_tool_error(&error);
+                let output = json!({ "error": message });
+                let tool_call = persist_tool_call(
+                    &state,
+                    &session_id,
+                    &user_message_id,
+                    tool_name,
+                    "failed",
+                    json!({ "query": prompt }),
+                    output,
+                    duration_ms,
+                )
+                .await?;
+                tool_calls.push(tool_call);
+                artifacts.push(Artifact {
+                    kind: "error".into(),
+                    title: format!("{}未完成", tool_label(tool_name)),
+                    summary: message,
+                    data: json!({ "tool": tool_name }),
+                });
+            }
+        }
     }
 
     let reply = compose_reply(prompt, &tool_calls);
@@ -181,7 +221,7 @@ async fn query(
     .bind(&session_id)
     .execute(&state.pool)
     .await?;
-    track_event(
+    let _ = track_event(
         &state,
         Some(&user.id),
         "agent_query_completed",
@@ -189,7 +229,7 @@ async fn query(
         Some(&session_id),
         json!({ "tools": tool_calls.iter().map(|call| call.name.as_str()).collect::<Vec<_>>() }),
     )
-    .await?;
+    .await;
     let message = sqlx::query_as::<_, AgentMessage>(
         "SELECT id, role, content, created_at FROM agent_messages WHERE id = ?",
     )
@@ -208,7 +248,8 @@ async fn query(
 async fn latest_or_create_session(state: &AppState, user: &UserRow) -> AppResult<String> {
     let existing: Option<String> = sqlx::query_scalar(
         "SELECT id FROM agent_sessions
-         WHERE user_id = ? AND status = 'active' ORDER BY updated_at DESC LIMIT 1",
+         WHERE user_id = ? AND status = 'active'
+         ORDER BY updated_at DESC, rowid DESC LIMIT 1",
     )
     .bind(&user.id)
     .fetch_optional(&state.pool)
@@ -217,10 +258,11 @@ async fn latest_or_create_session(state: &AppState, user: &UserRow) -> AppResult
         return Ok(id);
     }
     let id = Uuid::new_v4().to_string();
+    let mut transaction = state.pool.begin().await?;
     sqlx::query("INSERT INTO agent_sessions (id, user_id, title) VALUES (?, ?, '新的 Agent 会话')")
         .bind(&id)
         .bind(&user.id)
-        .execute(&state.pool)
+        .execute(&mut *transaction)
         .await?;
     let welcome = format!(
         "你好，{}。我可以直接查询业务数据、检索合作伙伴、推荐方案，并执行收藏或创建跟进任务。",
@@ -233,8 +275,9 @@ async fn latest_or_create_session(state: &AppState, user: &UserRow) -> AppResult
     .bind(Uuid::new_v4().to_string())
     .bind(&id)
     .bind(welcome)
-    .execute(&state.pool)
+    .execute(&mut *transaction)
     .await?;
+    transaction.commit().await?;
     Ok(id)
 }
 
@@ -255,7 +298,7 @@ async fn ensure_session_owner(state: &AppState, session_id: &str, user_id: &str)
 async fn load_messages(state: &AppState, session_id: &str) -> AppResult<Vec<AgentMessage>> {
     Ok(sqlx::query_as::<_, AgentMessage>(
         "SELECT id, role, content, created_at FROM agent_messages
-         WHERE session_id = ? ORDER BY created_at DESC LIMIT 30",
+         WHERE session_id = ? ORDER BY created_at DESC, rowid DESC LIMIT 30",
     )
     .bind(session_id)
     .fetch_all(&state.pool)
@@ -268,7 +311,8 @@ async fn load_messages(state: &AppState, session_id: &str) -> AppResult<Vec<Agen
 async fn load_tool_calls(state: &AppState, session_id: &str) -> AppResult<Vec<ToolCallView>> {
     let rows = sqlx::query(
         "SELECT id, tool_name, input_json, output_json, status, duration_ms
-         FROM agent_tool_calls WHERE session_id = ? ORDER BY created_at DESC LIMIT 8",
+         FROM agent_tool_calls WHERE session_id = ?
+         ORDER BY created_at DESC, rowid DESC LIMIT 8",
     )
     .bind(session_id)
     .fetch_all(&state.pool)
@@ -295,6 +339,7 @@ async fn persist_tool_call(
     session_id: &str,
     message_id: &str,
     tool_name: &str,
+    status: &str,
     input: Value,
     output: Value,
     duration_ms: i64,
@@ -302,13 +347,14 @@ async fn persist_tool_call(
     let id = Uuid::new_v4().to_string();
     sqlx::query(
         "INSERT INTO agent_tool_calls
-         (id, session_id, message_id, tool_name, input_json, output_json, duration_ms)
-         VALUES (?, ?, ?, ?, ?, ?, ?)",
+         (id, session_id, message_id, tool_name, status, input_json, output_json, duration_ms)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
     )
     .bind(&id)
     .bind(session_id)
     .bind(message_id)
     .bind(tool_name)
+    .bind(status)
     .bind(input.to_string())
     .bind(output.to_string())
     .bind(duration_ms)
@@ -318,7 +364,7 @@ async fn persist_tool_call(
         id,
         name: tool_name.into(),
         label: tool_label(tool_name).into(),
-        status: "completed".into(),
+        status: status.into(),
         input,
         output,
         duration_ms,
@@ -328,23 +374,92 @@ async fn persist_tool_call(
 fn select_tools(prompt: &str) -> Vec<&'static str> {
     let mut tools = Vec::new();
     if contains_any(prompt, &["数据", "统计", "趋势", "表现", "多少", "收益"]) {
-        tools.push("query_business_metrics");
-        tools.push("inspect_collaboration_pipeline");
+        push_tool(&mut tools, "query_business_metrics");
+        push_tool(&mut tools, "inspect_collaboration_pipeline");
     }
     if contains_any(prompt, &["找", "伙伴", "服务", "需求", "达人", "合作方"]) {
-        tools.push("search_partners");
+        push_tool(&mut tools, "search_partners");
     }
     if contains_any(prompt, &["方案", "推广", "预算", "推荐", "投放"]) {
-        tools.push("recommend_plans");
+        push_tool(&mut tools, "recommend_plans");
     }
-    if contains_any(prompt, &["联系", "沟通", "发起合作", "对接"]) {
-        tools.push("connect_partner");
+    if contains_any(
+        prompt,
+        &[
+            "帮我联系",
+            "请联系",
+            "直接联系",
+            "立即联系",
+            "联系最佳",
+            "联系最合适",
+            "联系第一",
+            "联系伙伴",
+            "联系合作方",
+            "发起合作",
+            "开始沟通",
+            "立即沟通",
+            "和第一位沟通",
+            "与第一位沟通",
+            "建立会话",
+            "帮我对接",
+            "直接对接",
+        ],
+    ) && !action_is_blocked(
+        prompt,
+        &["联系", "沟通", "合作", "会话", "对接"],
+        &[
+            "联系过",
+            "已联系",
+            "联系记录",
+            "联系状态",
+            "沟通数据",
+            "沟通记录",
+        ],
+    ) {
+        push_tool(&mut tools, "search_partners");
+        push_tool(&mut tools, "connect_partner");
     }
-    if contains_any(prompt, &["收藏", "保存方案"]) {
-        tools.push("save_recommended_plan");
+    if contains_any(
+        prompt,
+        &[
+            "帮我收藏",
+            "请收藏",
+            "收藏最佳",
+            "收藏这个",
+            "收藏推荐",
+            "收藏方案",
+            "保存方案",
+            "保存这个",
+            "加入收藏",
+        ],
+    ) && !action_is_blocked(
+        prompt,
+        &["收藏", "保存"],
+        &[
+            "取消收藏",
+            "已收藏",
+            "收藏了",
+            "收藏多少",
+            "收藏数据",
+            "收藏记录",
+        ],
+    ) {
+        push_tool(&mut tools, "recommend_plans");
+        push_tool(&mut tools, "save_recommended_plan");
     }
-    if contains_any(prompt, &["执行", "跟进", "提醒", "任务"]) {
-        tools.push("create_follow_up_task");
+    let task_requested = contains_any(
+        prompt,
+        &["提醒我", "安排跟进", "执行方案", "开始执行", "直接执行"],
+    ) || (contains_any(prompt, &["创建", "生成", "添加"])
+        && contains_any(prompt, &["任务", "跟进"]));
+    if task_requested
+        && !action_is_blocked(
+            prompt,
+            &["创建", "生成", "添加", "安排", "提醒", "执行"],
+            &["任务记录", "已有任务", "有哪些任务", "执行情况", "执行数据"],
+        )
+    {
+        push_tool(&mut tools, "create_follow_up_task");
     }
     if tools.is_empty() {
         tools.extend([
@@ -353,7 +468,6 @@ fn select_tools(prompt: &str) -> Vec<&'static str> {
             "recommend_plans",
         ]);
     }
-    tools.dedup();
     tools
 }
 
@@ -361,6 +475,7 @@ async fn execute_tool(
     state: &AppState,
     user: &UserRow,
     session_id: &str,
+    message_id: &str,
     tool_name: &str,
     prompt: &str,
 ) -> AppResult<ToolExecution> {
@@ -369,8 +484,8 @@ async fn execute_tool(
         "inspect_collaboration_pipeline" => inspect_pipeline(state, user).await,
         "search_partners" => search_partners(state, prompt).await,
         "recommend_plans" => recommend_plans(state, prompt).await,
-        "connect_partner" => connect_partner(state, user, session_id).await,
-        "save_recommended_plan" => save_recommended_plan(state, user, session_id).await,
+        "connect_partner" => connect_partner(state, user, session_id, message_id).await,
+        "save_recommended_plan" => save_recommended_plan(state, user, session_id, message_id).await,
         "create_follow_up_task" => create_follow_up_task(state, user, session_id, prompt).await,
         _ => Err(AppError::BadRequest("unknown agent tool".into())),
     }
@@ -448,7 +563,7 @@ async fn inspect_pipeline(state: &AppState, user: &UserRow) -> AppResult<ToolExe
     )
     .await?;
     let output = json!([
-        { "label": "发现伙伴", "value": discovered },
+            { "label": "可用伙伴池", "value": discovered },
         { "label": "智能匹配", "value": matched },
         { "label": "建立沟通", "value": connected },
         { "label": "完成结算", "value": settled }
@@ -458,7 +573,10 @@ async fn inspect_pipeline(state: &AppState, user: &UserRow) -> AppResult<ToolExe
             kind: "funnel".into(),
             title: "合作转化漏斗".into(),
             summary: if matched > 0 {
-                format!("匹配到沟通转化率 {}%", connected * 100 / matched.max(1))
+                format!(
+                    "匹配到沟通转化率 {}%",
+                    (connected * 100 / matched.max(1)).clamp(0, 100)
+                )
             } else {
                 "尚未发起智能匹配".into()
             },
@@ -530,7 +648,7 @@ async fn search_partners(state: &AppState, prompt: &str) -> AppResult<ToolExecut
                 "name": row.get::<String, _>("name"),
                 "identity": row.get::<String, _>("identity"),
                 "description": row.get::<String, _>("description"),
-                "tags": parse_json(row.get("tags")),
+                "tags": parse_json_array(row.get("tags")),
                 "matchScore": row.get::<i64, _>("match_score")
             })
         })
@@ -582,7 +700,7 @@ async fn recommend_plans(state: &AppState, prompt: &str) -> AppResult<ToolExecut
                 "title": row.get::<String, _>("title"),
                 "planType": row.get::<String, _>("plan_type"),
                 "description": row.get::<String, _>("description"),
-                "tags": parse_json(row.get("tags")),
+                "tags": parse_json_array(row.get("tags")),
                 "budgetAmount": budget,
                 "budget": format_money(budget),
                 "score": row.get::<i64, _>("score")
@@ -606,39 +724,79 @@ async fn save_recommended_plan(
     state: &AppState,
     user: &UserRow,
     session_id: &str,
+    message_id: &str,
 ) -> AppResult<ToolExecution> {
     let previous: Option<String> = sqlx::query_scalar(
         "SELECT output_json FROM agent_tool_calls
-         WHERE session_id = ? AND tool_name = 'recommend_plans'
-         ORDER BY created_at DESC LIMIT 1",
+         WHERE session_id = ? AND message_id = ? AND tool_name = 'recommend_plans'
+         ORDER BY created_at DESC, rowid DESC LIMIT 1",
     )
     .bind(session_id)
+    .bind(message_id)
     .fetch_optional(&state.pool)
     .await?;
     let plan_id = previous
         .as_deref()
         .and_then(|value| serde_json::from_str::<Value>(value).ok())
         .and_then(|value| value["plans"][0]["id"].as_str().map(str::to_owned))
-        .or(
-            sqlx::query_scalar("SELECT id FROM plans WHERE active = 1 ORDER BY score DESC LIMIT 1")
-                .fetch_optional(&state.pool)
-                .await?,
-        )
-        .ok_or_else(|| AppError::NotFound("plan not found".into()))?;
-    sqlx::query(
+        .ok_or_else(|| AppError::NotFound("当前没有可收藏的推荐方案".into()))?;
+    let active: bool =
+        sqlx::query_scalar("SELECT EXISTS(SELECT 1 FROM plans WHERE id = ? AND active = 1)")
+            .bind(&plan_id)
+            .fetch_one(&state.pool)
+            .await?;
+    if !active {
+        return Err(AppError::NotFound("推荐方案已下架，请重新查询".into()));
+    }
+    let mut transaction = state.pool.begin().await?;
+    let result = sqlx::query(
         "INSERT INTO saved_plans (user_id, plan_id) VALUES (?, ?)
          ON CONFLICT(user_id, plan_id) DO NOTHING",
     )
     .bind(&user.id)
     .bind(&plan_id)
-    .execute(&state.pool)
+    .execute(&mut *transaction)
     .await?;
-    let output = json!({ "saved": true, "planId": plan_id });
+    let created = result.rows_affected() == 1;
+    if created {
+        sqlx::query(
+            "INSERT INTO agent_actions
+             (id, session_id, user_id, action_type, title, payload)
+             VALUES (?, ?, ?, 'save_plan', '收藏推荐方案', ?)",
+        )
+        .bind(Uuid::new_v4().to_string())
+        .bind(session_id)
+        .bind(&user.id)
+        .bind(json!({ "planId": plan_id }).to_string())
+        .execute(&mut *transaction)
+        .await?;
+    }
+    transaction.commit().await?;
+    if created {
+        let _ = track_event(
+            state,
+            Some(&user.id),
+            "plan_saved",
+            Some("plan"),
+            Some(&plan_id),
+            json!({ "source": "agent" }),
+        )
+        .await;
+    }
+    let output = json!({ "saved": true, "created": created, "planId": plan_id });
     Ok(ToolExecution {
         artifact: Artifact {
             kind: "action".into(),
-            title: "方案已收藏".into(),
-            summary: "已写入你的收藏，可随时继续执行。".into(),
+            title: if created {
+                "方案已收藏".into()
+            } else {
+                "方案已在收藏中".into()
+            },
+            summary: if created {
+                "已写入你的收藏，可随时继续执行。".into()
+            } else {
+                "无需重复收藏，可继续安排后续执行。".into()
+            },
             data: output.clone(),
         },
         output,
@@ -649,83 +807,43 @@ async fn connect_partner(
     state: &AppState,
     user: &UserRow,
     session_id: &str,
+    message_id: &str,
 ) -> AppResult<ToolExecution> {
     let previous: Option<String> = sqlx::query_scalar(
         "SELECT output_json FROM agent_tool_calls
-         WHERE session_id = ? AND tool_name = 'search_partners'
-         ORDER BY created_at DESC LIMIT 1",
+         WHERE session_id = ? AND message_id = ? AND tool_name = 'search_partners'
+         ORDER BY created_at DESC, rowid DESC LIMIT 1",
     )
     .bind(session_id)
+    .bind(message_id)
     .fetch_optional(&state.pool)
     .await?;
     let partner_id = previous
         .as_deref()
         .and_then(|value| serde_json::from_str::<Value>(value).ok())
         .and_then(|value| value["partners"][0]["id"].as_str().map(str::to_owned))
-        .or(sqlx::query_scalar(
-            "SELECT id FROM partners WHERE active = 1 ORDER BY match_score DESC LIMIT 1",
-        )
-        .fetch_optional(&state.pool)
-        .await?)
-        .ok_or_else(|| AppError::NotFound("partner not found".into()))?;
-    let partner_name: String = sqlx::query_scalar("SELECT name FROM partners WHERE id = ?")
-        .bind(&partner_id)
-        .fetch_one(&state.pool)
-        .await?;
-    let conversation_id = Uuid::new_v4().to_string();
-    let welcome_message = "你好，Agent 已根据合作目标为我们建立会话，可以开始沟通细节。";
-    let mut transaction = state.pool.begin().await?;
-    sqlx::query(
-        "INSERT INTO conversations
-         (id, user_id, partner_id, last_message, unread_count)
-         VALUES (?, ?, ?, ?, 1)
-         ON CONFLICT(user_id, partner_id) DO NOTHING",
-    )
-    .bind(&conversation_id)
-    .bind(&user.id)
-    .bind(&partner_id)
-    .bind(welcome_message)
-    .execute(&mut *transaction)
-    .await?;
-    let stored_id: String =
-        sqlx::query_scalar("SELECT id FROM conversations WHERE user_id = ? AND partner_id = ?")
-            .bind(&user.id)
-            .bind(&partner_id)
-            .fetch_one(&mut *transaction)
-            .await?;
-    let message_exists: bool = sqlx::query_scalar(
-        "SELECT EXISTS(
-           SELECT 1 FROM conversation_messages
-           WHERE conversation_id = ? AND content = ?
-         )",
-    )
-    .bind(&stored_id)
-    .bind(welcome_message)
-    .fetch_one(&mut *transaction)
-    .await?;
-    if !message_exists {
-        sqlx::query(
-            "INSERT INTO conversation_messages (id, conversation_id, sender, content)
-             VALUES (?, ?, 'partner', ?)",
-        )
-        .bind(Uuid::new_v4().to_string())
-        .bind(&stored_id)
-        .bind(welcome_message)
-        .execute(&mut *transaction)
-        .await?;
-    }
-    transaction.commit().await?;
+        .ok_or_else(|| AppError::NotFound("当前没有可联系的匹配伙伴".into()))?;
+    let connection =
+        establish_partner_connection(state, user, &partner_id, Some(session_id)).await?;
+    let partner_name = connection.partner_name;
+    let stored_id = connection.conversation_id;
+    let created = connection.created;
     let output = json!({
         "conversationId": stored_id,
         "partnerId": partner_id,
         "partnerName": partner_name,
+        "created": created,
         "status": "completed"
     });
     Ok(ToolExecution {
         artifact: Artifact {
             kind: "action".into(),
-            title: format!("已联系{partner_name}"),
-            summary: "合作会话已建立，可前往消息中心继续沟通。".into(),
+            title: if created {
+                format!("已联系{partner_name}")
+            } else {
+                format!("与{partner_name}的会话已存在")
+            },
+            summary: "可前往消息中心继续沟通合作细节。".into(),
             data: output.clone(),
         },
         output,
@@ -738,20 +856,45 @@ async fn create_follow_up_task(
     session_id: &str,
     prompt: &str,
 ) -> AppResult<ToolExecution> {
-    let id = Uuid::new_v4().to_string();
     let title = short_title(prompt);
-    sqlx::query(
+    let bucket = Utc::now().timestamp() / 300;
+    let dedupe_key = format!("follow_up:{}:{}:{}:{}", session_id, user.id, bucket, title);
+    let existing: Option<String> = sqlx::query_scalar(
+        "SELECT id FROM agent_actions
+         WHERE dedupe_key = ?
+         ORDER BY created_at DESC, rowid DESC LIMIT 1",
+    )
+    .bind(&dedupe_key)
+    .fetch_optional(&state.pool)
+    .await?;
+    if let Some(id) = existing {
+        return Ok(follow_up_result(id, title, false));
+    }
+    let id = Uuid::new_v4().to_string();
+    let mut transaction = state.pool.begin().await?;
+    let result = sqlx::query(
         "INSERT INTO agent_actions
-         (id, session_id, user_id, action_type, title, payload)
-         VALUES (?, ?, ?, 'follow_up', ?, ?)",
+         (id, session_id, user_id, action_type, title, payload, dedupe_key)
+         VALUES (?, ?, ?, 'follow_up', ?, ?, ?)
+         ON CONFLICT DO NOTHING",
     )
     .bind(&id)
     .bind(session_id)
     .bind(&user.id)
     .bind(&title)
     .bind(json!({ "sourceQuery": prompt }).to_string())
-    .execute(&state.pool)
+    .bind(&dedupe_key)
+    .execute(&mut *transaction)
     .await?;
+    if result.rows_affected() == 0 {
+        let existing_id: String =
+            sqlx::query_scalar("SELECT id FROM agent_actions WHERE dedupe_key = ?")
+                .bind(&dedupe_key)
+                .fetch_one(&mut *transaction)
+                .await?;
+        transaction.commit().await?;
+        return Ok(follow_up_result(existing_id, title, false));
+    }
     sqlx::query(
         "INSERT INTO notifications (id, user_id, kind, title, description)
          VALUES (?, ?, 'spark', 'Agent 跟进任务已创建', ?)",
@@ -759,18 +902,32 @@ async fn create_follow_up_task(
     .bind(Uuid::new_v4().to_string())
     .bind(&user.id)
     .bind(&title)
-    .execute(&state.pool)
+    .execute(&mut *transaction)
     .await?;
-    let output = json!({ "actionId": id, "status": "completed", "title": title });
-    Ok(ToolExecution {
+    transaction.commit().await?;
+    Ok(follow_up_result(id, title, true))
+}
+
+fn follow_up_result(id: String, title: String, created: bool) -> ToolExecution {
+    let output =
+        json!({ "actionId": id, "status": "completed", "created": created, "title": title });
+    ToolExecution {
         artifact: Artifact {
             kind: "action".into(),
-            title: "执行任务已创建".into(),
-            summary: "任务已进入消息中心，后续可继续跟进。".into(),
+            title: if created {
+                "执行任务已创建".into()
+            } else {
+                "跟进任务已存在".into()
+            },
+            summary: if created {
+                "任务已进入消息中心，后续可继续跟进。".into()
+            } else {
+                "五分钟内不会重复创建相同任务。".into()
+            },
             data: output.clone(),
         },
         output,
-    })
+    }
 }
 
 async fn user_count(state: &AppState, query: &str, user_id: &str) -> AppResult<i64> {
@@ -781,6 +938,10 @@ async fn user_count(state: &AppState, query: &str, user_id: &str) -> AppResult<i
 }
 
 fn compose_reply(prompt: &str, tool_calls: &[ToolCallView]) -> String {
+    let failed = tool_calls
+        .iter()
+        .filter(|call| call.status == "failed")
+        .count();
     let labels = tool_calls
         .iter()
         .map(|call| call.label.as_str())
@@ -788,6 +949,14 @@ fn compose_reply(prompt: &str, tool_calls: &[ToolCallView]) -> String {
         .join("、");
     if tool_calls.is_empty() {
         return "我暂时没有找到需要调用的工具，请换一种方式描述目标。".into();
+    }
+    if failed > 0 {
+        return format!(
+            "已围绕“{}”执行 {}，其中 {} 个工具未完成。已保留成功结果和失败轨迹，你可以调整条件后继续。",
+            short_title(prompt),
+            labels,
+            failed
+        );
     }
     format!(
         "已围绕“{}”完成 {}。结果来自当前业务数据库，你可以继续追问细分渠道、预算或让我直接创建跟进任务。",
@@ -804,8 +973,67 @@ fn parse_json(value: String) -> Value {
     serde_json::from_str(&value).unwrap_or_else(|_| json!({}))
 }
 
+fn parse_json_array(value: String) -> Value {
+    serde_json::from_str::<Vec<Value>>(&value)
+        .map(Value::Array)
+        .unwrap_or_else(|_| json!([]))
+}
+
 fn contains_any(value: &str, keywords: &[&str]) -> bool {
     keywords.iter().any(|keyword| value.contains(keyword))
+}
+
+fn action_is_blocked(prompt: &str, verbs: &[&str], informational: &[&str]) -> bool {
+    if contains_any(prompt, informational) {
+        return true;
+    }
+    verbs.iter().any(|verb| {
+        prompt.match_indices(verb).any(|(index, _)| {
+            let prefix = &prompt[..index];
+            let recent = prefix
+                .chars()
+                .rev()
+                .take(10)
+                .collect::<String>()
+                .chars()
+                .rev()
+                .collect::<String>();
+            contains_any(
+                &recent,
+                &[
+                    "不要",
+                    "别",
+                    "无需",
+                    "不必",
+                    "暂不",
+                    "先不",
+                    "请勿",
+                    "禁止",
+                    "取消",
+                    "怎么",
+                    "如何",
+                    "能否",
+                    "是否",
+                    "可否",
+                    "该不该",
+                ],
+            ) || recent.ends_with('不')
+        })
+    })
+}
+
+fn push_tool(tools: &mut Vec<&'static str>, tool: &'static str) {
+    if !tools.contains(&tool) {
+        tools.push(tool);
+    }
+}
+
+fn safe_tool_error(error: &AppError) -> String {
+    match error {
+        AppError::NotFound(message) | AppError::BadRequest(message) => message.clone(),
+        AppError::Unauthorized => "登录状态已失效".into(),
+        AppError::Database(_) | AppError::Internal(_) => "工具暂时不可用，请稍后重试".into(),
+    }
 }
 
 fn tool_definitions() -> Vec<ToolDefinition> {
@@ -933,5 +1161,25 @@ mod tests {
             select_tools("推荐一个推广方案并保存方案"),
             vec!["recommend_plans", "save_recommended_plan"]
         );
+        assert_eq!(
+            select_tools("直接联系最合适的人"),
+            vec!["search_partners", "connect_partner"]
+        );
+    }
+
+    #[test]
+    fn does_not_execute_negated_or_informational_write_intents() {
+        assert_eq!(
+            select_tools("帮我找伙伴，但不要联系"),
+            vec!["search_partners"]
+        );
+        assert_eq!(select_tools("推荐方案但不要收藏"), vec!["recommend_plans"]);
+        assert_eq!(select_tools("如何联系这些合作方"), vec!["search_partners"]);
+        assert!(!select_tools("请不要帮我联系任何人").contains(&"connect_partner"));
+        assert!(!select_tools("分析沟通数据").contains(&"connect_partner"));
+        assert!(!select_tools("我收藏了几个方案").contains(&"save_recommended_plan"));
+        assert!(!select_tools("先不保存这个方案").contains(&"save_recommended_plan"));
+        assert!(!select_tools("有哪些任务").contains(&"create_follow_up_task"));
+        assert!(select_tools("请创建本周跟进任务").contains(&"create_follow_up_task"));
     }
 }

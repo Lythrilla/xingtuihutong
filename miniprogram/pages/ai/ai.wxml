@@ -12,7 +12,10 @@
       </view>
       <view class="agent-hero-copy">
         <view class="agent-state"><text></text> AGENT ONLINE</view>
-        <view class="agent-title">你的全链路音乐<br />商业智能体</view>
+        <view class="agent-title">
+          <text>你的全链路音乐</text>
+          <text>商业智能体</text>
+        </view>
         <view class="agent-engine">{{engine}}</view>
       </view>
       <view class="hero-actions">
@@ -64,9 +67,9 @@
             <text>TOOL CALL TRACE</text>
             <view>执行链路</view>
           </view>
-          <text>{{toolCalls.length}} 个工具完成</text>
+          <text>{{toolCalls.length}} 个工具已执行</text>
         </view>
-        <view class="trace-item" wx:for="{{toolCalls}}" wx:key="id">
+        <view class="trace-item {{item.status}}" wx:for="{{toolCalls}}" wx:key="id">
           <view class="trace-axis">
             <view class="trace-dot"></view>
             <view class="trace-line"></view>
@@ -75,7 +78,7 @@
             <view class="trace-name">{{item.label}}</view>
             <view class="trace-code">{{item.name}}</view>
             <view class="trace-meta">
-              <text>COMPLETED</text>
+              <text>{{item.status === 'failed' ? 'FAILED' : 'COMPLETED'}}</text>
               <text>{{item.durationMs}}ms</text>
             </view>
           </view>
@@ -85,7 +88,7 @@
       <view class="artifact-stream" wx:if="{{artifacts.length}}">
         <block wx:for="{{artifacts}}" wx:key="title">
           <view class="artifact">
-            <view class="artifact-kicker">{{item.kind === 'action' ? 'ACTION EXECUTED' : 'LIVE DATA'}}</view>
+            <view class="artifact-kicker">{{item.kind === 'action' ? 'ACTION EXECUTED' : item.kind === 'error' ? 'EXECUTION NOTICE' : 'LIVE DATA'}}</view>
             <view class="artifact-title">{{item.title}}</view>
             <view class="artifact-summary">{{item.summary}}</view>
 
@@ -132,9 +135,16 @@
               </view>
             </scroll-view>
 
-            <button class="action-result" wx:elif="{{item.kind === 'action'}}" bindtap="openMessages">
-              已完成 · 前往消息中心
-            </button>
+            <view class="error-result" wx:elif="{{item.kind === 'error'}}">可调整条件后重新执行，已完成的结果不会丢失。</view>
+
+            <button
+              class="action-result"
+              wx:elif="{{item.kind === 'action' && item.actionNavigable}}"
+              data-conversation-id="{{item.payload.conversationId}}"
+              data-partner-name="{{item.payload.partnerName}}"
+              bindtap="openAction"
+            >{{item.actionLabel}}</button>
+            <view class="action-result static" wx:elif="{{item.kind === 'action'}}">{{item.actionLabel}}</view>
           </view>
         </block>
       </view>

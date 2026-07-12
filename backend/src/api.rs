@@ -323,9 +323,28 @@ async fn connect_partner(
     Json(input): Json<ConnectPartner>,
 ) -> AppResult<Json<serde_json::Value>> {
     let user = current_user(&state, &headers).await?;
+    let connection = establish_partner_connection(&state, &user, &input.partner_id, None).await?;
+    Ok(Json(json!({
+        "conversationId": connection.conversation_id,
+        "partnerName": connection.partner_name
+    })))
+}
+
+pub(crate) struct PartnerConnection {
+    pub conversation_id: String,
+    pub partner_name: String,
+    pub created: bool,
+}
+
+pub(crate) async fn establish_partner_connection(
+    state: &AppState,
+    user: &UserRow,
+    partner_id: &str,
+    agent_session_id: Option<&str>,
+) -> AppResult<PartnerConnection> {
     let partner_name: Option<String> =
         sqlx::query_scalar("SELECT name FROM partners WHERE id = ? AND active = 1")
-            .bind(&input.partner_id)
+            .bind(partner_id)
             .fetch_optional(&state.pool)
             .await?;
     let partner_name =
@@ -340,7 +359,7 @@ async fn connect_partner(
     )
     .bind(Uuid::new_v4().to_string())
     .bind(&user.id)
-    .bind(&input.partner_id)
+    .bind(partner_id)
     .bind(welcome_message)
     .execute(&mut *tx)
     .await?;
@@ -348,7 +367,7 @@ async fn connect_partner(
     let conversation_id: String =
         sqlx::query_scalar("SELECT id FROM conversations WHERE user_id = ? AND partner_id = ?")
             .bind(&user.id)
-            .bind(&input.partner_id)
+            .bind(partner_id)
             .fetch_one(&mut *tx)
             .await?;
     if created {
@@ -394,6 +413,26 @@ async fn connect_partner(
             .execute(&mut *tx)
             .await?;
         }
+        if let Some(session_id) = agent_session_id {
+            sqlx::query(
+                "INSERT INTO agent_actions
+                 (id, session_id, user_id, action_type, title, payload)
+                 VALUES (?, ?, ?, 'connect_partner', ?, ?)",
+            )
+            .bind(Uuid::new_v4().to_string())
+            .bind(session_id)
+            .bind(&user.id)
+            .bind(format!("联系{partner_name}"))
+            .bind(
+                json!({
+                    "conversationId": conversation_id,
+                    "partnerId": partner_id
+                })
+                .to_string(),
+            )
+            .execute(&mut *tx)
+            .await?;
+        }
     }
     tx.commit().await?;
     let _ = crate::analytics::track_event(
@@ -402,12 +441,14 @@ async fn connect_partner(
         "partner_connected",
         Some("conversation"),
         Some(&conversation_id),
-        json!({ "partnerId": input.partner_id, "created": created }),
+        json!({ "partnerId": partner_id, "created": created }),
     )
     .await;
-    Ok(Json(
-        json!({ "conversationId": conversation_id, "partnerName": partner_name }),
-    ))
+    Ok(PartnerConnection {
+        conversation_id,
+        partner_name,
+        created,
+    })
 }
 
 #[derive(Serialize)]

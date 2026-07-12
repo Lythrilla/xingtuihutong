@@ -1,12 +1,10 @@
 page {
-  height: 100vh;
-  overflow: hidden;
+  min-height: 100%;
   background: rgba(237, 239, 253, 1);
 }
 
 .onboarding {
-  height: 100vh;
-  overflow: hidden;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   background: linear-gradient(180deg, rgba(237, 239, 253, 1) 0%, rgba(251, 251, 254, 1) 100%);
@@ -15,6 +13,7 @@ page {
 /* === 顶部：标题 + 副标题 + 插画 === */
 .hero {
   flex: 1;
+  min-height: 470rpx;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -23,28 +22,28 @@ page {
 }
 
 .brand-title {
-  margin-top: 24rpx;
+  margin-top: 16rpx;
   color: rgba(52, 59, 86, 1);
-  font-size: 78rpx;
+  font-size: 64rpx;
   font-weight: 700;
   text-align: center;
   letter-spacing: 2rpx;
 }
 
 .brand-subtitle {
-  margin-top: 18rpx;
+  margin-top: 12rpx;
   max-width: 560rpx;
   color: rgba(118, 121, 143, 1);
-  font-size: 30rpx;
+  font-size: 26rpx;
   text-align: center;
   line-height: 1.5;
 }
 
 .hero-image {
-  width: 440rpx;
+  width: 380rpx;
   flex: 1;
-  min-height: 280rpx;
-  margin-top: 16rpx;
+  min-height: 240rpx;
+  margin-top: 10rpx;
   opacity: 0.7;
 }
 
@@ -52,25 +51,25 @@ page {
 .panel {
   display: flex;
   flex-direction: column;
-  margin-top: 36rpx;
-  padding: 44rpx 40rpx calc(48rpx + env(safe-area-inset-bottom));
+  margin-top: 24rpx;
+  padding: 34rpx 40rpx calc(36rpx + env(safe-area-inset-bottom));
   background: rgba(255, 255, 255, 1);
-  border-top-left-radius: 48rpx;
-  border-top-right-radius: 48rpx;
+  border-top-left-radius: 36rpx;
+  border-top-right-radius: 36rpx;
   box-shadow: 0 -10rpx 40rpx rgba(120, 130, 180, 0.08);
 }
 
 .panel-title {
   color: rgba(46, 49, 62, 1);
-  font-size: 44rpx;
+  font-size: 36rpx;
   font-weight: 700;
   text-align: center;
 }
 
 .panel-subtitle {
-  margin-top: 14rpx;
+  margin-top: 8rpx;
   color: rgba(118, 121, 143, 1);
-  font-size: 30rpx;
+  font-size: 25rpx;
   text-align: center;
 }
 
@@ -80,21 +79,21 @@ page {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 32rpx;
-  padding: 30rpx 32rpx;
+  margin-top: 24rpx;
+  padding: 24rpx 28rpx;
   background: rgba(240, 243, 253, 1);
   transition: background 0.2s ease, box-shadow 0.2s ease;
 }
 
 .role-card.provider {
-  border-top-left-radius: 48rpx;
-  border-top-right-radius: 48rpx;
+  border-top-left-radius: 32rpx;
+  border-top-right-radius: 32rpx;
 }
 
 .role-card.client {
   margin-top: 6rpx;
-  border-bottom-left-radius: 48rpx;
-  border-bottom-right-radius: 48rpx;
+  border-bottom-left-radius: 32rpx;
+  border-bottom-right-radius: 32rpx;
 }
 
 .role-card.selected {
@@ -109,7 +108,7 @@ page {
 
 .role-name {
   color: rgba(46, 49, 62, 1);
-  font-size: 32rpx;
+  font-size: 29rpx;
   font-weight: 700;
 }
 
@@ -120,18 +119,35 @@ page {
   line-height: 1.5;
 }
 
-.role-icon {
-  width: 124rpx;
-  height: 134rpx;
+.role-symbol {
+  width: 82rpx;
+  height: 82rpx;
   flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin-left: 18rpx;
+  color: rgba(95, 101, 180, 1);
+  background: rgba(255, 255, 255, 0.7);
+  border: 1rpx solid rgba(255, 255, 255, 0.9);
+  border-radius: 24rpx;
+}
+
+.role-symbol .ui-icon {
+  width: 42rpx;
+  height: 42rpx;
+}
+
+.client-symbol {
+  color: rgba(111, 88, 174, 1);
+  background: rgba(250, 247, 255, 0.76);
 }
 
 /* === 协议勾选 === */
 .agreement {
   display: flex;
   align-items: center;
-  margin-top: 44rpx;
+  margin-top: 28rpx;
 }
 
 .agree-box {

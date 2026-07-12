@@ -39,6 +39,7 @@ Component({
     connectingId: '',
     previousType: 'all',
     favoritesOnly: false,
+    focusedPartnerId: '',
   },
   lifetimes: {
     async attached() {
@@ -74,14 +75,22 @@ Component({
           ...entry,
           favorite: favoriteIds.includes(entry.id),
         }))
+        const focusedPartnerId = initial
+          ? (wx.getStorageSync('starconnect-agent-partner') as string)
+          : ''
+        const focusedPartner = entries.find((entry) => entry.id === focusedPartnerId)
+        if (focusedPartnerId) wx.removeStorageSync('starconnect-agent-partner')
+        const query = focusedPartner?.name ?? this.data.query
         this.setData({
           activeType: type,
           types: response.types,
           entries,
+          query,
+          focusedPartnerId: focusedPartner?.id ?? '',
           loading: false,
           listLoading: false,
         })
-        this.filterEntries(this.data.query)
+        this.filterEntries(query)
       } catch (error) {
         this.setData({
           loading: false,
@@ -107,11 +116,11 @@ Component({
     },
     updateSearch(event: WechatMiniprogram.Input) {
       const query = event.detail.value
-      this.setData({ query })
+      this.setData({ query, focusedPartnerId: '' })
       this.filterEntries(query)
     },
     clearSearch() {
-      this.setData({ query: '' })
+      this.setData({ query: '', focusedPartnerId: '' })
       this.filterEntries('')
     },
     filterEntries(query: string) {

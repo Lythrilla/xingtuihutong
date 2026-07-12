@@ -17,7 +17,9 @@
         <view class="role-name">我是服务方</view>
         <view class="role-desc">我提供音乐推广、宣发等专业服务</view>
       </view>
-      <image class="role-icon" src="/assets/images/role-service.png" mode="aspectFit"></image>
+      <view class="role-symbol provider-symbol">
+        <view class="ui-icon icon-briefcase"></view>
+      </view>
     </view>
 
     <view class="role-card client {{selectedRole === 'client' ? 'selected' : ''}}" data-role="client" bindtap="chooseRole" hover-class="pressable">
@@ -25,7 +27,9 @@
         <view class="role-name">我是创作者</view>
         <view class="role-desc">我希望宣传我的作品，寻求音乐推广</view>
       </view>
-      <image class="role-icon" src="/assets/images/role-client.png" mode="aspectFit"></image>
+      <view class="role-symbol client-symbol">
+        <view class="ui-icon icon-audio"></view>
+      </view>
     </view>
 
     <view class="agreement" bindtap="toggleAgree">
