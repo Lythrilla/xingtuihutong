@@ -66,7 +66,7 @@
             data-id="{{item.id}}"
             catchtap="toggleFavorite"
             aria-label="{{item.favorite ? '取消收藏' : '收藏'}}"
-          ><view class="favorite-heart"></view></button>
+          >{{item.favorite ? '♥' : '♡'}}</button>
         </view>
         <view class="entry-service">{{item.partnerType === 'provider' ? '专业服务' : '合作需求'}} · {{item.description}}</view>
         <view class="tag-row">

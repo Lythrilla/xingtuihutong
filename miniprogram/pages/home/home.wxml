@@ -10,7 +10,7 @@
         <view class="ai-desc">精准匹配，高效连接</view>
         <view class="ai-enter"><text>从此进入 →</text></view>
       </view>
-      <image class="ai-illustration" src="/assets/images/ai-orb.webp" mode="aspectFit"></image>
+      <image class="ai-illustration" src="/assets/images/ai-illustration.png" mode="aspectFit"></image>
     </view>
 
     <view class="section">
