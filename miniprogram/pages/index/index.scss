@@ -4,7 +4,8 @@ page {
 }
 
 .onboarding {
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   background: linear-gradient(180deg, rgba(237, 239, 253, 1) 0%, rgba(251, 251, 254, 1) 100%);
@@ -12,8 +13,9 @@ page {
 
 /* === 顶部：标题 + 副标题 + 插画 === */
 .hero {
+  position: relative;
   flex: 1;
-  min-height: 470rpx;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -22,6 +24,8 @@ page {
 }
 
 .brand-title {
+  position: relative;
+  z-index: 2;
   margin-top: 16rpx;
   color: rgba(52, 59, 86, 1);
   font-size: 64rpx;
@@ -31,6 +35,8 @@ page {
 }
 
 .brand-subtitle {
+  position: relative;
+  z-index: 2;
   margin-top: 12rpx;
   max-width: 560rpx;
   color: rgba(118, 121, 143, 1);
@@ -40,18 +46,24 @@ page {
 }
 
 .hero-image {
-  width: 380rpx;
-  flex: 1;
-  min-height: 240rpx;
-  margin-top: 10rpx;
-  opacity: 0.7;
+  position: absolute;
+  bottom: -100rpx; /* 继续往下沉，制造更多层次感 */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 75%; /* 保持目前的精巧尺寸 */
+  max-width: 500rpx;
+  flex: none;
+  opacity: 0.85; /* 调低透明度，让它更像氛围背景 */
+  z-index: 1;
 }
 
 /* === 底部白色圆角面板 === */
 .panel {
+  flex: none;
+  position: relative;
+  z-index: 10;
   display: flex;
   flex-direction: column;
-  margin-top: 24rpx;
   padding: 34rpx 40rpx calc(36rpx + env(safe-area-inset-bottom));
   background: rgba(255, 255, 255, 1);
   border-top-left-radius: 36rpx;
@@ -80,50 +92,65 @@ page {
   align-items: center;
   justify-content: space-between;
   margin-top: 24rpx;
-  padding: 24rpx 28rpx;
-  background: rgba(240, 243, 253, 1);
-  transition: background 0.2s ease, box-shadow 0.2s ease;
+  padding: 36rpx 32rpx;
+  background: rgba(244, 246, 254, 0.6);
+  border: 3rpx solid transparent;
+  transition: all 0.25s cubic-bezier(0.1, 0.7, 0.1, 1);
 }
 
 .role-card.client {
-  border-top-left-radius: 32rpx;
-  border-top-right-radius: 32rpx;
+  border-top-left-radius: 36rpx;
+  border-top-right-radius: 36rpx;
+  border-bottom-left-radius: 12rpx;
+  border-bottom-right-radius: 12rpx;
 }
 
 .role-card.provider {
-  margin-top: 6rpx;
-  border-bottom-left-radius: 32rpx;
-  border-bottom-right-radius: 32rpx;
+  margin-top: 12rpx;
+  border-top-left-radius: 12rpx;
+  border-top-right-radius: 12rpx;
+  border-bottom-left-radius: 36rpx;
+  border-bottom-right-radius: 36rpx;
 }
 
 .role-card.selected {
   background: rgba(255, 255, 255, 1);
-  box-shadow: 0 6rpx 20rpx rgba(95, 101, 180, 0.12);
+  border-color: rgba(137, 154, 248, 0.6);
+  box-shadow: 0 16rpx 40rpx rgba(137, 154, 248, 0.12);
+  transform: scale(1.01);
+  z-index: 2;
+}
+
+.role-card:active {
+  transform: scale(0.98);
 }
 
 .role-info {
   flex: 1;
   min-width: 0;
+  padding-right: 20rpx;
 }
 
 .role-name {
   color: rgba(46, 49, 62, 1);
-  font-size: 29rpx;
+  font-size: 34rpx;
   font-weight: 700;
+  letter-spacing: 0.5rpx;
 }
 
 .role-desc {
-  margin-top: 12rpx;
-  color: rgba(118, 121, 143, 1);
+  margin-top: 14rpx;
+  color: rgba(118, 121, 143, 0.9);
   font-size: 24rpx;
   line-height: 1.5;
 }
 
 .role-icon {
-  width: 124rpx;
-  height: 134rpx;
+  width: 108rpx;
+  height: 108rpx;
   flex: none;
-  margin-left: 18rpx;
+  margin-left: 12rpx;
+  opacity: 0.9;
 }
 
 /* === 协议勾选 === */
@@ -134,6 +161,7 @@ page {
 .agreement-label {
   display: flex;
   align-items: center;
+  padding: 12rpx 0;
 }
 
 .agree-native {
@@ -146,14 +174,14 @@ page {
 
 .agree-box {
   position: relative;
-  width: 32rpx;
-  height: 32rpx;
+  width: 36rpx;
+  height: 36rpx;
   flex: none;
   margin-right: 16rpx;
-  border-radius: 8rpx;
+  border-radius: 50%;
   border: 2rpx solid rgba(201, 207, 224, 1);
   background: rgba(255, 255, 255, 1);
-  transition: background-color 0.2s ease, border-color 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .agree-box.on {
@@ -163,13 +191,13 @@ page {
 
 .agree-tick {
   position: absolute;
-  top: 4rpx;
-  left: 11rpx;
-  width: 8rpx;
-  height: 16rpx;
+  top: 50%;
+  left: 50%;
+  width: 10rpx;
+  height: 18rpx;
   border-right: 3rpx solid rgba(255, 255, 255, 1);
   border-bottom: 3rpx solid rgba(255, 255, 255, 1);
-  transform: rotate(45deg);
+  transform: translate(-50%, -60%) rotate(45deg);
 }
 
 .agree-text {

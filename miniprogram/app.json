@@ -12,7 +12,9 @@
     "pages/analytics/analytics",
     "pages/messages/messages",
     "pages/conversation/conversation",
-    "pages/profile/profile"
+    "pages/profile/profile",
+    "pages/agreement/agreement",
+    "pages/privacy/privacy"
   ],
   "window": {
     "navigationBarTextStyle": "black",

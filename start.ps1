@@ -60,25 +60,39 @@ function Patch-Configs([string]$Ip) {
     # miniprogram/utils/store.ts — dev baseUrl
     $storePath = Join-Path $Root 'miniprogram\utils\store.ts'
     if (Test-Path $storePath) {
-        if (Patch-File $storePath 'http://[^:]+:3000' $base) { $patched++ }
-        if (Patch-File $storePath 'http://[^:]+:8200' $base) { $patched++ }
+        if (Patch-File $storePath 'http://(127\.0\.0\.1|localhost|192\.168\.\d+\.\d+)[^:]*:\d+' $base) { $patched++ }
     }
 
-    # miniprogram/app.js (如果有写死的话)
-    $appPath = Join-Path $Root 'miniprogram\app.js'
-    if (Test-Path $appPath) {
-        if (Patch-File $appPath 'http://[^:]+:3000' $base) { $patched++ }
-        if (Patch-File $appPath 'http://[^:]+:8200' $base) { $patched++ }
+    # miniprogram/config.ts
+    $configPath = Join-Path $Root 'miniprogram\config.ts'
+    if (Test-Path $configPath) {
+        if (Patch-File $configPath 'http://(127\.0\.0\.1|localhost|192\.168\.\d+\.\d+)[^:]*:\d+' $base) { $patched++ }
     }
 
     # app.ts
     $appTsPath = Join-Path $Root 'miniprogram\app.ts'
     if (Test-Path $appTsPath) {
-        if (Patch-File $appTsPath 'http://[^:]+:3000' $base) { $patched++ }
-        if (Patch-File $appTsPath 'http://[^:]+:8200' $base) { $patched++ }
+        if (Patch-File $appTsPath 'http://(127\.0\.0\.1|localhost|192\.168\.\d+\.\d+)[^:]*:\d+' $base) { $patched++ }
     }
 
-    Ok "Patched $patched frontend file(s) -> API URL: $base"
+    # 替换后端的绑定地址 (.env.example 等)
+    $backendEnvExamplePath = Join-Path $Root 'backend\.env.example'
+    if (Test-Path $backendEnvExamplePath) {
+        if (Patch-File $backendEnvExamplePath 'BIND_ADDRESS=(127\.0\.0\.1|localhost|0\.0\.0\.0|192\.168\.\d+\.\d+):\d+' "BIND_ADDRESS=${Ip}:3000") { $patched++ }
+    }
+    
+    $backendEnvPath = Join-Path $Root 'backend\.env'
+    if (Test-Path $backendEnvPath) {
+        if (Patch-File $backendEnvPath 'BIND_ADDRESS=(127\.0\.0\.1|localhost|0\.0\.0\.0|192\.168\.\d+\.\d+):\d+' "BIND_ADDRESS=${Ip}:3000") { $patched++ }
+    }
+
+    # backend/src/config.rs (Rust 后端代码里的 fallback IP)
+    $backendConfigRsPath = Join-Path $Root 'backend\src\config.rs'
+    if (Test-Path $backendConfigRsPath) {
+        if (Patch-File $backendConfigRsPath '"(127\.0\.0\.1|localhost|0\.0\.0\.0|192\.168\.\d+\.\d+)(:\d+)?"' "`"${Ip}:3000`"") { $patched++ }
+    }
+
+    Ok "Patched $patched config file(s) -> API/Bind URL: $base"
 }
 
 function Stop-PortListeners([int[]]$Ports) {

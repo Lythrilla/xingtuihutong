@@ -3,7 +3,7 @@
     <view class="hero-spacer" style="height: {{navigationHeight}}px;"></view>
     <view class="brand-title">星推互通</view>
     <view class="brand-subtitle">连接每一个梦想，让更多人听见你的声音</view>
-    <image class="hero-image" src="/assets/images/hero.png" mode="aspectFill"></image>
+    <image class="hero-image" src="../../assets/images/hero.png" mode="widthFix"></image>
   </view>
 
   <view class="panel">
@@ -15,17 +15,17 @@
     <view class="role-card client {{selectedRole === 'client' ? 'selected' : ''}}" data-role="client" bindtap="chooseRole" hover-class="pressable">
       <view class="role-info">
         <view class="role-name">我是音乐创作者</view>
-        <view class="role-desc">提交作品与创作者资料，审核后发布推广需求</view>
+        <view class="role-desc">提交作品与创作者资料，发布推广需求</view>
       </view>
-      <image class="role-icon" src="/assets/images/role-client.png" mode="aspectFit"></image>
+      <image class="role-icon" src="../../assets/images/role-client.png" mode="aspectFit"></image>
     </view>
 
     <view class="role-card provider {{selectedRole === 'provider' ? 'selected' : ''}}" data-role="provider" bindtap="chooseRole" hover-class="pressable">
       <view class="role-info">
         <view class="role-name">我是推广服务方</view>
-        <view class="role-desc">提交团队与服务能力，审核后承接创作者项目</view>
+        <view class="role-desc">提交团队与服务能力，承接创作者项目</view>
       </view>
-      <image class="role-icon" src="/assets/images/role-service.png" mode="aspectFit"></image>
+      <image class="role-icon" src="../../assets/images/role-service.png" mode="aspectFit"></image>
     </view>
 
     <checkbox-group class="agreement" bindchange="toggleAgree">
@@ -34,7 +34,7 @@
         <view class="agree-box {{agreed ? 'on' : ''}}">
           <view class="agree-tick" wx:if="{{agreed}}"></view>
         </view>
-        <view class="agree-text">已阅读并同意 <text class="link">《用户协议》</text>与<text class="link">《隐私政策》</text></view>
+        <view class="agree-text">已阅读并同意 <text class="link" catchtap="goAgreement">《用户协议》</text>与<text class="link" catchtap="goPrivacy">《隐私政策》</text></view>
       </label>
     </checkbox-group>
 

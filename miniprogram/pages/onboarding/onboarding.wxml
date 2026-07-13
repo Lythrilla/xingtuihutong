@@ -7,8 +7,11 @@
   <data-state loading="{{loading}}" error="{{error}}" bind:action="retry"></data-state>
 
   <block wx:if="{{!loading && !error}}">
-    <view wx:if="{{!editing}}" class="card status-card status-{{status}}">
-      <view class="status-icon">{{status === 'approved' ? '✓' : '…'}}</view>
+    <view wx:if="{{!editing}}" class="glass-card status-card status-{{status}}">
+      <view class="status-orb">
+        <view class="status-icon">{{status === 'approved' ? '✓' : '…'}}</view>
+        <view class="status-halo"></view>
+      </view>
       <view class="status-title">{{status === 'approved' ? '入驻审核已通过' : '资料已提交，正在审核'}}</view>
       <view class="status-description">
         {{status === 'approved'
@@ -24,6 +27,7 @@
       </view>
       <button class="primary-button status-primary" bindtap="goHome">进入{{isCreator ? '创作者' : '推广方'}}工作台</button>
       <button wx:if="{{status === 'pending' || status === 'approved'}}" class="text-action" bindtap="editApplication">{{status === 'approved' ? '更新入驻资料' : '修改并重新提交'}}</button>
+      <button wx:if="{{status === 'pending' || status === 'rejected'}}" class="switch-role-btn" bindtap="goBackToIndex"><text class="switch-icon">↺</text> 重新选择身份</button>
     </view>
 
     <block wx:else>
@@ -33,14 +37,14 @@
       </view>
 
       <view class="flow-card">
-        <view class="flow-number">01</view>
-        <view>
+        <view class="flow-node"></view>
+        <view class="flow-main">
           <view class="flow-title">{{isCreator ? '创作者身份' : '团队与品牌'}}</view>
           <view class="flow-desc">这些信息会在审核通过后对合作对象展示</view>
         </view>
       </view>
 
-      <view class="card form-card">
+      <view class="glass-card form-card">
         <label class="field">
           <text>{{isCreator ? '创作者名 / 艺名' : '品牌 / 团队名称'}} *</text>
           <input
@@ -64,14 +68,14 @@
       </view>
 
       <view class="flow-card">
-        <view class="flow-number">02</view>
-        <view>
+        <view class="flow-node"></view>
+        <view class="flow-main">
           <view class="flow-title">{{isCreator ? '作品与创作方向' : '推广能力与合作范围'}}</view>
           <view class="flow-desc">{{isCreator ? '平台据此确认作品归属并生成推广资料' : '平台据此匹配适合你的创作者项目'}}</view>
         </view>
       </view>
 
-      <view class="card form-card">
+      <view class="glass-card form-card">
         <block wx:if="{{isCreator}}">
           <label class="field">
             <text>代表作品 *</text>
@@ -126,6 +130,8 @@
         loading="{{submitting}}"
         bindtap="submitApplication"
       >{{submitting ? '正在提交' : status === 'rejected' ? '重新提交审核' : '提交入驻审核'}}</button>
+      
+      <button class="switch-role-btn" bindtap="goBackToIndex"><text class="switch-icon">↺</text> 重新选择身份</button>
     </block>
   </block>
 </view>

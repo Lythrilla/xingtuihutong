@@ -6,35 +6,52 @@ view, text, input, textarea {
   padding-bottom: calc(56rpx + env(safe-area-inset-bottom));
 }
 
-.flow-card {
-  display: flex;
-  align-items: center;
-  gap: 20rpx;
-  margin-top: 32rpx;
+.glass-card {
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 32rpx;
+  box-shadow: 0 16rpx 40rpx rgba(137, 154, 248, 0.08);
+  backdrop-filter: blur(20px) saturate(140%);
 }
 
-.flow-number {
-  color: rgba(137, 154, 248, 0.52);
-  font-size: 42rpx;
-  font-weight: 800;
+.flow-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 20rpx;
+  margin-top: 48rpx;
+  padding: 0 12rpx;
+}
+
+.flow-node {
+  width: 8rpx;
+  height: 32rpx;
+  margin-top: 6rpx;
+  flex: none;
+  background: linear-gradient(180deg, rgba(137, 154, 248, 1), rgba(137, 154, 248, 0.1));
+  border-radius: 8rpx;
+  box-shadow: 0 4rpx 12rpx rgba(137, 154, 248, 0.3);
+}
+
+.flow-main {
+  min-width: 0;
+  flex: 1;
 }
 
 .flow-title {
-  color: #2e313e;
-  font-size: 30rpx;
+  color: rgba(46, 49, 62, 1);
+  font-size: 32rpx;
   font-weight: 700;
 }
 
 .flow-desc {
   margin-top: 6rpx;
-  color: #76798f;
+  color: rgba(118, 121, 143, 1);
   font-size: 22rpx;
 }
 
 .form-card {
-  margin-top: 18rpx;
-  padding: 30rpx;
-  border: 1rpx solid rgba(137, 154, 248, 0.08);
+  margin-top: 24rpx;
+  padding: 40rpx;
 }
 
 .field {
@@ -57,16 +74,17 @@ view, text, input, textarea {
 .field input,
 .field textarea {
   width: 100%;
-  padding: 0 22rpx;
-  color: #2e313e;
+  padding: 0 24rpx;
+  color: #343b56;
   font-size: 27rpx;
-  background: #f7f8fc;
-  border: 2rpx solid transparent;
-  border-radius: 18rpx;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 20rpx;
+  box-shadow: inset 0 2rpx 6rpx rgba(137, 154, 248, 0.05);
 }
 
 .field input {
-  height: 78rpx;
+  height: 84rpx;
 }
 
 .field textarea {
@@ -98,31 +116,61 @@ view, text, input, textarea {
 }
 
 .tag-option {
-  padding: 12rpx 22rpx;
+  padding: 12rpx 24rpx;
   color: #76798f;
   font-size: 23rpx;
-  background: #f3f4f9;
-  border: 2rpx solid transparent;
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.9);
   border-radius: 24rpx;
 }
 
 .tag-option.selected {
-  color: #5f65b4;
+  color: #899af8;
   font-weight: 600;
-  background: rgba(137, 154, 248, 0.12);
-  border-color: rgba(137, 154, 248, 0.62);
+  background: rgba(137, 154, 248, 0.1);
+  border-color: rgba(137, 154, 248, 0.3);
 }
 
 .submit-note {
-  margin: 30rpx 18rpx 0;
-  color: #8b8ea0;
+  margin: 40rpx 24rpx 0;
+  color: rgba(118, 121, 143, 0.8);
   font-size: 22rpx;
   line-height: 1.6;
   text-align: center;
 }
 
 .submit-button {
-  margin-top: 22rpx;
+  margin-top: 24rpx;
+}
+
+.switch-role-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+  margin: 40rpx auto 0;
+  padding: 16rpx 40rpx;
+  width: fit-content;
+  color: rgba(118, 121, 143, 1);
+  font-size: 24rpx;
+  font-weight: 500;
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 40rpx;
+  box-shadow: 0 4rpx 12rpx rgba(137, 154, 248, 0.05);
+  transition: all 0.2s ease;
+  line-height: 1;
+}
+
+.switch-role-btn:active {
+  transform: scale(0.96);
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.switch-icon {
+  font-size: 26rpx;
+  font-weight: bold;
+  margin-bottom: 2rpx;
 }
 
 .review-note {
@@ -152,22 +200,45 @@ view, text, input, textarea {
   text-align: center;
 }
 
+.status-orb {
+  position: relative;
+  width: 140rpx;
+  height: 140rpx;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .status-icon {
+  position: relative;
+  z-index: 2;
   width: 96rpx;
   height: 96rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto;
   color: #fff;
   font-size: 42rpx;
   font-weight: 700;
-  background: linear-gradient(135deg, #899af8, #a56bf8);
+  background: linear-gradient(135deg, rgba(162, 178, 252, 1), rgba(95, 101, 180, 1));
+  border-radius: 50%;
+  box-shadow: 0 8rpx 20rpx rgba(137, 154, 248, 0.2);
+}
+
+.status-halo {
+  position: absolute;
+  inset: -20rpx;
+  background: radial-gradient(circle, rgba(137, 154, 248, 0.2), transparent 70%);
   border-radius: 50%;
 }
 
 .status-approved .status-icon {
-  background: linear-gradient(135deg, #2dd8a7, #52b98f);
+  background: linear-gradient(135deg, #2dd8a7, #1ba279);
+}
+
+.status-approved .status-halo {
+  background: radial-gradient(circle, rgba(45, 216, 167, 0.2), transparent 70%);
 }
 
 .status-title {

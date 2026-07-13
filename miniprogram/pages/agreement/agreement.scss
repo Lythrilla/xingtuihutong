@@ -1,0 +1,62 @@
+page {
+  background: #ffffff;
+}
+
+.doc-container {
+  padding: 40rpx 40rpx 100rpx;
+  background: #ffffff;
+  min-height: 100vh;
+}
+
+.doc-title {
+  font-size: 44rpx;
+  font-weight: 700;
+  color: #2e313e;
+  text-align: center;
+  margin-bottom: 16rpx;
+}
+
+.doc-update-time {
+  font-size: 24rpx;
+  color: #76798f;
+  text-align: center;
+  margin-bottom: 60rpx;
+}
+
+.doc-section {
+  margin-bottom: 48rpx;
+}
+
+.doc-h2 {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #343b56;
+  margin-bottom: 20rpx;
+  position: relative;
+  padding-left: 20rpx;
+}
+
+.doc-h2::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8rpx;
+  height: 28rpx;
+  background: #899af8;
+  border-radius: 4rpx;
+}
+
+.doc-p {
+  font-size: 28rpx;
+  color: #5c6277;
+  line-height: 1.7;
+  margin-bottom: 16rpx;
+  text-align: justify;
+}
+
+.doc-strong {
+  font-weight: 600;
+  color: #2e313e;
+}

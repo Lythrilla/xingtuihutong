@@ -1,0 +1,43 @@
+<view class="doc-container">
+  <view class="doc-title">星推互通用户协议</view>
+  <view class="doc-update-time">最近更新日期：2026年7月</view>
+
+  <view class="doc-section">
+    <view class="doc-h2">1. 导言</view>
+    <view class="doc-p">欢迎使用“星推互通”微信小程序（以下简称“本平台”）。本协议是您与本平台开发者之间关于使用本平台服务所订立的协议。请您在注册、登录或使用本平台服务前，仔细阅读并充分理解本协议的全部内容，特别是免除或限制责任的条款。</view>
+    <view class="doc-p">一旦您选择勾选同意、注册或使用本平台服务，即表示您已充分理解并同意接受本协议的约束。</view>
+  </view>
+
+  <view class="doc-section">
+    <view class="doc-h2">2. 账号注册与管理</view>
+    <view class="doc-p"><text class="doc-strong">2.1 身份选择：</text>本平台提供“音乐创作者”与“推广服务方”两种身份。您应当根据自身真实情况选择入驻身份。不同的身份将享有不同的功能与工作台权限。</view>
+    <view class="doc-p"><text class="doc-strong">2.2 资料真实性：</text>您在入驻时必须提供真实、准确、完整的信息（包括但不限于音乐作品、团队能力、联系方式等）。若因信息不实导致匹配失败或产生纠纷，由您自行承担责任。</view>
+    <view class="doc-p"><text class="doc-strong">2.3 账号安全：</text>您应妥善保管您的微信账号及本平台相关授权状态，因您保管不善导致的账号被盗用或资金损失，本平台不承担赔偿责任。</view>
+  </view>
+
+  <view class="doc-section">
+    <view class="doc-h2">3. 平台服务说明</view>
+    <view class="doc-p"><text class="doc-strong">3.1 核心服务：</text>本平台致力于连接音乐创作者与推广服务方（品牌、MCN、代理等），提供项目发布、需求匹配、沟通协作与结算提现等服务。</view>
+    <view class="doc-p"><text class="doc-strong">3.2 AI 智能体服务：</text>本平台内置 AI 智能体（Agent），旨在帮助您分析数据、优化推广文案、提供运营建议。AI 生成的内容仅供参考，不构成平台的专业保证或强制性建议，您应自行判断其适用性。</view>
+    <view class="doc-p"><text class="doc-strong">3.3 平台中立性：</text>本平台仅作为信息撮合与技术服务提供方，不对双方在平台外达成的私下交易或线下履约质量提供绝对担保。</view>
+  </view>
+
+  <view class="doc-section">
+    <view class="doc-h2">4. 规范与义务</view>
+    <view class="doc-p"><text class="doc-strong">4.1 创作者义务：</text>保证上传的音乐作品拥有完整的著作权或已获得合法授权；不得发布抄袭、剽窃或侵犯他人合法权益的作品。</view>
+    <view class="doc-p"><text class="doc-strong">4.2 推广方义务：</text>保证服务能力的真实性，不得在合作中使用数据造假、虚假流量（刷量）等违规手段欺骗创作者。</view>
+    <view class="doc-p"><text class="doc-strong">4.3 违规处理：</text>若您违反法律法规或本协议约定，平台有权采取包括但不限于：下架作品、限制功能、封禁账号、扣除违规收益等措施。</view>
+  </view>
+
+  <view class="doc-section">
+    <view class="doc-h2">5. 资金与提现</view>
+    <view class="doc-p"><text class="doc-strong">5.1 资金结算：</text>通过本平台达成的合作，相关款项将结算至您的平台钱包（可提现余额）中。</view>
+    <view class="doc-p"><text class="doc-strong">5.2 提现规则：</text>您可以通过“我的”页面申请提现。提现可能会产生第三方支付机构收取的渠道手续费，且您应自行承担因获得收益而产生的税费申报义务。</view>
+  </view>
+
+  <view class="doc-section">
+    <view class="doc-h2">6. 知识产权与免责声明</view>
+    <view class="doc-p"><text class="doc-strong">6.1 知识产权：</text>本平台的界面设计、AI 算法、代码及系统均为平台所有。您上传的音乐作品版权归您所有，但您授权本平台在小程序内进行展示与播放。</view>
+    <view class="doc-p"><text class="doc-strong">6.2 服务中断：</text>因不可抗力、黑客攻击、系统维护等原因导致的服务中断，平台将尽力恢复，但不承担由此给您造成的直接或间接损失。</view>
+  </view>
+</view>

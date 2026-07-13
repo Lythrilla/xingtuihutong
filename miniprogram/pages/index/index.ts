@@ -26,6 +26,12 @@ Component({
     },
   },
   methods: {
+    goAgreement() {
+      wx.navigateTo({ url: '/pages/agreement/agreement' })
+    },
+    goPrivacy() {
+      wx.navigateTo({ url: '/pages/privacy/privacy' })
+    },
     chooseRole(event: WechatMiniprogram.TouchEvent) {
       const role = event.currentTarget.dataset.role as 'provider' | 'client'
       this.setData({ selectedRole: role })

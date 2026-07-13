@@ -135,6 +135,9 @@ Component({
     goHome() {
       wx.redirectTo({ url: '/pages/home/home' })
     },
+    goBackToIndex() {
+      wx.redirectTo({ url: '/pages/index/index' })
+    },
     async submitApplication() {
       if (this.data.submitting) return
       const required = [
