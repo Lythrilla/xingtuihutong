@@ -1,0 +1,131 @@
+<view class="page-shell onboarding-page">
+  <page-header
+    title="{{isCreator ? '创作者入驻' : '推广方入驻'}}"
+    subtitle="{{isCreator ? '先完成真实资料审核，再发布作品推广需求' : '先完成服务能力审核，再承接创作者合作'}}"
+  ></page-header>
+
+  <data-state loading="{{loading}}" error="{{error}}" bind:action="retry"></data-state>
+
+  <block wx:if="{{!loading && !error}}">
+    <view wx:if="{{!editing}}" class="card status-card status-{{status}}">
+      <view class="status-icon">{{status === 'approved' ? '✓' : '…'}}</view>
+      <view class="status-title">{{status === 'approved' ? '入驻审核已通过' : '资料已提交，正在审核'}}</view>
+      <view class="status-description">
+        {{status === 'approved'
+          ? (isCreator ? '你的创作者主页与代表作品已公开，可以开始匹配推广方。' : '你的服务主页已公开，可以开始发现创作者项目。')
+          : '审核通过前资料不会进入合作广场，避免无效匹配与虚假合作。'}}
+      </view>
+      <view class="status-steps">
+        <view class="status-step done"><text>1</text><view>填写资料</view></view>
+        <view class="status-line active"></view>
+        <view class="status-step {{status === 'approved' ? 'done' : 'active'}}"><text>2</text><view>平台审核</view></view>
+        <view class="status-line {{status === 'approved' ? 'active' : ''}}"></view>
+        <view class="status-step {{status === 'approved' ? 'done' : ''}}"><text>3</text><view>公开合作</view></view>
+      </view>
+      <button class="primary-button status-primary" bindtap="goHome">进入{{isCreator ? '创作者' : '推广方'}}工作台</button>
+      <button wx:if="{{status === 'pending' || status === 'approved'}}" class="text-action" bindtap="editApplication">{{status === 'approved' ? '更新入驻资料' : '修改并重新提交'}}</button>
+    </view>
+
+    <block wx:else>
+      <view wx:if="{{status === 'rejected'}}" class="review-note">
+        <view>审核建议</view>
+        <text>{{reviewNote || '请补充真实身份、作品或服务案例后重新提交。'}}</text>
+      </view>
+
+      <view class="flow-card">
+        <view class="flow-number">01</view>
+        <view>
+          <view class="flow-title">{{isCreator ? '创作者身份' : '团队与品牌'}}</view>
+          <view class="flow-desc">这些信息会在审核通过后对合作对象展示</view>
+        </view>
+      </view>
+
+      <view class="card form-card">
+        <label class="field">
+          <text>{{isCreator ? '创作者名 / 艺名' : '品牌 / 团队名称'}} *</text>
+          <input
+            value="{{entityName}}"
+            data-field="entityName"
+            maxlength="40"
+            placeholder="{{isCreator ? '请输入公开展示的创作者名称' : '请输入营业主体或团队名称'}}"
+            bindinput="updateField"
+          />
+        </label>
+        <view class="field-row">
+          <label class="field">
+            <text>联系人 *</text>
+            <input value="{{contactName}}" data-field="contactName" maxlength="24" placeholder="真实姓名" bindinput="updateField" />
+          </label>
+          <label class="field">
+            <text>联系方式 *</text>
+            <input value="{{contactMethod}}" data-field="contactMethod" maxlength="40" placeholder="微信或手机号" bindinput="updateField" />
+          </label>
+        </view>
+      </view>
+
+      <view class="flow-card">
+        <view class="flow-number">02</view>
+        <view>
+          <view class="flow-title">{{isCreator ? '作品与创作方向' : '推广能力与合作范围'}}</view>
+          <view class="flow-desc">{{isCreator ? '平台据此确认作品归属并生成推广资料' : '平台据此匹配适合你的创作者项目'}}</view>
+        </view>
+      </view>
+
+      <view class="card form-card">
+        <block wx:if="{{isCreator}}">
+          <label class="field">
+            <text>代表作品 *</text>
+            <input value="{{workTitle}}" data-field="workTitle" maxlength="60" placeholder="歌曲或专辑名称" bindinput="updateField" />
+          </label>
+          <label class="field">
+            <text>作品 / 音乐人主页链接 *</text>
+            <input value="{{workUrl}}" data-field="workUrl" maxlength="240" placeholder="网易云、QQ 音乐、汽水音乐等链接" bindinput="updateField" />
+          </label>
+          <label class="field">
+            <text>当前受众规模</text>
+            <input value="{{audienceSize}}" data-field="audienceSize" maxlength="40" placeholder="例如：全平台 5 万粉丝" bindinput="updateField" />
+          </label>
+        </block>
+        <label wx:else class="field">
+          <text>常见合作预算</text>
+          <input value="{{cooperationBudget}}" data-field="cooperationBudget" maxlength="60" placeholder="例如：单项目 ¥5,000 - 20,000" bindinput="updateField" />
+        </label>
+
+        <view class="field">
+          <text>{{isCreator ? '音乐风格' : '服务能力'}} *</text>
+          <view class="tag-picker">
+            <view
+              wx:for="{{tagOptions}}"
+              wx:key="label"
+              class="tag-option {{item.selected ? 'selected' : ''}}"
+              data-label="{{item.label}}"
+              bindtap="toggleTag"
+            >{{item.label}}</view>
+          </view>
+        </view>
+
+        <label class="field">
+          <text>{{isCreator ? '创作与合作介绍' : '服务与案例介绍'}} *</text>
+          <textarea
+            value="{{description}}"
+            data-field="description"
+            maxlength="300"
+            placeholder="{{isCreator ? '介绍你的作品、受众和希望获得的推广支持' : '介绍核心渠道、过往案例、交付方式和擅长方向'}}"
+            bindinput="updateField"
+          ></textarea>
+          <view class="field-hint">{{description.length}} / 300</view>
+        </label>
+      </view>
+
+      <view class="submit-note">
+        提交即代表资料真实有效。审核通过后，你只会出现在另一类用户的合作广场中。
+      </view>
+      <button
+        class="primary-button submit-button"
+        disabled="{{submitting}}"
+        loading="{{submitting}}"
+        bindtap="submitApplication"
+      >{{submitting ? '正在提交' : status === 'rejected' ? '重新提交审核' : '提交入驻审核'}}</button>
+    </block>
+  </block>
+</view>

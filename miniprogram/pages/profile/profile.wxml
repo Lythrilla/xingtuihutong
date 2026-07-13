@@ -1,5 +1,5 @@
 <view class="page-shell">
-  <page-header title="我的主页" subtitle="管理你的音乐合作与成长轨迹"></page-header>
+  <page-header title="我的主页" subtitle="{{isProvider ? '管理服务能力与创作者合作' : '管理作品资料与推广合作'}}"></page-header>
 
   <data-state loading="{{loading}}" error="{{error}}" bind:action="retry"></data-state>
 
@@ -18,10 +18,10 @@
           <view class="profile-name">{{user.organization}}</view>
           <view class="profile-role">
             <view class="role-check" wx:if="{{user.verified}}">✓</view>
-            <text>{{roleLabel}} · {{user.verified ? '平台已认证' : '认证资料待完善'}}</text>
+            <text>{{roleLabel}} · {{user.onboardingStatus === 'approved' ? '入驻已通过' : user.onboardingStatus === 'pending' ? '入驻审核中' : '资料待完善'}}</text>
           </view>
         </view>
-        <view class="edit-btn" bindtap="editProfile">编辑</view>
+        <view class="edit-btn" bindtap="editProfile">入驻资料</view>
       </view>
       <view class="profile-desc">{{user.description || '介绍一下自己的业务方向和合作偏好～'}}</view>
       <view class="profile-stats">
@@ -51,7 +51,7 @@
     </view>
 
     <!-- 钱包黑金卡片 -->
-    <view class="wallet-card">
+    <view wx:if="{{isProvider}}" class="wallet-card">
       <view class="wallet-bg"></view>
       <view class="wallet-content">
         <view class="wallet-left">
@@ -65,8 +65,8 @@
     <!-- 能力与认证 -->
     <view class="section">
       <view class="section-head">
-        <text class="section-title">我的能力</text>
-        <text class="section-action" bindtap="editProfile">完善资料 ></text>
+        <text class="section-title">{{isProvider ? '服务能力' : '作品与风格'}}</text>
+        <text class="section-action" bindtap="editProfile">入驻资料 ></text>
       </view>
       <view class="profile-card">
         <view class="certs" wx:if="{{certifications.length}}">
@@ -83,14 +83,14 @@
         <view class="skill-line" wx:if="{{tags.length}}">
           <text wx:for="{{tags}}" wx:key="*this">{{item}}</text>
         </view>
-        <view wx:else class="skill-empty" bindtap="editProfile">+ 添加能力标签，让 AI 推荐更准确</view>
+        <view wx:else class="skill-empty" bindtap="editProfile">+ 添加{{isProvider ? '能力' : '风格'}}标签，让推荐更准确</view>
       </view>
     </view>
 
     <!-- 精选案例 -->
     <view class="section">
       <view class="section-head">
-        <text class="section-title">精选案例</text>
+        <text class="section-title">{{isProvider ? '精选案例' : '代表作品'}}</text>
         <text class="section-action">全部案例 ></text>
       </view>
       <scroll-view wx:if="{{cases.length}}" class="case-scroll" scroll-x enhanced show-scrollbar="{{false}}">
@@ -102,7 +102,7 @@
           </view>
         </view>
       </scroll-view>
-      <view wx:else class="profile-card inline-empty">暂无精选案例</view>
+      <view wx:else class="profile-card inline-empty">暂无{{isProvider ? '精选案例' : '代表作品资料'}}</view>
     </view>
 
     <!-- 更多服务 -->
@@ -125,7 +125,7 @@
               <view>{{item.label}}</view>
               <text>{{item.description}}</text>
             </view>
-            <view class="service-value" wx:if="{{item.key === 'role'}}">{{roleLabel}}</view>
+            <view class="service-value" wx:if="{{item.key === 'onboarding'}}">{{user.onboardingStatus === 'approved' ? '已通过' : user.onboardingStatus === 'pending' ? '审核中' : '待完善'}}</view>
             <view class="service-arrow">›</view>
           </view>
         </view>
@@ -139,7 +139,7 @@
   <view class="sheet-card" catchtap="preventClose">
     <view class="sheet-head">
       <view>
-        <view class="sheet-title">{{sheetMode === 'edit' ? '编辑主页资料' : '申请提现'}}</view>
+        <view class="sheet-title">{{sheetMode === 'edit' ? (isProvider ? '编辑服务方主页' : '编辑创作者主页') : '申请提现'}}</view>
         <view class="sheet-description">
           {{sheetMode === 'edit' ? '完整资料能帮助合作伙伴更快了解你' : '提交后会生成一条待处理结算记录'}}
         </view>
@@ -149,26 +149,26 @@
 
     <block wx:if="{{sheetMode === 'edit'}}">
       <label class="field">
-        <text>机构或个人名称</text>
+        <text>{{isProvider ? '团队或品牌名称' : '创作者名 / 艺名'}}</text>
         <input
           value="{{organizationInput}}"
           maxlength="40"
-          placeholder="请输入对外展示名称"
+          placeholder="{{isProvider ? '请输入对外展示的团队名称' : '请输入对外展示的创作者名称'}}"
           bindinput="updateOrganization"
         />
       </label>
       <label class="field">
-        <text>业务简介</text>
+        <text>{{isProvider ? '服务简介' : '创作者简介'}}</text>
         <textarea
           value="{{descriptionInput}}"
           maxlength="240"
-          placeholder="介绍业务方向、优势和合作偏好"
+          placeholder="{{isProvider ? '介绍服务方向、渠道与合作偏好' : '介绍作品方向、受众与合作偏好'}}"
           bindinput="updateDescription"
         ></textarea>
         <view class="field-hint">{{descriptionInput.length}} / 240</view>
       </label>
       <label class="field">
-        <text>能力标签</text>
+        <text>{{isProvider ? '能力标签' : '风格标签'}}</text>
         <input
           value="{{tagsInput}}"
           maxlength="100"

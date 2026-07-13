@@ -3,8 +3,8 @@ use crate::{
     error::{AppError, AppResult},
     models::{
         BudgetOption, Certification, ConnectPartner, Conversation, CreateMatch, CreateSession,
-        Notification, Partner, Plan, PortfolioCase, SendMessage, Song, TargetType, UpdateProfile,
-        UpdateRole, User, UserRow, WithdrawalRequest,
+        Notification, Partner, Plan, PortfolioCase, SendMessage, Song, SubmitOnboarding,
+        TargetType, UpdateProfile, UpdateRole, User, UserRow, WithdrawalRequest,
     },
     state::AppState,
 };
@@ -24,6 +24,7 @@ pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/auth/session", post(create_session))
         .route("/me/role", put(update_role))
+        .route("/onboarding", get(onboarding).put(submit_onboarding))
         .route("/home", get(home))
         .route("/plaza", get(plaza))
         .route("/plaza/connect", post(connect_partner))
@@ -91,13 +92,228 @@ async fn update_role(
             "role must be provider or client".into(),
         ));
     }
-    sqlx::query("UPDATE users SET role = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?")
-        .bind(&input.role)
+    if input.role == user.role {
+        return Ok(Json(user.into()));
+    }
+    if input.role != user.role && user.onboarding_status != "draft" {
+        return Err(AppError::BadRequest(
+            "submitted role cannot be changed".into(),
+        ));
+    }
+    let mut tx = state.pool.begin().await?;
+    sqlx::query(
+        "UPDATE users SET role = ?, verified = 0, onboarding_status = 'draft',
+         review_note = '', updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+    )
+    .bind(&input.role)
+    .bind(&user.id)
+    .execute(&mut *tx)
+    .await?;
+    if input.role != user.role {
+        sqlx::query("DELETE FROM onboarding_applications WHERE user_id = ?")
+            .bind(&user.id)
+            .execute(&mut *tx)
+            .await?;
+        sqlx::query(
+            "UPDATE partners SET active = 0, updated_at = CURRENT_TIMESTAMP
+             WHERE source_user_id = ?",
+        )
         .bind(&user.id)
-        .execute(&state.pool)
+        .execute(&mut *tx)
         .await?;
+        sqlx::query(
+            "UPDATE songs SET active = 0, updated_at = CURRENT_TIMESTAMP
+             WHERE source_user_id = ?",
+        )
+        .bind(&user.id)
+        .execute(&mut *tx)
+        .await?;
+    }
+    tx.commit().await?;
     let updated = load_user(&state, &user.id).await?;
     Ok(Json(updated.into()))
+}
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+struct OnboardingApplicationView {
+    entity_name: String,
+    contact_name: String,
+    contact_method: String,
+    description: String,
+    tags: Vec<String>,
+    work_title: String,
+    work_url: String,
+    audience_size: String,
+    cooperation_budget: String,
+    status: String,
+    review_note: String,
+}
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+struct OnboardingResponse {
+    role: String,
+    status: String,
+    review_note: String,
+    application: Option<OnboardingApplicationView>,
+}
+
+async fn onboarding(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+) -> AppResult<Json<OnboardingResponse>> {
+    let user = current_user(&state, &headers).await?;
+    let row = sqlx::query(
+        "SELECT entity_name, contact_name, contact_method, description, tags,
+         work_title, work_url, audience_size, cooperation_budget, status, review_note
+         FROM onboarding_applications WHERE user_id = ?",
+    )
+    .bind(&user.id)
+    .fetch_optional(&state.pool)
+    .await?;
+    let application = row.map(|row| OnboardingApplicationView {
+        entity_name: row.get("entity_name"),
+        contact_name: row.get("contact_name"),
+        contact_method: row.get("contact_method"),
+        description: row.get("description"),
+        tags: serde_json::from_str(&row.get::<String, _>("tags")).unwrap_or_default(),
+        work_title: row.get("work_title"),
+        work_url: row.get("work_url"),
+        audience_size: row.get("audience_size"),
+        cooperation_budget: row.get("cooperation_budget"),
+        status: row.get("status"),
+        review_note: row.get("review_note"),
+    });
+    Ok(Json(OnboardingResponse {
+        role: user.role,
+        status: user.onboarding_status,
+        review_note: user.review_note,
+        application,
+    }))
+}
+
+async fn submit_onboarding(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    Json(input): Json<SubmitOnboarding>,
+) -> AppResult<Json<OnboardingResponse>> {
+    let user = current_user(&state, &headers).await?;
+    let entity_name = input.entity_name.trim();
+    let contact_name = input.contact_name.trim();
+    let contact_method = input.contact_method.trim();
+    let description = input.description.trim();
+    let work_title = input.work_title.unwrap_or_default().trim().to_string();
+    let work_url = input.work_url.unwrap_or_default().trim().to_string();
+    let audience_size = input.audience_size.unwrap_or_default().trim().to_string();
+    let cooperation_budget = input
+        .cooperation_budget
+        .unwrap_or_default()
+        .trim()
+        .to_string();
+    if entity_name.is_empty()
+        || contact_name.is_empty()
+        || contact_method.is_empty()
+        || description.is_empty()
+    {
+        return Err(AppError::BadRequest(
+            "onboarding required fields are missing".into(),
+        ));
+    }
+    if user.role == "client" && (work_title.is_empty() || work_url.is_empty()) {
+        return Err(AppError::BadRequest(
+            "creator work information is required".into(),
+        ));
+    }
+    let tags: Vec<String> = input
+        .tags
+        .into_iter()
+        .map(|tag| tag.trim().to_string())
+        .filter(|tag| !tag.is_empty())
+        .take(8)
+        .collect();
+    if tags.is_empty() {
+        return Err(AppError::BadRequest(
+            "at least one specialty is required".into(),
+        ));
+    }
+    let tags_json =
+        serde_json::to_string(&tags).map_err(|error| AppError::Internal(error.into()))?;
+    let mut tx = state.pool.begin().await?;
+    sqlx::query(
+        "INSERT INTO onboarding_applications
+         (user_id, role, entity_name, contact_name, contact_method, description, tags,
+          work_title, work_url, audience_size, cooperation_budget, status, review_note)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', '')
+         ON CONFLICT(user_id) DO UPDATE SET
+          role = excluded.role,
+          entity_name = excluded.entity_name,
+          contact_name = excluded.contact_name,
+          contact_method = excluded.contact_method,
+          description = excluded.description,
+          tags = excluded.tags,
+          work_title = excluded.work_title,
+          work_url = excluded.work_url,
+          audience_size = excluded.audience_size,
+          cooperation_budget = excluded.cooperation_budget,
+          status = 'pending',
+          review_note = '',
+          submitted_at = CURRENT_TIMESTAMP,
+          reviewed_at = NULL,
+          updated_at = CURRENT_TIMESTAMP",
+    )
+    .bind(&user.id)
+    .bind(&user.role)
+    .bind(entity_name)
+    .bind(contact_name)
+    .bind(contact_method)
+    .bind(description)
+    .bind(tags_json)
+    .bind(work_title)
+    .bind(work_url)
+    .bind(audience_size)
+    .bind(cooperation_budget)
+    .execute(&mut *tx)
+    .await?;
+    sqlx::query(
+        "UPDATE users SET display_name = ?, organization = ?, description = ?,
+         verified = 0, onboarding_status = 'pending', review_note = '',
+         updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+    )
+    .bind(entity_name)
+    .bind(entity_name)
+    .bind(description)
+    .bind(&user.id)
+    .execute(&mut *tx)
+    .await?;
+    sqlx::query("DELETE FROM user_tags WHERE user_id = ?")
+        .bind(&user.id)
+        .execute(&mut *tx)
+        .await?;
+    for (index, tag) in tags.iter().enumerate() {
+        sqlx::query("INSERT INTO user_tags (user_id, tag, sort_order) VALUES (?, ?, ?)")
+            .bind(&user.id)
+            .bind(tag)
+            .bind(index as i64 + 1)
+            .execute(&mut *tx)
+            .await?;
+    }
+    sqlx::query(
+        "UPDATE partners SET active = 0, updated_at = CURRENT_TIMESTAMP
+         WHERE source_user_id = ?",
+    )
+    .bind(&user.id)
+    .execute(&mut *tx)
+    .await?;
+    sqlx::query(
+        "UPDATE songs SET active = 0, updated_at = CURRENT_TIMESTAMP
+         WHERE source_user_id = ?",
+    )
+    .bind(&user.id)
+    .execute(&mut *tx)
+    .await?;
+    tx.commit().await?;
+    onboarding(State(state), headers).await
 }
 
 #[derive(Serialize)]
@@ -126,6 +342,10 @@ struct Recommendation {
 struct HomeResponse {
     header_subtitle: String,
     name: String,
+    role: String,
+    onboarding_status: String,
+    status_title: String,
+    status_description: String,
     metrics: Vec<Metric>,
     recommendations: Vec<Recommendation>,
 }
@@ -186,10 +406,17 @@ async fn home(State(state): State<AppState>, headers: HeaderMap) -> AppResult<Js
             },
         ]
     };
+    let opposite_role = if user.role == "provider" {
+        "client"
+    } else {
+        "provider"
+    };
     let rows = sqlx::query(
         "SELECT id, avatar, avatar_class, name, description, match_score, result_text
-         FROM partners WHERE active = 1 ORDER BY match_score DESC LIMIT 3",
+         FROM partners WHERE active = 1 AND partner_type = ?
+         ORDER BY match_score DESC LIMIT 3",
     )
+    .bind(opposite_role)
     .fetch_all(&state.pool)
     .await?;
     let recommendations: Vec<Recommendation> = rows
@@ -206,49 +433,47 @@ async fn home(State(state): State<AppState>, headers: HeaderMap) -> AppResult<Js
             price: row.get("result_text"),
         })
         .collect();
-    let recommendations = if recommendations.is_empty() {
-        mock_recommendations()
-    } else {
-        recommendations
+    let (status_title, status_description) = match user.onboarding_status.as_str() {
+        "approved" => (
+            "入驻已通过".into(),
+            if user.role == "provider" {
+                "现在可以发现创作者项目并发起真实合作。".into()
+            } else {
+                "现在可以发布作品推广需求并匹配已审核推广方。".into()
+            },
+        ),
+        "pending" => (
+            "入驻资料审核中".into(),
+            "平台正在核验身份与合作资料，审核通过前不会公开展示。".into(),
+        ),
+        "rejected" => (
+            "入驻资料需要补充".into(),
+            if user.review_note.is_empty() {
+                "请修改资料后重新提交审核。".into()
+            } else {
+                user.review_note.clone()
+            },
+        ),
+        _ => (
+            "完成入驻后再开始合作".into(),
+            "先提交真实身份与业务资料，审核通过后进入对应工作台。".into(),
+        ),
     };
 
     Ok(Json(HomeResponse {
         header_subtitle: if user.role == "provider" {
-            "服务方 · 今日合作概览".into()
+            "推广服务方工作台".into()
         } else {
-            "被服务方 · 今日推广概览".into()
+            "音乐创作者工作台".into()
         },
-        name: user.organization,
+        name: user.organization.clone(),
+        role: user.role.clone(),
+        onboarding_status: user.onboarding_status.clone(),
+        status_title,
+        status_description,
         metrics,
         recommendations,
     }))
-}
-
-fn mock_recommendations() -> Vec<Recommendation> {
-    vec![
-        Recommendation {
-            id: "mock-1".into(),
-            avatar: "/assets/images/avatar-1.png".into(),
-            avatar_class: "violet".into(),
-            verified: true,
-            preferred: true,
-            title: "星动传媒".into(),
-            subtitle: "擅长：短视频推广/全网覆盖".into(),
-            score: "4.9".into(),
-            price: "高匹配".into(),
-        },
-        Recommendation {
-            id: "mock-2".into(),
-            avatar: "/assets/images/avatar-2.png".into(),
-            avatar_class: "blue".into(),
-            verified: true,
-            preferred: false,
-            title: "星动传媒".into(),
-            subtitle: "擅长：短视频推广/全网覆盖".into(),
-            score: "4.8".into(),
-            price: "中匹配".into(),
-        },
-    ]
 }
 
 #[derive(Deserialize)]
@@ -258,9 +483,13 @@ struct PlazaQuery {
 }
 
 #[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
 struct PlazaResponse {
     types: Vec<FilterOption>,
     entries: Vec<Partner>,
+    role: String,
+    onboarding_status: String,
+    can_connect: bool,
 }
 
 #[derive(Serialize)]
@@ -274,25 +503,21 @@ async fn plaza(
     headers: HeaderMap,
     Query(query): Query<PlazaQuery>,
 ) -> AppResult<Json<PlazaResponse>> {
-    current_user(&state, &headers).await?;
+    let user = current_user(&state, &headers).await?;
+    let opposite_role = if user.role == "provider" {
+        "client"
+    } else {
+        "provider"
+    };
     let rows = match query.partner_type.as_deref() {
-        Some("provider" | "client") => {
-            sqlx::query_as::<_, Partner>(
-                "SELECT id, partner_type, avatar, avatar_class, name, identity, description,
-                 tags AS tags_json, match_score, result_text, active
-                 FROM partners WHERE active = 1 AND partner_type = ?
-                 ORDER BY match_score DESC",
-            )
-            .bind(query.partner_type)
-            .fetch_all(&state.pool)
-            .await?
-        }
         Some("latest") => {
             sqlx::query_as::<_, Partner>(
                 "SELECT id, partner_type, avatar, avatar_class, name, identity, description,
                  tags AS tags_json, match_score, result_text, active
-                 FROM partners WHERE active = 1 ORDER BY created_at DESC",
+                 FROM partners WHERE active = 1 AND partner_type = ?
+                 ORDER BY created_at DESC",
             )
+            .bind(opposite_role)
             .fetch_all(&state.pool)
             .await?
         }
@@ -300,20 +525,20 @@ async fn plaza(
             sqlx::query_as::<_, Partner>(
                 "SELECT id, partner_type, avatar, avatar_class, name, identity, description,
                  tags AS tags_json, match_score, result_text, active
-                 FROM partners WHERE active = 1 ORDER BY match_score DESC",
+                 FROM partners WHERE active = 1 AND partner_type = ?
+                 ORDER BY match_score DESC",
             )
+            .bind(opposite_role)
             .fetch_all(&state.pool)
             .await?
         }
     };
     Ok(Json(PlazaResponse {
-        types: vec![
-            filter("all", "全部"),
-            filter("provider", "服务方"),
-            filter("client", "被服务方"),
-            filter("latest", "最新"),
-        ],
+        types: vec![filter("all", "全部"), filter("latest", "最新")],
         entries: rows.into_iter().map(with_partner_tags).collect(),
+        role: user.role.clone(),
+        onboarding_status: user.onboarding_status.clone(),
+        can_connect: user.onboarding_status == "approved",
     }))
 }
 
@@ -323,6 +548,7 @@ async fn connect_partner(
     Json(input): Json<ConnectPartner>,
 ) -> AppResult<Json<serde_json::Value>> {
     let user = current_user(&state, &headers).await?;
+    require_approved(&user)?;
     let connection = establish_partner_connection(&state, &user, &input.partner_id, None).await?;
     Ok(Json(json!({
         "conversationId": connection.conversation_id,
@@ -342,11 +568,15 @@ pub(crate) async fn establish_partner_connection(
     partner_id: &str,
     agent_session_id: Option<&str>,
 ) -> AppResult<PartnerConnection> {
-    let partner_name: Option<String> =
-        sqlx::query_scalar("SELECT name FROM partners WHERE id = ? AND active = 1")
-            .bind(partner_id)
-            .fetch_optional(&state.pool)
-            .await?;
+    require_approved(user)?;
+    let partner_name: Option<String> = sqlx::query_scalar(
+        "SELECT name FROM partners
+             WHERE id = ? AND active = 1 AND partner_type != ?",
+    )
+    .bind(partner_id)
+    .bind(&user.role)
+    .fetch_optional(&state.pool)
+    .await?;
     let partner_name =
         partner_name.ok_or_else(|| AppError::NotFound("partner not found".into()))?;
     let welcome_message = "你好，欢迎联系我！我们可以先聊聊合作需求。";
@@ -380,39 +610,6 @@ pub(crate) async fn establish_partner_connection(
         .bind(welcome_message)
         .execute(&mut *tx)
         .await?;
-        if user.role == "provider" {
-            let amount = 150_000_i64;
-            let notification_description = format!("合作服务收益 {} 已到账", format_money(amount));
-            sqlx::query(
-                "INSERT INTO settlements (id, user_id, title, amount, status)
-                 VALUES (?, ?, '合作服务收益', ?, 'completed')",
-            )
-            .bind(Uuid::new_v4().to_string())
-            .bind(&user.id)
-            .bind(amount)
-            .execute(&mut *tx)
-            .await?;
-            let wallet_update = sqlx::query(
-                "UPDATE wallets SET balance = balance + ?, updated_at = CURRENT_TIMESTAMP
-                 WHERE user_id = ?",
-            )
-            .bind(amount)
-            .bind(&user.id)
-            .execute(&mut *tx)
-            .await?;
-            if wallet_update.rows_affected() != 1 {
-                return Err(AppError::NotFound("wallet not found".into()));
-            }
-            sqlx::query(
-                "INSERT INTO notifications (id, user_id, kind, title, description)
-                 VALUES (?, ?, 'wallet', '合作收益到账', ?)",
-            )
-            .bind(Uuid::new_v4().to_string())
-            .bind(&user.id)
-            .bind(notification_description)
-            .execute(&mut *tx)
-            .await?;
-        }
         if let Some(session_id) = agent_session_id {
             sqlx::query(
                 "INSERT INTO agent_actions
@@ -436,7 +633,7 @@ pub(crate) async fn establish_partner_connection(
     }
     tx.commit().await?;
     let _ = crate::analytics::track_event(
-        &state,
+        state,
         Some(&user.id),
         "partner_connected",
         Some("conversation"),
@@ -457,17 +654,21 @@ struct MatchBootstrap {
     songs: Vec<Song>,
     targets: Vec<TargetType>,
     budgets: Vec<BudgetOption>,
+    available_providers: i64,
 }
 
 async fn match_bootstrap(
     State(state): State<AppState>,
     headers: HeaderMap,
 ) -> AppResult<Json<MatchBootstrap>> {
-    current_user(&state, &headers).await?;
+    let user = current_user(&state, &headers).await?;
+    require_creator(&user)?;
+    require_approved(&user)?;
     let songs = sqlx::query_as::<_, Song>(
         "SELECT id, name, artist, cover_class, active FROM songs
-         WHERE active = 1 ORDER BY created_at",
+         WHERE active = 1 AND source_user_id = ? ORDER BY created_at",
     )
+    .bind(&user.id)
     .fetch_all(&state.pool)
     .await?;
     let targets = sqlx::query_as::<_, TargetType>(
@@ -480,10 +681,16 @@ async fn match_bootstrap(
     )
     .fetch_all(&state.pool)
     .await?;
+    let available_providers = sqlx::query_scalar(
+        "SELECT COUNT(*) FROM partners WHERE active = 1 AND partner_type = 'provider'",
+    )
+    .fetch_one(&state.pool)
+    .await?;
     Ok(Json(MatchBootstrap {
         songs,
         targets,
         budgets,
+        available_providers,
     }))
 }
 
@@ -491,7 +698,7 @@ async fn match_bootstrap(
 #[serde(rename_all = "camelCase")]
 struct MatchResponse {
     match_id: String,
-    plans: Vec<Plan>,
+    partners: Vec<Partner>,
 }
 
 async fn create_match(
@@ -500,16 +707,22 @@ async fn create_match(
     Json(input): Json<CreateMatch>,
 ) -> AppResult<Json<MatchResponse>> {
     let user = current_user(&state, &headers).await?;
+    require_creator(&user)?;
+    require_approved(&user)?;
     if input.target_keys.is_empty() {
         return Err(AppError::BadRequest(
             "at least one target must be selected".into(),
         ));
     }
-    let song_exists: bool =
-        sqlx::query_scalar("SELECT EXISTS(SELECT 1 FROM songs WHERE id = ? AND active = 1)")
-            .bind(&input.song_id)
-            .fetch_one(&state.pool)
-            .await?;
+    let song_exists: bool = sqlx::query_scalar(
+        "SELECT EXISTS(
+             SELECT 1 FROM songs WHERE id = ? AND active = 1 AND source_user_id = ?
+             )",
+    )
+    .bind(&input.song_id)
+    .bind(&user.id)
+    .fetch_one(&state.pool)
+    .await?;
     let budget_exists: bool =
         sqlx::query_scalar("SELECT EXISTS(SELECT 1 FROM budget_options WHERE id = ?)")
             .bind(&input.budget_id)
@@ -534,25 +747,20 @@ async fn create_match(
     .bind(&input.budget_id)
     .execute(&mut *tx)
     .await?;
-    let plans = sqlx::query_as::<_, Plan>(
-        "SELECT id, icon_class, color_class, title, plan_type, description,
-         tags AS tags_json, budget_amount, score, active
-         FROM plans WHERE active = 1 ORDER BY score DESC LIMIT 3",
+    let partners = sqlx::query_as::<_, Partner>(
+        "SELECT id, partner_type, avatar, avatar_class, name, identity, description,
+         tags AS tags_json, match_score, result_text, active
+         FROM partners WHERE active = 1 AND partner_type = 'provider'
+         ORDER BY match_score DESC LIMIT 6",
     )
     .fetch_all(&mut *tx)
     .await?;
-    for (rank, plan) in plans.iter().enumerate() {
-        sqlx::query(
-            "INSERT INTO match_request_plans (match_request_id, plan_id, rank)
-             VALUES (?, ?, ?)",
-        )
-        .bind(&match_id)
-        .bind(&plan.id)
-        .bind(rank as i64 + 1)
-        .execute(&mut *tx)
-        .await?;
+    if partners.is_empty() {
+        return Err(AppError::BadRequest(
+            "no approved providers available".into(),
+        ));
     }
-    let description = format!("匹配已完成，共生成 {} 个可用方案", plans.len());
+    let description = format!("匹配已完成，找到 {} 位已审核推广方", partners.len());
     sqlx::query(
         "INSERT INTO notifications (id, user_id, kind, title, description)
          VALUES (?, ?, 'spark', '智能匹配完成', ?)",
@@ -573,13 +781,13 @@ async fn create_match(
             "songId": input.song_id,
             "budgetId": input.budget_id,
             "targets": input.target_keys,
-            "planCount": plans.len()
+            "partnerCount": partners.len()
         }),
     )
     .await;
     Ok(Json(MatchResponse {
         match_id,
-        plans: plans.into_iter().map(with_plan_tags).collect(),
+        partners: partners.into_iter().map(with_partner_tags).collect(),
     }))
 }
 
@@ -639,6 +847,11 @@ async fn save_plan(
     Path(id): Path<String>,
 ) -> AppResult<Json<serde_json::Value>> {
     let user = current_user(&state, &headers).await?;
+    if user.role != "provider" {
+        return Err(AppError::BadRequest(
+            "creator wallet is not available".into(),
+        ));
+    }
     let exists: bool =
         sqlx::query_scalar("SELECT EXISTS(SELECT 1 FROM plans WHERE id = ? AND active = 1)")
             .bind(&id)
@@ -1030,24 +1243,51 @@ async fn profile_payload(state: &AppState, user: UserRow) -> AppResult<ProfileRe
     .bind(&user.id)
     .fetch_one(&state.pool)
     .await?;
-    let stats = vec![
-        Metric {
-            value: conversation_count.to_string(),
-            label: "合作伙伴".into(),
-        },
-        Metric {
-            value: match_count.to_string(),
-            label: "智能匹配".into(),
-        },
-        Metric {
-            value: completed_settlements.to_string(),
-            label: "完成结算".into(),
-        },
-    ];
-    let role_label = if user.role == "provider" {
-        "服务方"
+    let stats = if user.role == "provider" {
+        vec![
+            Metric {
+                value: conversation_count.to_string(),
+                label: "创作者会话".into(),
+            },
+            Metric {
+                value: completed_settlements.to_string(),
+                label: "完成合作".into(),
+            },
+            Metric {
+                value: if user.verified {
+                    "已通过"
+                } else {
+                    "审核中"
+                }
+                .into(),
+                label: "入驻状态".into(),
+            },
+        ]
     } else {
-        "被服务方"
+        vec![
+            Metric {
+                value: match_count.to_string(),
+                label: "推广需求".into(),
+            },
+            Metric {
+                value: conversation_count.to_string(),
+                label: "推广伙伴".into(),
+            },
+            Metric {
+                value: if user.verified {
+                    "已通过"
+                } else {
+                    "审核中"
+                }
+                .into(),
+                label: "创作者认证".into(),
+            },
+        ]
+    };
+    let role_label = if user.role == "provider" {
+        "推广服务方"
+    } else {
+        "音乐创作者"
     }
     .into();
     Ok(ProfileResponse {
@@ -1068,7 +1308,8 @@ pub(crate) async fn current_user(state: &AppState, headers: &HeaderMap) -> AppRe
 
 async fn load_user(state: &AppState, id: &str) -> AppResult<UserRow> {
     Ok(sqlx::query_as::<_, UserRow>(
-        "SELECT id, display_name, organization, role, avatar, description, verified
+        "SELECT id, display_name, organization, role, avatar, description, verified,
+         onboarding_status, review_note
          FROM users WHERE id = ?",
     )
     .bind(id)
@@ -1088,6 +1329,20 @@ fn filter(key: &str, label: &str) -> FilterOption {
         key: key.into(),
         label: label.into(),
     }
+}
+
+fn require_approved(user: &UserRow) -> AppResult<()> {
+    if user.onboarding_status != "approved" {
+        return Err(AppError::BadRequest("onboarding approval required".into()));
+    }
+    Ok(())
+}
+
+fn require_creator(user: &UserRow) -> AppResult<()> {
+    if user.role != "client" {
+        return Err(AppError::BadRequest("creator role required".into()));
+    }
+    Ok(())
 }
 
 fn with_partner_tags(mut partner: Partner) -> Partner {

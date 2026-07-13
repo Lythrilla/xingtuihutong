@@ -24,6 +24,9 @@ interface PlazaEntry {
 interface PlazaResponse {
   types: FilterOption[]
   entries: PlazaEntry[]
+  role: 'provider' | 'client'
+  onboardingStatus: 'draft' | 'pending' | 'approved' | 'rejected'
+  canConnect: boolean
 }
 
 Component({
@@ -40,6 +43,10 @@ Component({
     previousType: 'all',
     favoritesOnly: false,
     focusedPartnerId: '',
+    role: 'client' as 'provider' | 'client',
+    isCreator: true,
+    canConnect: false,
+    onboardingStatus: 'draft',
   },
   lifetimes: {
     async attached() {
@@ -85,6 +92,10 @@ Component({
           activeType: type,
           types: response.types,
           entries,
+          role: response.role,
+          isCreator: response.role === 'client',
+          canConnect: response.canConnect,
+          onboardingStatus: response.onboardingStatus,
           query,
           focusedPartnerId: focusedPartner?.id ?? '',
           loading: false,
@@ -156,9 +167,20 @@ Component({
       })
     },
     openAI() {
-      wx.redirectTo({ url: '/pages/ai/ai' })
+      wx.redirectTo({ url: this.data.isCreator ? '/pages/match/match' : '/pages/ai/ai' })
     },
     async connect(event: WechatMiniprogram.TouchEvent) {
+      if (!this.data.canConnect) {
+        wx.showModal({
+          title: '完成入驻后再合作',
+          content: '审核通过前可以浏览，但不能发起沟通，避免无效或匿名合作。',
+          confirmText: '查看入驻',
+          success: (result) => {
+            if (result.confirm) wx.redirectTo({ url: '/pages/onboarding/onboarding' })
+          },
+        })
+        return
+      }
       const partnerId = event.currentTarget.dataset.id as string
       if (this.data.connectingId) return
       this.setData({ connectingId: partnerId })

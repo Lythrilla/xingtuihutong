@@ -33,6 +33,7 @@ Component({
     actionLoading: false,
     sheetMode: '',
     isProvider: true,
+    isApproved: false,
     user: {} as SessionUser,
     roleLabel: '',
     stats: [] as ProfileResponse['stats'],
@@ -45,19 +46,13 @@ Component({
     descriptionInput: '',
     tagsInput: '',
     withdrawInput: '',
-    quickActions: [
-      { key: 'agent', label: 'AI Agent', icon: 'spark' },
-      { key: 'analytics', label: '数据洞察', icon: 'target' },
-      { key: 'plaza', label: '找合作', icon: 'target' },
-      { key: 'messages', label: '合作会话', icon: 'audio' },
-    ],
-    serviceActions: [
-      { key: 'ai', label: 'AI Agent 工作台', description: '查询、调用工具并执行合作任务', icon: 'spark' },
-      { key: 'analytics', label: '我的数据洞察', description: '趋势、转化漏斗与渠道分布', icon: 'target' },
-      { key: 'favorites', label: '我的收藏', description: '回看感兴趣的合作伙伴', icon: 'target' },
-      { key: 'role', label: '合作身份', description: '切换服务方或被服务方', icon: 'refresh' },
-      { key: 'edit', label: '主页设置', description: '名称、简介与能力标签', icon: 'briefcase' },
-    ],
+    quickActions: [] as Array<{ key: string; label: string; icon: string }>,
+    serviceActions: [] as Array<{
+      key: string
+      label: string
+      description: string
+      icon: string
+    }>,
   },
   lifetimes: {
     async attached() {
@@ -73,9 +68,54 @@ Component({
       try {
         const profile = await apiRequest<ProfileResponse>('/api/profile')
         app.globalData.role = profile.user.role
+        app.globalData.onboardingStatus = profile.user.onboardingStatus
+        wx.setStorageSync('starconnect-onboarding-status', profile.user.onboardingStatus)
+        const isProvider = profile.user.role === 'provider'
+        const isApproved = profile.user.onboardingStatus === 'approved'
         this.setData({
           ...profile,
-          isProvider: profile.user.role === 'provider',
+          isProvider,
+          isApproved,
+          quickActions: !isApproved
+            ? [
+                { key: 'onboarding', label: '完成入驻', icon: 'shield' },
+                { key: 'plaza', label: '浏览广场', icon: 'target' },
+                { key: 'messages', label: '消息', icon: 'audio' },
+                { key: 'analytics', label: '数据', icon: 'target' },
+              ]
+            : isProvider
+            ? [
+                { key: 'plaza', label: '找创作者', icon: 'target' },
+                { key: 'agent', label: 'AI Agent', icon: 'spark' },
+                { key: 'analytics', label: '服务数据', icon: 'target' },
+                { key: 'messages', label: '合作会话', icon: 'audio' },
+              ]
+            : [
+                { key: 'match', label: '发推广', icon: 'spark' },
+                { key: 'plaza', label: '找推广方', icon: 'target' },
+                { key: 'analytics', label: '推广数据', icon: 'target' },
+                { key: 'messages', label: '合作会话', icon: 'audio' },
+              ],
+          serviceActions: !isApproved
+            ? [
+                {
+                  key: 'onboarding',
+                  label: isProvider ? '完成推广方入驻' : '完成创作者入驻',
+                  description: '提交真实资料并等待平台审核',
+                  icon: 'shield',
+                },
+              ]
+            : isProvider
+            ? [
+                { key: 'onboarding', label: '服务方入驻资料', description: '主体、能力与审核状态', icon: 'shield' },
+                { key: 'ai', label: 'AI Agent 工作台', description: '分析创作者项目与合作重点', icon: 'spark' },
+                { key: 'favorites', label: '收藏的创作者', description: '回看感兴趣的创作者项目', icon: 'target' },
+              ]
+            : [
+                { key: 'onboarding', label: '创作者入驻资料', description: '身份、作品与审核状态', icon: 'shield' },
+                { key: 'match', label: '发布推广需求', description: '选择作品、方向与合作预算', icon: 'spark' },
+                { key: 'favorites', label: '收藏的推广方', description: '回看感兴趣的推广服务', icon: 'target' },
+              ],
           walletBalance: formatMoney(profile.walletBalance),
           walletBalanceCents: profile.walletBalance,
           loading: false,
@@ -87,37 +127,8 @@ Component({
         })
       }
     },
-    async switchRole() {
-      if (this.data.actionLoading) return
-      const isProvider = !this.data.isProvider
-      const role = isProvider ? 'provider' : 'client'
-      const roleName = isProvider ? '服务方' : '被服务方'
-      const confirmation = await wx.showModal({
-        title: `切换为${roleName}`,
-        content: '首页数据与推荐会按新身份重新展示，已有会话和资料不会丢失。',
-        confirmText: '确认切换',
-      })
-      if (!confirmation.confirm) return
-      this.setData({ actionLoading: true })
-      try {
-        await apiRequest('/api/me/role', 'PUT', { role })
-        app.globalData.role = role
-        wx.setStorageSync('starconnect-role', role)
-        await this.loadProfile()
-        wx.showToast({ title: `已切换为${roleName}`, icon: 'none' })
-      } catch (error) {
-        wx.showToast({ title: error instanceof Error ? error.message : '角色切换失败', icon: 'none' })
-      } finally {
-        this.setData({ actionLoading: false })
-      }
-    },
     editProfile() {
-      this.setData({
-        sheetMode: 'edit',
-        organizationInput: this.data.user.organization,
-        descriptionInput: this.data.user.description,
-        tagsInput: this.data.tags.join('，'),
-      })
+      wx.redirectTo({ url: '/pages/onboarding/onboarding' })
     },
     updateOrganization(event: WechatMiniprogram.Input) {
       this.setData({ organizationInput: event.detail.value })
@@ -138,14 +149,15 @@ Component({
     preventClose() {},
     openQuickAction(event: WechatMiniprogram.TouchEvent) {
       const key = event.currentTarget.dataset.key as string
-      if (key === 'edit') {
-        this.editProfile()
+      if (key === 'onboarding') {
+        wx.redirectTo({ url: '/pages/onboarding/onboarding' })
         return
       }
       const routes: Record<string, string> = {
         agent: '/pages/ai/ai',
         analytics: '/pages/analytics/analytics',
         plaza: '/pages/plaza/plaza',
+        match: '/pages/match/match',
         messages: '/pages/messages/messages',
       }
       const url = routes[key]
@@ -153,18 +165,15 @@ Component({
     },
     openServiceAction(event: WechatMiniprogram.TouchEvent) {
       const key = event.currentTarget.dataset.key as string
-      if (key === 'role') {
-        void this.switchRole()
-        return
-      }
-      if (key === 'edit') {
-        this.editProfile()
+      if (key === 'onboarding') {
+        wx.redirectTo({ url: '/pages/onboarding/onboarding' })
         return
       }
       const routes: Record<string, string> = {
         ai: '/pages/ai/ai',
         analytics: '/pages/analytics/analytics',
         favorites: '/pages/plaza/plaza',
+        match: '/pages/match/match',
       }
       const url = routes[key]
       if (url) wx.redirectTo({ url })

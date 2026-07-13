@@ -24,7 +24,8 @@ pub async fn connect(database_url: &str) -> anyhow::Result<SqlitePool> {
 
 pub async fn user_from_token(pool: &SqlitePool, token: &str) -> AppResult<UserRow> {
     let user = sqlx::query_as::<_, UserRow>(
-        "SELECT u.id, u.display_name, u.organization, u.role, u.avatar, u.description, u.verified
+        "SELECT u.id, u.display_name, u.organization, u.role, u.avatar, u.description, u.verified,
+         u.onboarding_status, u.review_note
          FROM users u
          JOIN user_sessions s ON s.user_id = u.id
          WHERE s.token = ? AND s.expires_at > CURRENT_TIMESTAMP",
@@ -51,8 +52,9 @@ pub async fn create_user_session(pool: &SqlitePool, role: &str) -> AppResult<(St
 
     let mut tx = pool.begin().await?;
     sqlx::query(
-        "INSERT INTO users (id, display_name, organization, role, avatar, description)
-         VALUES (?, ?, ?, ?, ?, ?)",
+        "INSERT INTO users
+         (id, display_name, organization, role, avatar, description, verified, onboarding_status)
+         VALUES (?, ?, ?, ?, ?, ?, 0, 'draft')",
     )
     .bind(&user_id)
     .bind("新用户")
@@ -76,7 +78,8 @@ pub async fn create_user_session(pool: &SqlitePool, role: &str) -> AppResult<(St
 
     tx.commit().await?;
     let user = sqlx::query_as::<_, UserRow>(
-        "SELECT id, display_name, organization, role, avatar, description, verified
+        "SELECT id, display_name, organization, role, avatar, description, verified,
+         onboarding_status, review_note
          FROM users WHERE id = ?",
     )
     .bind(user_id)

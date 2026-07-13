@@ -1,6 +1,8 @@
 use crate::{
     error::{AppError, AppResult},
-    models::{AdminLogin, Partner, PartnerInput, Plan, PlanInput, Song, SongInput},
+    models::{
+        AdminLogin, Partner, PartnerInput, Plan, PlanInput, ReviewOnboarding, Song, SongInput,
+    },
     state::AppState,
 };
 use argon2::{password_hash::PasswordHash, Argon2, PasswordVerifier};
@@ -14,7 +16,7 @@ use axum::{
 use chrono::{Duration, Utc};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
-use sqlx::FromRow;
+use sqlx::{FromRow, Row};
 use uuid::Uuid;
 
 pub fn routes() -> Router<AppState> {
@@ -23,6 +25,7 @@ pub fn routes() -> Router<AppState> {
         .route("/auth/logout", post(logout))
         .route("/overview", get(overview))
         .route("/users", get(users))
+        .route("/users/{id}/review", put(review_user))
         .route("/partners", get(partners).post(create_partner))
         .route("/partners/{id}", put(update_partner).delete(delete_partner))
         .route("/songs", get(songs).post(create_song))
@@ -103,12 +106,9 @@ async fn overview(State(state): State<AppState>, headers: HeaderMap) -> AppResul
         "SELECT COUNT(*) FROM settlements WHERE status = 'pending'",
     )
     .await?;
-    let recent_users = sqlx::query_as::<_, AdminUser>(
-        "SELECT id, organization, role, avatar, verified, created_at
-         FROM users ORDER BY created_at DESC LIMIT 6",
-    )
-    .fetch_all(&state.pool)
-    .await?;
+    let recent_users = sqlx::query_as::<_, AdminUser>(&admin_users_query(true))
+        .fetch_all(&state.pool)
+        .await?;
     Ok(Json(Overview {
         users: users_count,
         active_partners,
@@ -128,6 +128,13 @@ struct AdminUser {
     role: String,
     avatar: String,
     verified: bool,
+    onboarding_status: String,
+    contact_name: String,
+    contact_method: String,
+    application_description: String,
+    work_title: String,
+    cooperation_budget: String,
+    review_note: String,
     created_at: String,
 }
 
@@ -137,13 +144,182 @@ async fn users(
 ) -> AppResult<Json<Vec<AdminUser>>> {
     require_admin(&state, &headers).await?;
     Ok(Json(
-        sqlx::query_as::<_, AdminUser>(
-            "SELECT id, organization, role, avatar, verified, created_at
-             FROM users ORDER BY created_at DESC",
-        )
-        .fetch_all(&state.pool)
-        .await?,
+        sqlx::query_as::<_, AdminUser>(&admin_users_query(false))
+            .fetch_all(&state.pool)
+            .await?,
     ))
+}
+
+fn admin_users_query(limited: bool) -> String {
+    format!(
+        "SELECT u.id, u.organization, u.role, u.avatar, u.verified,
+         u.onboarding_status,
+         COALESCE(a.contact_name, '') AS contact_name,
+         COALESCE(a.contact_method, '') AS contact_method,
+         COALESCE(a.description, '') AS application_description,
+         COALESCE(a.work_title, '') AS work_title,
+         COALESCE(a.cooperation_budget, '') AS cooperation_budget,
+         u.review_note, u.created_at
+         FROM users u
+         LEFT JOIN onboarding_applications a ON a.user_id = u.id
+         ORDER BY u.created_at DESC{}",
+        if limited { " LIMIT 6" } else { "" }
+    )
+}
+
+async fn review_user(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    Path(id): Path<String>,
+    Json(input): Json<ReviewOnboarding>,
+) -> AppResult<Json<serde_json::Value>> {
+    require_admin(&state, &headers).await?;
+    if input.status != "approved" && input.status != "rejected" {
+        return Err(AppError::BadRequest("invalid review status".into()));
+    }
+    let application = sqlx::query(
+        "SELECT role, entity_name, description, tags, work_title, audience_size,
+         cooperation_budget FROM onboarding_applications WHERE user_id = ?",
+    )
+    .bind(&id)
+    .fetch_optional(&state.pool)
+    .await?
+    .ok_or_else(|| AppError::NotFound("onboarding application not found".into()))?;
+    let role: String = application.get("role");
+    let entity_name: String = application.get("entity_name");
+    let description: String = application.get("description");
+    let tags: String = application.get("tags");
+    let work_title: String = application.get("work_title");
+    let audience_size: String = application.get("audience_size");
+    let cooperation_budget: String = application.get("cooperation_budget");
+    let review_note = input.review_note.unwrap_or_else(|| {
+        if input.status == "rejected" {
+            "资料未通过，请补充真实身份、作品或服务案例后重新提交。".into()
+        } else {
+            String::new()
+        }
+    });
+    let mut tx = state.pool.begin().await?;
+    sqlx::query(
+        "UPDATE users SET verified = ?, onboarding_status = ?, review_note = ?,
+         updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+    )
+    .bind(input.status == "approved")
+    .bind(&input.status)
+    .bind(&review_note)
+    .bind(&id)
+    .execute(&mut *tx)
+    .await?;
+    sqlx::query(
+        "UPDATE onboarding_applications SET status = ?, review_note = ?,
+         reviewed_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP WHERE user_id = ?",
+    )
+    .bind(&input.status)
+    .bind(&review_note)
+    .bind(&id)
+    .execute(&mut *tx)
+    .await?;
+    if input.status == "approved" {
+        let avatar = entity_name.chars().next().unwrap_or('星').to_string();
+        let identity = if role == "provider" {
+            "已审核推广服务方"
+        } else {
+            "已审核音乐创作者"
+        };
+        let result_text = if role == "provider" {
+            if cooperation_budget.is_empty() {
+                "可承接推广合作".to_string()
+            } else {
+                format!("合作预算 {cooperation_budget}")
+            }
+        } else if audience_size.is_empty() {
+            "寻找作品推广合作".to_string()
+        } else {
+            format!("受众规模 {audience_size}")
+        };
+        sqlx::query(
+            "INSERT INTO partners
+             (id, partner_type, avatar, avatar_class, name, identity, description,
+              tags, match_score, result_text, active, source_user_id)
+             VALUES (?, ?, ?, 'violet', ?, ?, ?, ?, 88, ?, 1, ?)
+             ON CONFLICT(source_user_id) DO UPDATE SET
+              partner_type = excluded.partner_type,
+              avatar = excluded.avatar,
+              name = excluded.name,
+              identity = excluded.identity,
+              description = excluded.description,
+              tags = excluded.tags,
+              result_text = excluded.result_text,
+              active = 1,
+              updated_at = CURRENT_TIMESTAMP",
+        )
+        .bind(Uuid::new_v4().to_string())
+        .bind(&role)
+        .bind(avatar)
+        .bind(&entity_name)
+        .bind(identity)
+        .bind(&description)
+        .bind(&tags)
+        .bind(result_text)
+        .bind(&id)
+        .execute(&mut *tx)
+        .await?;
+        if role == "client" {
+            sqlx::query(
+                "INSERT INTO songs
+                 (id, name, artist, cover_class, active, source_user_id)
+                 VALUES (?, ?, ?, 'violet', 1, ?)
+                 ON CONFLICT(source_user_id) DO UPDATE SET
+                  name = excluded.name,
+                  artist = excluded.artist,
+                  active = 1,
+                  updated_at = CURRENT_TIMESTAMP",
+            )
+            .bind(Uuid::new_v4().to_string())
+            .bind(work_title)
+            .bind(&entity_name)
+            .bind(&id)
+            .execute(&mut *tx)
+            .await?;
+        }
+    } else {
+        sqlx::query(
+            "UPDATE partners SET active = 0, updated_at = CURRENT_TIMESTAMP
+             WHERE source_user_id = ?",
+        )
+        .bind(&id)
+        .execute(&mut *tx)
+        .await?;
+        sqlx::query(
+            "UPDATE songs SET active = 0, updated_at = CURRENT_TIMESTAMP
+             WHERE source_user_id = ?",
+        )
+        .bind(&id)
+        .execute(&mut *tx)
+        .await?;
+    }
+    let notification_title = if input.status == "approved" {
+        "入驻审核通过"
+    } else {
+        "入驻资料需补充"
+    };
+    let notification_description = if input.status == "approved" {
+        "你的主页已公开，可以开始真实合作。"
+    } else {
+        review_note.as_str()
+    };
+    sqlx::query(
+        "INSERT INTO notifications (id, user_id, kind, title, description)
+         VALUES (?, ?, 'shield', ?, ?)",
+    )
+    .bind(Uuid::new_v4().to_string())
+    .bind(&id)
+    .bind(notification_title)
+    .bind(notification_description)
+    .execute(&mut *tx)
+    .await?;
+    tx.commit().await?;
+    Ok(Json(json!({ "success": true, "status": input.status })))
 }
 
 async fn partners(

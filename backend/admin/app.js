@@ -8,10 +8,10 @@ const state = {
 const titles = {
   overview: "运营总览",
   analytics: "数据驾驶舱",
-  partners: "合作方管理",
+  partners: "公开主页管理",
   songs: "曲库管理",
   plans: "推广方案",
-  users: "用户管理",
+  users: "入驻审核",
   conversations: "合作会话",
   settlements: "结算记录",
   agent: "Agent 设置",
@@ -80,12 +80,37 @@ content.addEventListener("click", async (event) => {
   const retry = event.target.closest("[data-retry]");
   const create = event.target.closest("[data-create]");
   const settlementAction = event.target.closest("[data-settlement-action]");
+  const reviewAction = event.target.closest("[data-review-action]");
   if (retry) {
     await loadView();
     return;
   }
   if (create) {
     openModal();
+    return;
+  }
+  if (reviewAction) {
+    const status = reviewAction.dataset.reviewAction;
+    const approved = status === "approved";
+    const accepted = await confirmAction(
+      approved ? "确认通过这份入驻申请？" : "确认退回这份入驻申请？",
+      approved
+        ? "通过后会公开该用户主页，并加入对应角色的合作广场。"
+        : "退回后不会公开展示，用户可补充资料后重新提交。",
+    );
+    if (!accepted) return;
+    setButtonBusy(reviewAction, true, "处理中");
+    try {
+      await api(`/api/admin/users/${reviewAction.dataset.id}/review`, {
+        method: "PUT",
+        body: { status },
+      });
+      toast(approved ? "入驻审核已通过" : "入驻申请已退回");
+      await loadView();
+    } catch (error) {
+      toast(error.message);
+      setButtonBusy(reviewAction, false);
+    }
     return;
   }
   if (settlementAction) {
@@ -250,11 +275,11 @@ function renderOverview(data) {
     <section class="table-panel">
       <div class="table-head"><h2>最近注册用户</h2></div>
       ${table(
-        ["用户", "身份", "认证", "注册时间"],
+        ["用户", "身份", "入驻状态", "注册时间"],
         data.recentUsers.map((user) => [
           identity(user.avatar, user.organization),
           roleLabel(user.role),
-          badge(user.verified ? "已认证" : "未认证", user.verified),
+          badge(onboardingLabel(user.onboardingStatus), user.onboardingStatus === "approved"),
           formatDate(user.createdAt),
         ]),
       )}
@@ -407,12 +432,19 @@ function renderTable(view, records) {
       ],
     },
     users: {
-      headers: ["用户", "身份", "认证", "注册时间"],
+      headers: ["申请主体", "身份", "联系信息", "申请内容", "入驻状态", "注册时间", "操作"],
       row: (item) => [
-        identity(item.avatar, item.organization),
+        identity(item.avatar, item.organization, item.workTitle || item.cooperationBudget),
         roleLabel(item.role),
-        badge(item.verified ? "已认证" : "未认证", item.verified),
+        item.contactName
+          ? titleCell(item.contactName, item.contactMethod)
+          : '<span class="muted">尚未填写</span>',
+        item.applicationDescription
+          ? `<div class="cell-subtitle">${escapeHtml(item.applicationDescription)}</div>`
+          : '<span class="muted">等待提交</span>',
+        badge(onboardingLabel(item.onboardingStatus), item.onboardingStatus === "approved"),
         formatDate(item.createdAt),
+        onboardingActions(item),
       ],
     },
     conversations: {
@@ -512,8 +544,8 @@ function formFields(view, item = {}) {
   if (view === "partners") {
     return [
       selectField("partnerType", "类型", item.partnerType, [
-        ["provider", "服务方"],
-        ["client", "被服务方"],
+        ["provider", "推广服务方"],
+        ["client", "音乐创作者"],
       ]),
       inputField("name", "名称", item.name, true),
       inputField("avatar", "头像文字", item.avatar, true),
@@ -740,6 +772,15 @@ function settlementActions(item) {
   return `<div class="row-actions"><button class="text-button" data-id="${item.id}" data-settlement-action="completed">批准</button><button class="text-button danger" data-id="${item.id}" data-settlement-action="rejected">拒绝</button></div>`;
 }
 
+function onboardingActions(item) {
+  if (item.onboardingStatus !== "pending") {
+    return item.reviewNote
+      ? `<span class="cell-subtitle">${escapeHtml(item.reviewNote)}</span>`
+      : "—";
+  }
+  return `<div class="row-actions"><button class="text-button" data-id="${item.id}" data-review-action="approved">通过</button><button class="text-button danger" data-id="${item.id}" data-review-action="rejected">退回</button></div>`;
+}
+
 function badge(text, active) {
   return `<span class="state ${active ? "" : "inactive"}">${escapeHtml(text)}</span>`;
 }
@@ -749,7 +790,16 @@ function tags(items) {
 }
 
 function roleLabel(role) {
-  return role === "provider" ? "服务方" : "被服务方";
+  return role === "provider" ? "推广服务方" : "音乐创作者";
+}
+
+function onboardingLabel(status) {
+  return {
+    draft: "待填写",
+    pending: "待审核",
+    approved: "已通过",
+    rejected: "需补充",
+  }[status] ?? status;
 }
 
 function settlementLabel(status) {

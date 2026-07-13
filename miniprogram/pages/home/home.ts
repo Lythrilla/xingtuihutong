@@ -2,6 +2,8 @@ import { apiRequest } from '../../utils/api'
 
 export {}
 
+const app = getApp<IAppOption>()
+
 interface Recommendation {
   id: string
   avatar: string
@@ -16,6 +18,13 @@ interface Recommendation {
 }
 
 interface HomeResponse {
+  headerSubtitle: string
+  name: string
+  role: 'provider' | 'client'
+  onboardingStatus: 'draft' | 'pending' | 'approved' | 'rejected'
+  statusTitle: string
+  statusDescription: string
+  metrics: Array<{ value: string; label: string }>
   recommendations: Recommendation[]
 }
 
@@ -24,6 +33,15 @@ Component({
     loading: true,
     error: '',
     greeting: '早上好',
+    role: 'client' as 'provider' | 'client',
+    isCreator: true,
+    isApproved: false,
+    onboardingStatus: 'draft',
+    statusTitle: '',
+    statusDescription: '',
+    headerSubtitle: '',
+    name: '',
+    metrics: [] as HomeResponse['metrics'],
     recommendations: [] as Recommendation[],
     connectingId: '',
   },
@@ -41,6 +59,9 @@ Component({
       this.setData({ loading: true, error: '' })
       try {
         const response = await apiRequest<HomeResponse>('/api/home')
+        app.globalData.role = response.role
+        app.globalData.onboardingStatus = response.onboardingStatus
+        wx.setStorageSync('starconnect-onboarding-status', response.onboardingStatus)
         const recommendations = (response.recommendations || []).map((item) => {
           const hasImageAvatar = !!item.avatar && (item.avatar.indexOf('http') === 0 || item.avatar.indexOf('/') === 0)
           return {
@@ -51,7 +72,13 @@ Component({
             preferred: item.preferred ?? true,
           }
         })
-        this.setData({ recommendations, loading: false })
+        this.setData({
+          ...response,
+          isCreator: response.role === 'client',
+          isApproved: response.onboardingStatus === 'approved',
+          recommendations,
+          loading: false,
+        })
       } catch (error) {
         this.setData({
           loading: false,
@@ -59,13 +86,25 @@ Component({
         })
       }
     },
-    openAI() {
-      wx.redirectTo({ url: '/pages/ai/ai' })
+    openPrimary() {
+      wx.redirectTo({
+        url: this.data.isCreator ? '/pages/match/match' : '/pages/plaza/plaza',
+      })
+    },
+    openOnboarding() {
+      wx.redirectTo({ url: '/pages/onboarding/onboarding' })
+    },
+    openStatus() {
+      if (!this.data.isApproved) this.openOnboarding()
     },
     openPlaza() {
       wx.redirectTo({ url: '/pages/plaza/plaza' })
     },
     async contactPartner(event: WechatMiniprogram.TouchEvent) {
+      if (!this.data.isApproved) {
+        this.openOnboarding()
+        return
+      }
       const partnerId = event.currentTarget.dataset.id as string
       if (this.data.connectingId) return
       this.setData({ connectingId: partnerId })
