@@ -102,7 +102,9 @@ Component({
       return this.loadMessages(true)
     },
     openPlaza() {
-      wx.redirectTo({ url: '/pages/plaza/plaza' })
+      wx.switchTab({ url: '/pages/plaza/plaza' }).catch(() => {
+        wx.redirectTo({ url: '/pages/plaza/plaza' })
+      })
     },
   },
 })

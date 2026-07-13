@@ -12,7 +12,7 @@
         </view>
       </view>
       <view class="insight-copy">
-        <view class="insight-kicker">AI GROWTH SIGNAL</view>
+        <view class="insight-kicker">智能增长信号</view>
         <view class="insight-title">{{opportunity.title}}</view>
         <view class="insight-desc">{{opportunity.description}}</view>
         <button bindtap="askAgent">{{opportunity.action}} <text>→</text></button>
@@ -34,7 +34,7 @@
 
     <view class="data-section">
       <view class="data-head">
-        <view><text>7 DAYS</text><label>合作活跃趋势</label></view>
+        <view><text>近 7 天</text><label>合作活跃趋势</label></view>
         <view class="legend"><text class="purple"></text>匹配 <text class="cyan"></text>会话</view>
       </view>
       <view class="trend-chart">
@@ -50,7 +50,7 @@
 
     <view class="data-section">
       <view class="data-head">
-        <view><text>CONVERSION</text><label>合作进度漏斗</label></view>
+        <view><text>转化分析</text><label>合作进度漏斗</label></view>
         <view class="data-hint">实时业务数据</view>
       </view>
       <view class="funnel">
@@ -66,7 +66,7 @@
 
     <view class="data-section">
       <view class="data-head">
-        <view><text>CHANNEL MIX</text><label>合作目标分布</label></view>
+        <view><text>渠道分布</text><label>合作目标分布</label></view>
       </view>
       <view class="channel-empty" wx:if="{{!channels.length}}" bindtap="openPlaza">
         暂无渠道数据，去完成一次智能匹配 <text>→</text>
@@ -83,9 +83,9 @@
     </view>
 
     <view class="agent-explain" bindtap="askAgent">
-      <image src="/assets/images/ai-orb.webp" mode="aspectFit"></image>
+      <image src="/assets/images/ai-illustration.png" mode="aspectFit"></image>
       <view>
-        <text>让 Agent 解读这组数据</text>
+        <text>让智能体解读这组数据</text>
         <label>查询原因、制定策略并创建执行任务</label>
       </view>
       <text>↗</text>

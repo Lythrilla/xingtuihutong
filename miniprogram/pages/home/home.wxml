@@ -4,13 +4,20 @@
   <data-state loading="{{loading}}" error="{{error}}" bind:action="retry"></data-state>
 
   <block wx:if="{{!loading && !error}}">
-    <view class="ai-card" bindtap="openAI" hover-class="pressable">
-      <view class="ai-copy">
-        <view class="ai-title">选择不清晰？来问问 AI！</view>
-        <view class="ai-desc">精准匹配，高效连接</view>
-        <view class="ai-enter"><text>从此进入 →</text></view>
+    <view class="hero-card" bindtap="openAI" hover-class="pressable" style="margin-top: 64rpx;">
+      <view class="hero-grid"></view>
+      <view class="hero-orb-wrap">
+        <view class="hero-orb-halo"></view>
+        <image class="hero-orb" src="/assets/images/ai-illustration.png" mode="aspectFit"></image>
       </view>
-      <image class="ai-illustration" src="/assets/images/ai-illustration.png" mode="aspectFit"></image>
+      <view class="hero-copy">
+        <view class="hero-title">
+          <text>选择不清晰？</text>
+          <text>来问问 AI！</text>
+        </view>
+        <view class="hero-desc">精准匹配，高效连接</view>
+        <view class="hero-action">从此进入 →</view>
+      </view>
     </view>
 
     <view class="section">
@@ -35,7 +42,7 @@
             </view>
             <view class="recommend-subtitle">{{item.subtitle}}</view>
           </view>
-          <view class="cooperate" data-id="{{item.id}}" bindtap="contactPartner">沟通</view>
+          <view class="cooperate" data-id="{{item.id}}" bindtap="contactPartner">去沟通</view>
         </view>
       </view>
       <view wx:else class="inline-empty">暂无伙伴推荐，可前往合作广场主动发现。</view>

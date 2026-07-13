@@ -50,42 +50,36 @@
 
     <view class="entry-list" wx:if="{{!listLoading && visibleEntries.length}}">
       <view class="entry {{focusedPartnerId === item.id ? 'focused' : ''}}" wx:for="{{visibleEntries}}" wx:key="id">
-        <view class="entry-head">
+        <view class="entry-cover">
           <view class="avatar {{item.avatarClass}}">{{item.avatar}}</view>
-          <view class="entry-identity">
-            <view class="entry-name-line">
-              <view class="entry-name">{{item.name}}</view>
-              <view class="verified" wx:if="{{item.matchScore >= 85}}">
-                <view class="verify-dot">✓</view>优选
-              </view>
+          <view class="match-badge" wx:if="{{item.matchScore}}">匹配 {{item.matchScore}}%</view>
+        </view>
+        <view class="entry-main">
+          <view class="entry-service">{{item.description}}</view>
+          <view class="tag-row">
+            <text class="tag" wx:for="{{item.tags}}" wx:key="*this" wx:for-item="tag">{{tag}}</text>
+          </view>
+          <view class="entry-user">
+            <view class="user-info">
+              <view class="user-name">{{item.name}}</view>
+              <view class="verified" wx:if="{{item.matchScore >= 85}}"><view class="verify-dot">✓</view></view>
             </view>
-            <view class="entry-role">{{item.identity}}</view>
+            <button
+              class="favorite-button {{item.favorite ? 'active' : ''}}"
+              data-id="{{item.id}}"
+              catchtap="toggleFavorite"
+              aria-label="{{item.favorite ? '取消收藏' : '收藏'}}"
+            >{{item.favorite ? '♥' : '♡'}}</button>
           </view>
-          <button
-            class="favorite-button {{item.favorite ? 'active' : ''}}"
-            data-id="{{item.id}}"
-            catchtap="toggleFavorite"
-            aria-label="{{item.favorite ? '取消收藏' : '收藏'}}"
-          >{{item.favorite ? '♥' : '♡'}}</button>
-        </view>
-        <view class="entry-service">{{item.partnerType === 'provider' ? '专业服务' : '合作需求'}} · {{item.description}}</view>
-        <view class="tag-row">
-          <text class="tag" wx:for="{{item.tags}}" wx:key="*this" wx:for-item="tag">{{tag}}</text>
-        </view>
-        <view class="entry-foot">
-          <view class="entry-proof">
-            <text class="match-number">{{item.matchScore}}%</text>
-            <text>匹配度</text>
-            <view class="proof-dot"></view>
-            <text>{{item.resultText}}</text>
+          <view class="entry-action">
+            <button
+              class="connect-button"
+              data-id="{{item.id}}"
+              disabled="{{connectingId !== ''}}"
+              loading="{{connectingId === item.id}}"
+              bindtap="connect"
+            >{{connectingId === item.id ? '进入中...' : '沟通合作'}}</button>
           </view>
-          <button
-            class="connect-button"
-            data-id="{{item.id}}"
-            disabled="{{connectingId !== ''}}"
-            loading="{{connectingId === item.id}}"
-            bindtap="connect"
-          >{{connectingId === item.id ? '正在进入' : '沟通合作'}}</button>
         </view>
       </view>
     </view>
@@ -101,7 +95,7 @@
 
     <view class="ai-invite" bindtap="openAI" hover-class="pressable">
       <view class="ai-invite-glow"></view>
-      <image class="ai-invite-orb" src="/assets/images/ai-orb.webp" mode="aspectFit"></image>
+      <image class="ai-invite-orb" src="/assets/images/ai-illustration.png" mode="aspectFit"></image>
       <view class="ai-invite-copy">
         <view>还没找到理想伙伴？</view>
         <text>告诉 AI 你的目标，生成专属合作阵容</text>

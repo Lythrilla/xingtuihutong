@@ -189,9 +189,6 @@ Component({
     toggleTools() {
       this.setData({ showTools: !this.data.showTools })
     },
-    openInsights() {
-      wx.redirectTo({ url: '/pages/analytics/analytics' })
-    },
     openPartner(event: WechatMiniprogram.TouchEvent) {
       const id = event.currentTarget.dataset.id as string
       wx.setStorageSync('starconnect-agent-partner', id)
@@ -235,8 +232,14 @@ function toViewArtifact(artifact: Artifact): ViewArtifact {
           ? '方案已在收藏中'
           : '方案已加入收藏'
         : '操作已完成'
+  let title = artifact.title.replace(/Agent/gi, '智能体')
+  if (title === '候选合作伙伴') {
+    title = '智能推荐'
+  }
+
   return {
     ...artifact,
+    title,
     funnel,
     payload,
     actionLabel,

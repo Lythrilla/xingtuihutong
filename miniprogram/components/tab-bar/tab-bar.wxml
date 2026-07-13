@@ -12,7 +12,7 @@
       <view class="fab-halo"></view>
       <view class="fab-ring"></view>
       <view class="fab-core">
-        <image class="fab-orb" src="/assets/images/ai-orb.webp" mode="aspectFit"></image>
+        <image class="fab-orb" src="/assets/images/ai-illustration.png" mode="aspectFit"></image>
         <view class="fab-shine"></view>
       </view>
       <text class="fab-label">AI</text>

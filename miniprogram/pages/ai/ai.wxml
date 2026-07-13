@@ -1,37 +1,21 @@
 <view class="page-shell agent-page">
-  <page-header title="AI Agent" subtitle="查询数据、调用工具并继续执行"></page-header>
+  <page-header title="星链智能体" subtitle="查询数据、深度分析并生成方案"></page-header>
 
   <data-state loading="{{loading}}" error="{{error}}" bind:action="retry"></data-state>
 
   <block wx:if="{{!loading && !error}}">
-    <view class="agent-hero">
+    <view class="hero-card" style="margin-top: 64rpx;">
       <view class="hero-grid"></view>
-      <view class="agent-orb-wrap">
-        <view class="agent-orb-halo"></view>
-        <image class="agent-orb" src="/assets/images/ai-orb.webp" mode="aspectFit"></image>
+      <view class="hero-orb-wrap">
+        <view class="hero-orb-halo"></view>
+        <image class="hero-orb" src="/assets/images/ai-illustration.png" mode="aspectFit"></image>
       </view>
-      <view class="agent-hero-copy">
-        <view class="agent-state"><text></text> AGENT ONLINE</view>
-        <view class="agent-title">
+      <view class="hero-copy">
+        <view class="hero-title">
           <text>你的全链路音乐</text>
           <text>商业智能体</text>
         </view>
-        <view class="agent-engine">{{engine}}</view>
-      </view>
-      <view class="hero-actions">
-        <button bindtap="openInsights">数据洞察 <text>→</text></button>
-        <button bindtap="toggleTools">{{showTools ? '收起工具' : tools.length + ' 个工具在线'}}</button>
-      </view>
-    </view>
-
-    <view class="tool-drawer" wx:if="{{showTools}}">
-      <view class="tool-row" wx:for="{{tools}}" wx:key="name">
-        <view class="tool-mode {{item.mode}}">{{item.mode === 'read' ? 'Q' : 'A'}}</view>
-        <view class="tool-copy">
-          <view>{{item.label}}</view>
-          <text>{{item.description}}</text>
-        </view>
-        <view class="tool-ready"></view>
+        <view class="hero-desc">星链智能运行时 · 数据驱动</view>
       </view>
     </view>
 
@@ -44,51 +28,39 @@
     >
       <view wx:for="{{messages}}" wx:key="id" class="message {{item.role}}">
         <view class="message-avatar" wx:if="{{item.role === 'assistant'}}">
-          <image src="/assets/images/ai-orb.webp" mode="aspectFit"></image>
+          <image src="/assets/images/ai-illustration.png" mode="aspectFit"></image>
         </view>
         <view class="message-body">
-          <view class="message-role">{{item.role === 'assistant' ? 'STARCONNECT AGENT' : '你'}}</view>
+          <view class="message-role">{{item.role === 'assistant' ? '星链智能体' : '你'}}</view>
           <view class="message-content">{{item.content}}</view>
         </view>
       </view>
 
       <view class="thinking" wx:if="{{thinking}}">
-        <image src="/assets/images/ai-orb.webp" mode="aspectFit"></image>
+        <image src="/assets/images/ai-illustration.png" mode="aspectFit"></image>
         <view>
-          <view>正在规划执行链路</view>
-          <text>分析意图 · 选择工具 · 查询实时数据</text>
+          <view>正在思考与规划</view>
+          <text>理解需求 · 检索数据 · 生成方案</text>
         </view>
         <view class="thinking-dots"><view></view><view></view><view></view></view>
       </view>
 
-      <view class="execution" wx:if="{{toolCalls.length}}">
-        <view class="execution-head">
-          <view>
-            <text>TOOL CALL TRACE</text>
-            <view>执行链路</view>
-          </view>
-          <text>{{toolCalls.length}} 个工具已执行</text>
-        </view>
-        <view class="trace-item {{item.status}}" wx:for="{{toolCalls}}" wx:key="id">
-          <view class="trace-axis">
-            <view class="trace-dot"></view>
-            <view class="trace-line"></view>
-          </view>
-          <view class="trace-main">
-            <view class="trace-name">{{item.label}}</view>
-            <view class="trace-code">{{item.name}}</view>
-            <view class="trace-meta">
-              <text>{{item.status === 'failed' ? 'FAILED' : 'COMPLETED'}}</text>
-              <text>{{item.durationMs}}ms</text>
+      <view class="inline-trace" wx:if="{{toolCalls.length}}">
+        <scroll-view class="trace-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+          <view class="trace-track">
+            <view class="trace-node {{item.status}}" wx:for="{{toolCalls}}" wx:key="id">
+              <view class="node-dot"></view>
+              <text>{{item.label}}</text>
+              <view class="node-line" wx:if="{{index !== toolCalls.length - 1}}"></view>
             </view>
           </view>
-        </view>
+        </scroll-view>
       </view>
 
       <view class="artifact-stream" wx:if="{{artifacts.length}}">
         <block wx:for="{{artifacts}}" wx:key="title">
           <view class="artifact">
-            <view class="artifact-kicker">{{item.kind === 'action' ? 'ACTION EXECUTED' : item.kind === 'error' ? 'EXECUTION NOTICE' : 'LIVE DATA'}}</view>
+            <view class="artifact-kicker">{{item.kind === 'action' ? '执行结果' : item.kind === 'error' ? '提示' : '分析数据'}}</view>
             <view class="artifact-title">{{item.title}}</view>
             <view class="artifact-summary">{{item.summary}}</view>
 
@@ -115,12 +87,11 @@
                 data-id="{{partner.id}}"
                 bindtap="openPartner"
               >
-                <view class="partner-rank">{{$index + 1}}</view>
+                <view class="partner-avatar">{{partner.name[0]}}</view>
                 <view class="partner-copy">
-                  <view>{{partner.name}} <text>{{partner.matchScore}}%</text></view>
+                  <view>{{partner.name}} <text>{{partner.matchScore}}% 契合度</text></view>
                   <text>{{partner.identity}} · {{partner.description}}</text>
                 </view>
-                <view class="partner-arrow">›</view>
               </view>
             </view>
 
@@ -169,12 +140,12 @@
     disabled="{{thinking}}"
     maxlength="240"
     confirm-type="send"
-    placeholder="告诉 Agent 你的目标，或让它查询数据…"
+    placeholder="告诉智能体你的目标，或让它查询数据…"
     bindinput="updateInput"
     bindconfirm="send"
   />
   <button disabled="{{thinking || !input}}" bindtap="send">
-    <text wx:if="{{!thinking}}">↑</text>
+    <view wx:if="{{!thinking}}" class="ui-icon icon-send"></view>
     <view wx:else class="composer-loader"></view>
   </button>
 </view>

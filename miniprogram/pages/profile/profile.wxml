@@ -4,9 +4,14 @@
   <data-state loading="{{loading}}" error="{{error}}" bind:action="retry"></data-state>
 
   <block wx:if="{{!loading && !error}}">
-    <view class="profile-hero">
-      <view class="profile-aura aura-one"></view>
-      <view class="profile-aura aura-two"></view>
+    <!-- 头部卡片（参照首页 hero-card） -->
+    <view class="hero-card profile-hero-card">
+      <view class="hero-grid"></view>
+      <!-- 保留首页风格的旋转光晕，放大作为氛围背景 -->
+      <view class="hero-orb-wrap" style="top: -60rpx; right: -80rpx; width: 320rpx; height: 320rpx; opacity: 0.5;">
+        <view class="hero-orb-halo"></view>
+      </view>
+
       <view class="profile-head">
         <view class="profile-avatar">{{user.avatar}}</view>
         <view class="profile-main">
@@ -16,9 +21,9 @@
             <text>{{roleLabel}} · {{user.verified ? '平台已认证' : '认证资料待完善'}}</text>
           </view>
         </view>
-        <button class="edit-button" disabled="{{actionLoading}}" bindtap="editProfile">编辑资料</button>
+        <view class="edit-btn" bindtap="editProfile">编辑</view>
       </view>
-      <view class="profile-desc">{{user.description}}</view>
+      <view class="profile-desc">{{user.description || '介绍一下自己的业务方向和合作偏好～'}}</view>
       <view class="profile-stats">
         <view class="profile-stat" wx:for="{{stats}}" wx:key="label">
           <text>{{item.value}}</text>
@@ -27,6 +32,7 @@
       </view>
     </view>
 
+    <!-- 四大金刚功能区（恢复原样） -->
     <view class="workspace">
       <view
         class="workspace-item"
@@ -44,27 +50,44 @@
       </view>
     </view>
 
+    <!-- 钱包黑金卡片 -->
+    <view class="wallet-card">
+      <view class="wallet-bg"></view>
+      <view class="wallet-content">
+        <view class="wallet-left">
+          <view class="wallet-title"><view class="ui-icon icon-wallet"></view> 可提现余额</view>
+          <view class="wallet-amount"><text class="currency">¥</text>{{walletBalance}}</view>
+        </view>
+        <button class="wallet-btn" disabled="{{actionLoading || walletBalanceCents <= 0}}" bindtap="withdraw">去提现</button>
+      </view>
+    </view>
+
+    <!-- 能力与认证 -->
     <view class="section">
       <view class="section-head">
         <text class="section-title">我的能力</text>
         <text class="section-action" bindtap="editProfile">完善资料 ></text>
       </view>
-      <view class="certs" wx:if="{{certifications.length}}">
-        <view class="cert" wx:for="{{certifications}}" wx:key="id">
-          <view class="cert-icon {{item.colorClass}}">
-            <view class="ui-icon icon-{{item.iconClass}}"></view>
+      <view class="profile-card">
+        <view class="certs" wx:if="{{certifications.length}}">
+          <view class="cert" wx:for="{{certifications}}" wx:key="id">
+            <view class="cert-icon {{item.colorClass}}">
+              <view class="ui-icon icon-{{item.iconClass}}"></view>
+            </view>
+            <text class="cert-title">{{item.title}}</text>
+            <view class="cert-status">{{item.status}}</view>
           </view>
-          <text class="cert-title">{{item.title}}</text>
-          <view class="cert-status">{{item.status}}</view>
         </view>
+        <view wx:else class="inline-empty">暂无认证信息</view>
+        
+        <view class="skill-line" wx:if="{{tags.length}}">
+          <text wx:for="{{tags}}" wx:key="*this">{{item}}</text>
+        </view>
+        <view wx:else class="skill-empty" bindtap="editProfile">+ 添加能力标签，让 AI 推荐更准确</view>
       </view>
-      <view wx:else class="inline-empty">暂无认证信息</view>
-      <view class="skill-line" wx:if="{{tags.length}}">
-        <text wx:for="{{tags}}" wx:key="*this">{{item}}</text>
-      </view>
-      <view wx:else class="skill-empty" bindtap="editProfile">+ 添加能力标签，让 AI 推荐更准确</view>
     </view>
 
+    <!-- 精选案例 -->
     <view class="section">
       <view class="section-head">
         <text class="section-title">精选案例</text>
@@ -79,42 +102,32 @@
           </view>
         </view>
       </scroll-view>
-      <view wx:else class="inline-empty">暂无精选案例</view>
+      <view wx:else class="profile-card inline-empty">暂无精选案例</view>
     </view>
 
+    <!-- 更多服务 -->
     <view class="section">
       <view class="section-head">
-        <text class="section-title">账户与服务</text>
+        <text class="section-title">更多服务</text>
       </view>
-      <view class="wallet">
-        <view class="wallet-icon"><view class="ui-icon icon-wallet"></view></view>
-        <view class="wallet-main">
-          <view class="wallet-label">可提现余额</view>
-          <view class="wallet-value">{{walletBalance}}</view>
-        </view>
-        <button
-          class="wallet-button"
-          disabled="{{actionLoading || walletBalanceCents <= 0}}"
-          bindtap="withdraw"
-        >提现</button>
-      </view>
-
-      <view class="service-list">
-        <view
-          class="service-row"
-          wx:for="{{serviceActions}}"
-          wx:key="key"
-          data-key="{{item.key}}"
-          bindtap="openServiceAction"
-          hover-class="pressable"
-        >
-          <view class="service-icon"><view class="ui-icon icon-{{item.icon}}"></view></view>
-          <view class="service-copy">
-            <view>{{item.label}}</view>
-            <text>{{item.description}}</text>
+      <view class="profile-card">
+        <view class="service-list">
+          <view
+            class="service-row"
+            wx:for="{{serviceActions}}"
+            wx:key="key"
+            data-key="{{item.key}}"
+            bindtap="openServiceAction"
+            hover-class="pressable"
+          >
+            <view class="service-icon"><view class="ui-icon icon-{{item.icon}}"></view></view>
+            <view class="service-copy">
+              <view>{{item.label}}</view>
+              <text>{{item.description}}</text>
+            </view>
+            <view class="service-value" wx:if="{{item.key === 'role'}}">{{roleLabel}}</view>
+            <view class="service-arrow">›</view>
           </view>
-          <view class="service-value" wx:if="{{item.key === 'role'}}">{{roleLabel}}</view>
-          <view class="service-arrow">›</view>
         </view>
       </view>
     </view>

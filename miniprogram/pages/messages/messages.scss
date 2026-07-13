@@ -1,61 +1,226 @@
+view, text, scroll-view, image {
+  box-sizing: border-box;
+}
+
 /* === 平台通知 === */
 .notice-list {
-  padding: 0;
-  background: transparent;
-  border-radius: 0;
-  box-shadow: none;
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
 }
 
-.notice {
+.notice-card {
   display: flex;
   align-items: flex-start;
-  gap: 20rpx;
-  padding: 24rpx 0;
+  gap: 24rpx;
+  padding: 28rpx;
+  background: #fff;
+  border-radius: 32rpx;
+  box-shadow: 0 4rpx 20rpx rgba(140, 153, 255, 0.05);
+  transition: transform 0.2s ease, opacity 0.2s ease;
 }
 
-.notice + .notice {
-  border-top: 1rpx solid rgba(95, 101, 180, 0.08);
+.notice-card:active {
+  transform: scale(0.98);
+}
+
+.notice-icon-wrap {
+  position: relative;
 }
 
 .notice-icon {
-  width: 64rpx;
-  height: 64rpx;
+  width: 88rpx;
+  height: 88rpx;
   flex: none;
   display: flex;
   align-items: center;
   justify-content: center;
   color: rgba(95, 101, 180, 1);
   background: rgba(237, 239, 253, 1);
-  border-radius: 20rpx;
+  border-radius: 28rpx;
 }
 
 .notice-icon .ui-icon {
-  width: 32rpx;
-  height: 32rpx;
+  width: 44rpx;
+  height: 44rpx;
+}
+
+.notice-unread-badge {
+  position: absolute;
+  top: -4rpx;
+  right: -4rpx;
+  width: 18rpx;
+  height: 18rpx;
+  background: #ff4757;
+  border-radius: 50%;
+  border: 4rpx solid #fff;
 }
 
 .notice-main {
   min-width: 0;
   flex: 1;
+  padding-top: 4rpx;
 }
 
-.notice.read {
+.notice-card.read {
   opacity: 0.55;
 }
 
-.notice-title-line {
-  min-width: 0;
+.notice-header {
   display: flex;
   align-items: center;
-  gap: 12rpx;
+  justify-content: space-between;
+  margin-bottom: 8rpx;
 }
 
-.unread-dot {
-  width: 14rpx;
-  height: 14rpx;
+.notice-title {
+  color: rgba(52, 59, 86, 1);
+  font-size: 30rpx;
+  font-weight: 600;
+}
+
+.notice-time {
   flex: none;
-  background: rgba(95, 101, 180, 1);
+  color: rgba(158, 163, 185, 1);
+  font-size: 22rpx;
+}
+
+.notice-desc {
+  color: rgba(118, 121, 143, 1);
+  font-size: 26rpx;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.empty-state-clean {
+  padding: 60rpx 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16rpx;
+  color: rgba(158, 163, 185, 1);
+  font-size: 26rpx;
+}
+
+.empty-icon {
+  width: 64rpx;
+  height: 64rpx;
+  opacity: 0.4;
+}
+
+/* === 合作会话 === */
+.chat-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+}
+
+.chat-card {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  padding: 28rpx;
+  background: #fff;
+  border-radius: 32rpx;
+  box-shadow: 0 4rpx 20rpx rgba(140, 153, 255, 0.05);
+  transition: transform 0.2s ease;
+}
+
+.chat-card:active {
+  transform: scale(0.98);
+}
+
+.chat-avatar-wrap {
+  position: relative;
+}
+
+.chat-avatar {
+  width: 96rpx;
+  height: 96rpx;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(95, 101, 180, 1);
+  font-size: 36rpx;
+  font-weight: 700;
+  background: rgba(237, 239, 253, 1);
   border-radius: 50%;
+}
+
+.chat-unread-badge {
+  position: absolute;
+  top: -4rpx;
+  right: -4rpx;
+  min-width: 32rpx;
+  height: 32rpx;
+  padding: 0 8rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 20rpx;
+  font-weight: 700;
+  background: #ff4757;
+  border-radius: 16rpx;
+  border: 4rpx solid #fff;
+  box-sizing: content-box;
+}
+
+.chat-main {
+  min-width: 0;
+  flex: 1;
+}
+
+.chat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8rpx;
+}
+
+.chat-name {
+  overflow: hidden;
+  color: rgba(52, 59, 86, 1);
+  font-size: 32rpx;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chat-time {
+  flex: none;
+  color: rgba(158, 163, 185, 1);
+  font-size: 22rpx;
+}
+
+.chat-preview {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+}
+
+.chat-message {
+  min-width: 0;
+  overflow: hidden;
+  color: rgba(118, 121, 143, 1);
+  font-size: 26rpx;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chat-arrow {
+  flex: none;
+  color: rgba(158, 163, 185, 0.6);
+}
+
+.chat-arrow .ui-icon {
+  width: 32rpx;
+  height: 32rpx;
 }
 
 .read-action {
@@ -68,116 +233,4 @@
 .read-action[disabled] {
   color: rgba(118, 121, 143, 1);
   background: transparent;
-}
-
-.notice-line {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.notice-title {
-  color: rgba(52, 59, 86, 1);
-  font-size: 28rpx;
-  font-weight: 600;
-}
-
-.notice-time {
-  color: rgba(118, 121, 143, 1);
-  font-size: 24rpx;
-}
-
-.notice-desc {
-  margin-top: 10rpx;
-  color: rgba(118, 121, 143, 1);
-  font-size: 24rpx;
-  line-height: 1.5;
-}
-
-/* === 合作会话 === */
-.chat-list {
-  padding: 0;
-  background: transparent;
-  border-radius: 0;
-  box-shadow: none;
-}
-
-.chat {
-  display: flex;
-  align-items: center;
-  gap: 20rpx;
-  padding: 24rpx 0;
-}
-
-.chat + .chat {
-  border-top: 1rpx solid rgba(95, 101, 180, 0.08);
-}
-
-.chat-avatar {
-  width: 76rpx;
-  height: 76rpx;
-  flex: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: rgba(95, 101, 180, 1);
-  font-size: 28rpx;
-  font-weight: 700;
-  background: rgba(237, 239, 253, 1);
-  border-radius: 22rpx;
-}
-
-.chat-main {
-  min-width: 0;
-  flex: 1;
-}
-
-.chat-line {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16rpx;
-}
-
-.chat-line + .chat-line {
-  margin-top: 10rpx;
-}
-
-.chat-name {
-  overflow: hidden;
-  color: rgba(52, 59, 86, 1);
-  font-size: 28rpx;
-  font-weight: 600;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.chat-time {
-  flex: none;
-  color: rgba(118, 121, 143, 1);
-  font-size: 24rpx;
-}
-
-.chat-message {
-  min-width: 0;
-  overflow: hidden;
-  color: rgba(118, 121, 143, 1);
-  font-size: 24rpx;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.chat-unread {
-  min-width: 36rpx;
-  height: 36rpx;
-  flex: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 12rpx;
-  color: rgba(255, 255, 255, 1);
-  font-size: 22rpx;
-  font-weight: 600;
-  background: rgba(95, 101, 180, 1);
-  border-radius: 20rpx;
 }
