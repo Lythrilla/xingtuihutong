@@ -1,0 +1,25 @@
+<view class="page-shell payment-page">
+  <page-header back="{{true}}" title="支付结果" subtitle="订单状态以服务端查单结果为准"></page-header>
+
+  <view class="card result-card {{status}}">
+    <view class="result-symbol">{{symbol}}</view>
+    <view class="result-title">{{title}}</view>
+    <view class="result-description">{{description}}</view>
+
+    <view class="result-detail">
+      <view><text>订单状态</text><label>{{status === 'success' ? '已支付' : status === 'pending' ? '确认中' : status === 'failed' ? '未支付' : '未创建订单'}}</label></view>
+      <view><text>权益变动</text><label>{{status === 'success' ? '已到账' : '无变动'}}</label></view>
+      <view><text>重复扣款保护</text><label>同一订单号只发放一次</label></view>
+    </view>
+  </view>
+
+  <view class="card safety-card">
+    <view class="safety-title">遇到异常怎么办？</view>
+    <view>· 显示确认中时不要重复付款，先重新查询</view>
+    <view>· 微信已扣款但权益未到账时，保留订单号提交客服</view>
+    <view>· 联系方式无效时走权益申诉，不在这里申请退款</view>
+  </view>
+
+  <button class="primary-button result-primary" bindtap="primaryAction">{{action}}</button>
+  <button class="result-secondary" bindtap="goHome">返回首页</button>
+</view>

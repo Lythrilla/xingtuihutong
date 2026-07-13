@@ -39,7 +39,6 @@ Component({
     types: [] as FilterOption[],
     entries: [] as PlazaEntry[],
     visibleEntries: [] as PlazaEntry[],
-    connectingId: '',
     previousType: 'all',
     favoritesOnly: false,
     focusedPartnerId: '',
@@ -169,35 +168,12 @@ Component({
     openAI() {
       wx.redirectTo({ url: this.data.isCreator ? '/pages/match/match' : '/pages/ai/ai' })
     },
-    async connect(event: WechatMiniprogram.TouchEvent) {
-      if (!this.data.canConnect) {
-        wx.showModal({
-          title: '完成入驻后再合作',
-          content: '审核通过前可以浏览，但不能发起沟通，避免无效或匿名合作。',
-          confirmText: '查看入驻',
-          success: (result) => {
-            if (result.confirm) wx.redirectTo({ url: '/pages/onboarding/onboarding' })
-          },
-        })
-        return
-      }
+    openDetail(event: WechatMiniprogram.TouchEvent) {
       const partnerId = event.currentTarget.dataset.id as string
-      if (this.data.connectingId) return
-      this.setData({ connectingId: partnerId })
-      try {
-        const response = await apiRequest<{ conversationId: string; partnerName: string }>(
-          '/api/plaza/connect',
-          'POST',
-          { partnerId },
-        )
-        wx.navigateTo({
-          url: `/pages/conversation/conversation?id=${encodeURIComponent(response.conversationId)}&name=${encodeURIComponent(response.partnerName)}`,
-        })
-      } catch (error) {
-        wx.showToast({ title: error instanceof Error ? error.message : '发起沟通失败', icon: 'none' })
-      } finally {
-        this.setData({ connectingId: '' })
-      }
+      if (!partnerId) return
+      wx.navigateTo({
+        url: `/pages/partner-detail/partner-detail?id=${encodeURIComponent(partnerId)}`,
+      })
     },
   },
 })

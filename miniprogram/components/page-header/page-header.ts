@@ -10,6 +10,10 @@ Component({
       type: String,
       value: '',
     },
+    back: {
+      type: Boolean,
+      value: false,
+    },
   },
   data: {
     statusBarHeight: 20,
@@ -30,6 +34,16 @@ Component({
         navigationHeight: Math.max(menuHeight + gap * 2, 52),
         rightInset,
       })
+    },
+  },
+  methods: {
+    goBack() {
+      const pages = getCurrentPages()
+      if (pages.length > 1) {
+        wx.navigateBack()
+        return
+      }
+      wx.redirectTo({ url: '/pages/home/home' })
     },
   },
 })

@@ -169,6 +169,8 @@ pub struct CreateMatch {
     pub song_id: String,
     pub target_keys: Vec<String>,
     pub budget_id: String,
+    pub goal: String,
+    pub cycle: String,
 }
 
 #[derive(Debug, Deserialize)]

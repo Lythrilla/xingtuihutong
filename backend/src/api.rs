@@ -27,6 +27,7 @@ pub fn routes() -> Router<AppState> {
         .route("/onboarding", get(onboarding).put(submit_onboarding))
         .route("/home", get(home))
         .route("/plaza", get(plaza))
+        .route("/partners/{id}", get(partner_detail))
         .route("/plaza/connect", post(connect_partner))
         .route("/match/bootstrap", get(match_bootstrap))
         .route("/match", post(create_match))
@@ -493,6 +494,19 @@ struct PlazaResponse {
 }
 
 #[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+struct PartnerDetailResponse {
+    partner: Partner,
+    verification_items: Vec<String>,
+    contact_preview: String,
+    contact_available: bool,
+    reviewed_at: String,
+    role: String,
+    onboarding_status: String,
+    can_connect: bool,
+}
+
+#[derive(Serialize)]
 struct FilterOption {
     key: String,
     label: String,
@@ -536,6 +550,74 @@ async fn plaza(
     Ok(Json(PlazaResponse {
         types: vec![filter("all", "全部"), filter("latest", "最新")],
         entries: rows.into_iter().map(with_partner_tags).collect(),
+        role: user.role.clone(),
+        onboarding_status: user.onboarding_status.clone(),
+        can_connect: user.onboarding_status == "approved",
+    }))
+}
+
+async fn partner_detail(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    Path(id): Path<String>,
+) -> AppResult<Json<PartnerDetailResponse>> {
+    let user = current_user(&state, &headers).await?;
+    let opposite_role = if user.role == "provider" {
+        "client"
+    } else {
+        "provider"
+    };
+    let partner = sqlx::query_as::<_, Partner>(
+        "SELECT id, partner_type, avatar, avatar_class, name, identity, description,
+         tags AS tags_json, match_score, result_text, active
+         FROM partners WHERE id = ? AND active = 1 AND partner_type = ?",
+    )
+    .bind(&id)
+    .bind(opposite_role)
+    .fetch_optional(&state.pool)
+    .await?
+    .ok_or_else(|| AppError::NotFound("partner not found".into()))?;
+    let application = sqlx::query(
+        "SELECT oa.contact_method, COALESCE(oa.reviewed_at, oa.updated_at) AS reviewed_at
+         FROM partners p
+         JOIN onboarding_applications oa ON oa.user_id = p.source_user_id
+         WHERE p.id = ? AND oa.status = 'approved'",
+    )
+    .bind(&id)
+    .fetch_optional(&state.pool)
+    .await?;
+    let (contact_preview, reviewed_at, contact_available) = application
+        .map(|row| {
+            let contact_method: String = row.get("contact_method");
+            (
+                describe_contact_method(&contact_method),
+                row.get::<String, _>("reviewed_at"),
+                true,
+            )
+        })
+        .unwrap_or_else(|| ("该主页暂未配置可解锁联系方式".into(), String::new(), false));
+    let verification_items = if partner.partner_type == "provider" && contact_available {
+        vec![
+            "平台入驻已审核".into(),
+            "服务资料可追溯".into(),
+            "联系方式已留存".into(),
+        ]
+    } else if partner.partner_type == "client" && contact_available {
+        vec![
+            "创作者入驻已审核".into(),
+            "代表作品已提交".into(),
+            "联系方式已留存".into(),
+        ]
+    } else {
+        vec!["平台公开资料已审核".into(), "主页当前处于可展示状态".into()]
+    };
+
+    Ok(Json(PartnerDetailResponse {
+        partner: with_partner_tags(partner),
+        verification_items,
+        contact_preview,
+        contact_available,
+        reviewed_at,
         role: user.role.clone(),
         onboarding_status: user.onboarding_status.clone(),
         can_connect: user.onboarding_status == "approved",
@@ -714,6 +796,15 @@ async fn create_match(
             "at least one target must be selected".into(),
         ));
     }
+    let goal = input.goal.trim();
+    if goal.chars().count() < 8 || goal.chars().count() > 300 {
+        return Err(AppError::BadRequest(
+            "goal must contain between 8 and 300 characters".into(),
+        ));
+    }
+    if !["7 天", "14 天", "30 天", "60 天"].contains(&input.cycle.as_str()) {
+        return Err(AppError::BadRequest("invalid campaign cycle".into()));
+    }
     let song_exists: bool = sqlx::query_scalar(
         "SELECT EXISTS(
              SELECT 1 FROM songs WHERE id = ? AND active = 1 AND source_user_id = ?
@@ -737,14 +828,16 @@ async fn create_match(
     let mut tx = state.pool.begin().await?;
     sqlx::query(
         "INSERT INTO match_requests
-         (id, user_id, song_id, target_keys, budget_id)
-         VALUES (?, ?, ?, ?, ?)",
+         (id, user_id, song_id, target_keys, budget_id, goal, cycle)
+         VALUES (?, ?, ?, ?, ?, ?, ?)",
     )
     .bind(&match_id)
     .bind(&user.id)
     .bind(&input.song_id)
     .bind(target_keys)
     .bind(&input.budget_id)
+    .bind(goal)
+    .bind(&input.cycle)
     .execute(&mut *tx)
     .await?;
     let partners = sqlx::query_as::<_, Partner>(
@@ -781,6 +874,8 @@ async fn create_match(
             "songId": input.song_id,
             "budgetId": input.budget_id,
             "targets": input.target_keys,
+            "goal": goal,
+            "cycle": input.cycle,
             "partnerCount": partners.len()
         }),
     )
@@ -1343,6 +1438,16 @@ fn require_creator(user: &UserRow) -> AppResult<()> {
         return Err(AppError::BadRequest("creator role required".into()));
     }
     Ok(())
+}
+
+fn describe_contact_method(contact_method: &str) -> String {
+    if contact_method.contains('@') {
+        "邮箱联系方式已提交平台审核".into()
+    } else if contact_method.chars().any(|value| value.is_ascii_digit()) {
+        "手机号或微信联系方式已提交平台审核".into()
+    } else {
+        "联系方式已提交平台审核".into()
+    }
 }
 
 fn with_partner_tags(mut partner: Partner) -> Partner {

@@ -43,7 +43,12 @@ Component({
     name: '',
     metrics: [] as HomeResponse['metrics'],
     recommendations: [] as Recommendation[],
-    connectingId: '',
+    workspaceActions: [] as Array<{
+      key: string
+      title: string
+      description: string
+      icon: string
+    }>,
   },
   lifetimes: {
     attached() {
@@ -77,6 +82,18 @@ Component({
           isCreator: response.role === 'client',
           isApproved: response.onboardingStatus === 'approved',
           recommendations,
+          workspaceActions:
+            response.role === 'client'
+              ? [
+                  { key: 'match', title: '发布需求', description: '拆分多个推广任务', icon: 'spark' },
+                  { key: 'plaza', title: '找推广方', description: '查看能力和认证', icon: 'target' },
+                  { key: 'membership', title: '联系权益', description: '会员与按次解锁', icon: 'wallet' },
+                ]
+              : [
+                  { key: 'plaza', title: '发现项目', description: '查看真实创作者', icon: 'target' },
+                  { key: 'ai', title: 'AI 工作台', description: '分析合作重点', icon: 'spark' },
+                  { key: 'membership', title: '联系权益', description: '会员与按次解锁', icon: 'wallet' },
+                ],
           loading: false,
         })
       } catch (error) {
@@ -100,28 +117,27 @@ Component({
     openPlaza() {
       wx.redirectTo({ url: '/pages/plaza/plaza' })
     },
-    async contactPartner(event: WechatMiniprogram.TouchEvent) {
+    openWorkspaceAction(event: WechatMiniprogram.TouchEvent) {
+      const key = event.currentTarget.dataset.key as string
+      const routes: Record<string, string> = {
+        match: '/pages/match/match',
+        plaza: '/pages/plaza/plaza',
+        ai: '/pages/ai/ai',
+        membership: '/pages/membership/membership',
+      }
+      const url = routes[key]
+      if (url) wx.redirectTo({ url })
+    },
+    openPartner(event: WechatMiniprogram.TouchEvent) {
       if (!this.data.isApproved) {
         this.openOnboarding()
         return
       }
       const partnerId = event.currentTarget.dataset.id as string
-      if (this.data.connectingId) return
-      this.setData({ connectingId: partnerId })
-      try {
-        const response = await apiRequest<{ conversationId: string; partnerName: string }>(
-          '/api/plaza/connect',
-          'POST',
-          { partnerId },
-        )
-        wx.navigateTo({
-          url: `/pages/conversation/conversation?id=${encodeURIComponent(response.conversationId)}&name=${encodeURIComponent(response.partnerName)}`,
-        })
-      } catch (error) {
-        wx.showToast({ title: error instanceof Error ? error.message : '发起沟通失败', icon: 'none' })
-      } finally {
-        this.setData({ connectingId: '' })
-      }
+      if (!partnerId) return
+      wx.navigateTo({
+        url: `/pages/partner-detail/partner-detail?id=${encodeURIComponent(partnerId)}`,
+      })
     },
   },
 })

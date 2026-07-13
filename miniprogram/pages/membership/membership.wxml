@@ -1,0 +1,69 @@
+<view class="page-shell membership-page">
+  <page-header back="{{true}}" title="会员与联系权益" subtitle="每次扣除前明确展示价格、额度和保障规则"></page-header>
+
+  <view class="hero-card membership-hero">
+    <view class="hero-grid"></view>
+    <view class="membership-kicker">当前身份</view>
+    <view class="membership-title">普通用户</view>
+    <view class="membership-desc">可浏览审核通过的公开资料，联系时选择会员额度或按次购买。</view>
+    <view class="quota-row">
+      <view><text>0</text><label>会员剩余额度</label></view>
+      <view><text>0</text><label>按次可用额度</label></view>
+      <view><text>0</text><label>已解锁联系人</label></view>
+    </view>
+  </view>
+
+  <view class="section">
+    <view class="section-head">
+      <text class="section-title">选择权益</text>
+      <text class="section-action" bindtap="openRules">保障规则 ></text>
+    </view>
+    <view class="plan-list">
+      <view
+        class="card plan-card {{selectedPlan === item.key ? 'selected' : ''}}"
+        wx:for="{{plans}}"
+        wx:key="key"
+        data-key="{{item.key}}"
+        bindtap="selectPlan"
+      >
+        <view class="plan-radio"><view></view></view>
+        <view class="plan-copy">
+          <view class="plan-name">{{item.name}} <text wx:if="{{item.badge}}">{{item.badge}}</text></view>
+          <view class="plan-desc">{{item.description}}</view>
+        </view>
+        <view class="plan-price">{{item.price}}</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="card newcomer-card">
+    <view class="newcomer-badge">NEW</view>
+    <view>
+      <view class="newcomer-title">新人优惠只在支付成功后核销</view>
+      <text>取消支付不会消耗资格，优惠金额和有效期会在付款前明确展示。</text>
+    </view>
+  </view>
+
+  <view class="section">
+    <view class="section-head">
+      <text class="section-title">权益如何使用</text>
+    </view>
+    <view class="card rule-card">
+      <view class="rule-row"><text>1</text><view><view>打开真实主体详情</view><label>先查看能力、案例和认证，再决定是否联系</label></view></view>
+      <view class="rule-row"><text>2</text><view><view>确认本次权益</view><label>优先使用会员额度，不足时再选择按次购买</label></view></view>
+      <view class="rule-row"><text>3</text><view><view>支付成功后解锁</view><label>支付结果以服务端查单为准，未知状态不会重复扣款</label></view></view>
+      <view class="rule-row"><text>4</text><view><view>无效信息可申诉</view><label>核实后退回次数或额度，并复核被投诉主体</label></view></view>
+    </view>
+  </view>
+
+  <view class="section">
+    <view class="section-head">
+      <text class="section-title">使用记录</text>
+    </view>
+    <view class="card inline-empty">暂无权益获得、消耗或退回记录</view>
+  </view>
+
+  <button class="primary-button purchase-button" loading="{{purchasing}}" disabled="{{purchasing}}" bindtap="purchase">
+    {{selectedPlan === 'single' ? '确认按次购买' : '确认开通会员'}}
+  </button>
+</view>

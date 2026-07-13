@@ -1,0 +1,117 @@
+<view class="page-shell detail-page">
+  <page-header
+    back="{{true}}"
+    title="{{partner ? partner.name : '合作方详情'}}"
+    subtitle="{{partner ? partner.identity : '查看公开能力与认证资料'}}"
+  ></page-header>
+
+  <data-state loading="{{loading}}" error="{{error}}" bind:action="retry"></data-state>
+
+  <block wx:if="{{!loading && !error && partner}}">
+    <view class="hero-card detail-hero">
+      <view class="hero-grid"></view>
+      <view class="detail-hero-head">
+        <view class="detail-avatar {{partner.avatarClass}}">{{partner.avatar}}</view>
+        <view class="detail-identity">
+          <view class="detail-name">{{partner.name}}</view>
+          <view class="detail-role">{{partner.identity}}</view>
+        </view>
+        <button class="favorite {{favorite ? 'active' : ''}}" bindtap="toggleFavorite">{{favorite ? '♥' : '♡'}}</button>
+      </view>
+      <view class="detail-description">{{partner.description}}</view>
+      <view class="match-reason" wx:if="{{partner.matchScore}}">
+        <view><text>{{partner.matchScore}}%</text> 匹配</view>
+        <view>{{partner.resultText || '能力标签与当前合作方向较匹配'}}</view>
+      </view>
+    </view>
+
+    <view class="section">
+      <view class="section-head">
+        <text class="section-title">{{isCreator ? '服务能力' : '作品方向'}}</text>
+        <text class="section-action">来自审核资料</text>
+      </view>
+      <view class="card tag-card">
+        <view class="detail-tags" wx:if="{{partner.tags.length}}">
+          <text wx:for="{{partner.tags}}" wx:key="*this">{{item}}</text>
+        </view>
+        <view wx:else class="inline-empty">暂未补充公开标签</view>
+      </view>
+    </view>
+
+    <view class="section">
+      <view class="section-head">
+        <text class="section-title">平台核验</text>
+        <text class="section-action">{{reviewedAt}}</text>
+      </view>
+      <view class="card verification-card">
+        <view class="verification-row" wx:for="{{verificationItems}}" wx:key="*this">
+          <view class="verification-check">✓</view>
+          <view>{{item}}</view>
+        </view>
+        <view class="verification-note">认证标签只说明对应资料已提交审核，不代表平台承诺合作效果。</view>
+      </view>
+    </view>
+
+    <view class="section">
+      <view class="section-head">
+        <text class="section-title">联系信息</text>
+        <text class="section-action">付费权益</text>
+      </view>
+      <view class="card contact-card">
+        <view class="contact-lock">••••••••</view>
+        <view class="contact-copy">
+          <view>{{contactPreview}}</view>
+          <text>解锁前不会展示完整手机号、微信号或邮箱</text>
+        </view>
+      </view>
+    </view>
+  </block>
+</view>
+
+<view wx:if="{{!loading && !error && partner}}" class="detail-footer">
+  <button class="footer-secondary" bindtap="toggleFavorite">{{favorite ? '已收藏' : '收藏'}}</button>
+  <button class="footer-primary" disabled="{{!contactAvailable}}" bindtap="openAccess">
+    {{contactAvailable ? '解锁联系方式' : '暂不可解锁'}}
+  </button>
+</view>
+
+<view wx:if="{{showAccessSheet}}" class="sheet-layer" bindtap="closeAccess">
+  <view class="sheet-card" catchtap="preventClose">
+    <view class="sheet-handle"></view>
+    <view class="sheet-title">确认联系方式权益</view>
+    <view class="sheet-subtitle">解锁 {{partner.name}} 的完整联系方式</view>
+
+    <view
+      class="access-option {{selectedAccess === 'member' ? 'selected' : ''}}"
+      data-mode="member"
+      bindtap="chooseAccess"
+    >
+      <view>
+        <view class="access-name">使用会员额度</view>
+        <text>每次解锁前明确展示剩余额度</text>
+      </view>
+      <view class="access-value">待开通</view>
+    </view>
+
+    <view
+      class="access-option {{selectedAccess === 'single' ? 'selected' : ''}}"
+      data-mode="single"
+      bindtap="chooseAccess"
+    >
+      <view>
+        <view class="access-name">按次购买</view>
+        <text>支持新人优惠，支付成功后立即解锁</text>
+      </view>
+      <view class="access-value">待定价</view>
+    </view>
+
+    <view class="access-rules">
+      <view>· 同一合作方重复查看不重复扣费</view>
+      <view>· 联系方式无效可申诉，核实后退回次数或额度</view>
+      <view>· 解锁不代表对方承诺回复或达成合作</view>
+    </view>
+
+    <button class="primary-button access-primary" bindtap="attemptUnlock">确认权益并继续</button>
+    <button class="access-chat" loading="{{connecting}}" disabled="{{connecting}}" bindtap="connect">先发起站内沟通</button>
+  </view>
+</view>

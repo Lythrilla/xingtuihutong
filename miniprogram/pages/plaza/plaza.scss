@@ -154,6 +154,12 @@ view, text, scroll-view, image {
   box-shadow: 0 4rpx 16rpx rgba(140, 153, 255, 0.08);
   display: flex;
   flex-direction: column;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.entry-press {
+  transform: scale(0.985);
+  box-shadow: 0 2rpx 10rpx rgba(140, 153, 255, 0.12);
 }
 
 .entry.focused {
