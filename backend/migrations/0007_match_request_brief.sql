@@ -1,0 +1,2 @@
+ALTER TABLE match_requests ADD COLUMN goal TEXT NOT NULL DEFAULT '';
+ALTER TABLE match_requests ADD COLUMN cycle TEXT NOT NULL DEFAULT '';

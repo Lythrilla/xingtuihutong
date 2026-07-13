@@ -123,8 +123,11 @@ Component({
       this.setData({ loading: true, error: '' })
       try {
         const response = await apiRequest<BootstrapResponse>('/api/agent/bootstrap')
+        const prefill = wx.getStorageSync('starconnect-ai-prefill') as string
+        if (prefill) wx.removeStorageSync('starconnect-ai-prefill')
         this.setData({
           ...response,
+          input: prefill || this.data.input,
           toolCalls: response.recentToolCalls,
           loading: false,
           scrollTarget: response.messages.length ? 'conversation-end' : '',

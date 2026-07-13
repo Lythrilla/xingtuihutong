@@ -45,7 +45,14 @@
     </view>
 
     <view class="entry-list" wx:if="{{!listLoading && visibleEntries.length}}">
-      <view class="entry {{focusedPartnerId === item.id ? 'focused' : ''}}" wx:for="{{visibleEntries}}" wx:key="id">
+      <view
+        class="entry {{focusedPartnerId === item.id ? 'focused' : ''}}"
+        wx:for="{{visibleEntries}}"
+        wx:key="id"
+        data-id="{{item.id}}"
+        bindtap="openDetail"
+        hover-class="entry-press"
+      >
         <view class="entry-cover">
           <view class="avatar {{item.avatarClass}}">{{item.avatar}}</view>
           <view class="match-badge" wx:if="{{item.matchScore}}">匹配 {{item.matchScore}}%</view>
@@ -71,10 +78,8 @@
             <button
               class="connect-button"
               data-id="{{item.id}}"
-              disabled="{{connectingId !== '' || !canConnect}}"
-              loading="{{connectingId === item.id}}"
-              bindtap="connect"
-            >{{connectingId === item.id ? '进入中...' : !canConnect ? '审核后可沟通' : isCreator ? '咨询推广' : '联系创作者'}}</button>
+              catchtap="openDetail"
+            >{{!canConnect ? '查看公开资料' : isCreator ? '查看并联系' : '查看创作者'}}</button>
           </view>
         </view>
       </view>

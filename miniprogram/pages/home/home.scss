@@ -83,6 +83,51 @@ view, text, scroll-view, image {
   font-weight: 700;
 }
 
+.workspace-actions {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14rpx;
+  margin-top: 20rpx;
+}
+
+.workspace-action {
+  min-width: 0;
+  padding: 22rpx 16rpx;
+}
+
+.workspace-icon {
+  width: 52rpx;
+  height: 52rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #5f65b4;
+  background: rgba(95, 101, 180, 0.08);
+  border-radius: 18rpx;
+}
+
+.workspace-icon .ui-icon {
+  width: 28rpx;
+  height: 28rpx;
+}
+
+.workspace-title {
+  margin-top: 16rpx;
+  color: #343b56;
+  font-size: 24rpx;
+  font-weight: 650;
+}
+
+.workspace-desc {
+  margin-top: 6rpx;
+  overflow: hidden;
+  color: #76798f;
+  font-size: 18rpx;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .role-hero {
   margin-top: 28rpx;
 }

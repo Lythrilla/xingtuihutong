@@ -108,11 +108,13 @@ Component({
             : isProvider
             ? [
                 { key: 'onboarding', label: '服务方入驻资料', description: '主体、能力与审核状态', icon: 'shield' },
+                { key: 'membership', label: '会员与联系权益', description: '查看额度、按次解锁与使用记录', icon: 'wallet' },
                 { key: 'ai', label: 'AI Agent 工作台', description: '分析创作者项目与合作重点', icon: 'spark' },
                 { key: 'favorites', label: '收藏的创作者', description: '回看感兴趣的创作者项目', icon: 'target' },
               ]
             : [
                 { key: 'onboarding', label: '创作者入驻资料', description: '身份、作品与审核状态', icon: 'shield' },
+                { key: 'membership', label: '会员与联系权益', description: '查看额度、按次解锁与使用记录', icon: 'wallet' },
                 { key: 'match', label: '发布推广需求', description: '选择作品、方向与合作预算', icon: 'spark' },
                 { key: 'favorites', label: '收藏的推广方', description: '回看感兴趣的推广服务', icon: 'target' },
               ],
@@ -174,6 +176,7 @@ Component({
         analytics: '/pages/analytics/analytics',
         favorites: '/pages/plaza/plaza',
         match: '/pages/match/match',
+        membership: '/pages/membership/membership',
       }
       const url = routes[key]
       if (url) wx.redirectTo({ url })

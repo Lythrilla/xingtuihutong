@@ -1,5 +1,5 @@
-<view class="page-shell">
-  <page-header title="发布推广需求" subtitle="只使用你已审核的作品，匹配真实入驻推广方"></page-header>
+<view class="page-shell demand-page">
+  <page-header title="发布推广需求" subtitle="一个需求可拆分多个任务，分别寻找合适服务方"></page-header>
 
   <data-state loading="{{loading}}" error="{{error}}" bind:action="retry"></data-state>
 
@@ -7,33 +7,44 @@
     <data-state
       wx:if="{{!songs.length || !targets.length || !budgets.length || !availableProviders}}"
       empty="{{true}}"
-      empty-title="匹配资料还未准备好"
-      empty-description="{{!songs.length ? '请先完成创作者入驻并通过作品审核' : !availableProviders ? '暂无已审核推广方，平台不会生成虚假匹配' : '推广对象或预算配置暂不可用'}}"
+      empty-title="需求资料还未准备好"
+      empty-description="{{!songs.length ? '请先完成创作者入驻并通过作品审核' : !availableProviders ? '暂无已审核推广方，平台不会生成虚假匹配' : '推广任务或预算配置暂不可用'}}"
       action-text="重新加载"
       bind:action="retry"
     ></data-state>
 
     <block wx:else>
-      <view class="match-steps">
-        <view class="step {{selectedSongId ? 'done' : 'active'}}">
-          <view class="step-number">1</view>
-          <text>选择歌曲</text>
+      <view class="draft-status" wx:if="{{savedHint}}">
+        <view class="draft-dot"></view>
+        <text>{{savedHint}}</text>
+      </view>
+
+      <view class="demand-steps">
+        <view class="demand-step {{activeStep >= 1 ? 'active' : ''}} {{activeStep > 1 ? 'done' : ''}}">
+          <view>1</view><text>作品</text>
         </view>
-        <view class="step-line {{selectedSongId ? 'active' : ''}}"></view>
-        <view class="step {{selectedSongId ? 'active done' : ''}} {{selectedTargets.length ? 'done' : ''}}">
-          <view class="step-number">2</view>
-          <text>推广对象</text>
+        <view class="demand-line {{activeStep > 1 ? 'active' : ''}}"></view>
+        <view class="demand-step {{activeStep >= 2 ? 'active' : ''}} {{activeStep > 2 ? 'done' : ''}}">
+          <view>2</view><text>目标</text>
         </view>
-        <view class="step-line {{selectedTargets.length ? 'active' : ''}}"></view>
-        <view class="step {{canSubmit ? 'active' : ''}}">
-          <view class="step-number">3</view>
-          <text>智能匹配</text>
+        <view class="demand-line {{activeStep > 2 ? 'active' : ''}}"></view>
+        <view class="demand-step {{activeStep >= 3 ? 'active' : ''}} {{activeStep > 3 ? 'done' : ''}}">
+          <view>3</view><text>任务</text>
+        </view>
+        <view class="demand-line {{activeStep > 3 ? 'active' : ''}}"></view>
+        <view class="demand-step {{activeStep >= 4 ? 'active' : ''}}">
+          <view>4</view><text>确认</text>
         </view>
       </view>
 
       <view class="form-section card">
-        <view class="form-title">选择要推广的歌曲</view>
-        <view class="form-desc">仅展示你在入驻审核中提交并通过的作品</view>
+        <view class="form-heading">
+          <view>
+            <view class="form-title">选择推广作品</view>
+            <view class="form-desc">仅展示你已通过审核的真实作品</view>
+          </view>
+          <view class="required-mark">必填</view>
+        </view>
         <scroll-view class="song-scroll" scroll-x enhanced show-scrollbar="{{false}}">
           <view class="song-row">
             <view
@@ -55,8 +66,47 @@
       </view>
 
       <view class="form-section card">
-        <view class="form-title">希望由谁来推广？</view>
-        <view class="form-desc">可多选，用于筛选已审核推广方的真实能力标签</view>
+        <view class="form-heading">
+          <view>
+            <view class="form-title">这次希望实现什么？</view>
+            <view class="form-desc">服务方会根据目标判断是否适合承接</view>
+          </view>
+          <view class="required-mark">必填</view>
+        </view>
+        <textarea
+          class="goal-input"
+          value="{{goal}}"
+          maxlength="300"
+          auto-height
+          placeholder="例如：为新单曲发行积累首批真实听众，重点覆盖小红书和短视频平台，希望获得内容发布与数据复盘。"
+          placeholder-class="goal-placeholder"
+          bindinput="updateGoal"
+        ></textarea>
+        <view class="goal-footer">
+          <text>{{goal.length}} / 300</text>
+          <button bindtap="openAIAssistant"><view class="ui-icon icon-spark"></view> AI 帮我完善</button>
+        </view>
+
+        <view class="sub-title">推广周期</view>
+        <view class="cycle-row">
+          <view
+            wx:for="{{cycles}}"
+            wx:key="*this"
+            class="cycle {{selectedCycle === item ? 'selected' : ''}}"
+            data-value="{{item}}"
+            bindtap="chooseCycle"
+          >{{item}}</view>
+        </view>
+      </view>
+
+      <view class="form-section card">
+        <view class="form-heading">
+          <view>
+            <view class="form-title">拆分推广任务</view>
+            <view class="form-desc">可同时选择多类任务，后续分别联系和签约服务方</view>
+          </view>
+          <view class="task-count">{{selectedTasks.length}} 个任务</view>
+        </view>
         <view class="target-grid">
           <view
             wx:for="{{targets}}"
@@ -65,16 +115,35 @@
             data-key="{{item.key}}"
             bindtap="toggleTarget"
           >
-            <view class="target-icon"><view class="ui-icon icon-{{item.iconClass}}"></view></view>
+            <view class="target-top">
+              <view class="target-icon"><view class="ui-icon icon-{{item.iconClass}}"></view></view>
+              <view class="target-check">{{item.selected ? '✓' : '+'}}</view>
+            </view>
             <view class="target-title">{{item.title}}</view>
             <view class="target-desc">{{item.description}}</view>
+          </view>
+        </view>
+
+        <view class="task-summary" wx:if="{{selectedTasks.length}}">
+          <view class="task-summary-title">本次将创建</view>
+          <view class="task-line" wx:for="{{selectedTasks}}" wx:key="key">
+            <view class="task-index">{{index + 1}}</view>
+            <view>
+              <view>{{item.title}}</view>
+              <text>独立匹配服务方 · 后续单独报价与签约</text>
+            </view>
           </view>
         </view>
       </view>
 
       <view class="form-section card">
-        <view class="form-title">合作预算</view>
-        <view class="form-desc">用于筛选可承接该预算的推广服务方</view>
+        <view class="form-heading">
+          <view>
+            <view class="form-title">整体预算</view>
+            <view class="form-desc">发布前只展示预算区间，不会产生任何扣款</view>
+          </view>
+          <view class="required-mark">必填</view>
+        </view>
         <view class="budget-list">
           <view
             wx:for="{{budgets}}"
@@ -89,16 +158,21 @@
         </view>
       </view>
 
-      <view class="selection-summary">{{selectionSummary}}</view>
+      <view class="review-card">
+        <view class="review-label">发布前确认</view>
+        <view class="review-title">{{selectionSummary}}</view>
+        <view class="review-rule"><text>✓</text> 公开作品、目标、任务和预算区间</view>
+        <view class="review-rule"><text>✓</text> 联系方式仍保持隐藏，不会随需求公开</view>
+        <view class="review-rule"><text>✓</text> 发布不扣费，解锁联系人时再确认权益</view>
+      </view>
+
       <button
-        class="primary-button match-button"
+        class="primary-button publish-button"
         disabled="{{!canSubmit || isSubmitting}}"
         loading="{{isSubmitting}}"
         bindtap="startMatching"
-      >
-        <text>{{isSubmitting ? '正在匹配已入驻推广方' : '匹配真实推广方'}}</text>
-        <view class="ui-icon icon-spark button-icon"></view>
-      </button>
+      >{{isSubmitting ? '正在发布需求…' : '发布需求并查看推荐'}}</button>
+      <view class="disabled-reason" wx:if="{{!canSubmit}}">{{selectionSummary}}</view>
     </block>
   </block>
 </view>

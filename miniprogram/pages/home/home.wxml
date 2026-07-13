@@ -23,6 +23,21 @@
       </view>
     </view>
 
+    <view wx:if="{{isApproved}}" class="workspace-actions">
+      <view
+        class="card workspace-action"
+        wx:for="{{workspaceActions}}"
+        wx:key="key"
+        data-key="{{item.key}}"
+        bindtap="openWorkspaceAction"
+        hover-class="pressable"
+      >
+        <view class="workspace-icon"><view class="ui-icon icon-{{item.icon}}"></view></view>
+        <view class="workspace-title">{{item.title}}</view>
+        <view class="workspace-desc">{{item.description}}</view>
+      </view>
+    </view>
+
     <view wx:if="{{isApproved}}" class="hero-card role-hero {{isCreator ? 'creator' : 'provider'}}" bindtap="openPrimary" hover-class="pressable">
       <view class="hero-grid"></view>
       <view class="hero-orb-wrap">
@@ -62,7 +77,7 @@
             </view>
             <view class="recommend-subtitle">{{item.subtitle}}</view>
           </view>
-          <view class="cooperate" data-id="{{item.id}}" bindtap="contactPartner">{{isCreator ? '聊推广' : '聊合作'}}</view>
+          <view class="cooperate" data-id="{{item.id}}" bindtap="openPartner">{{isCreator ? '查看推广' : '查看项目'}}</view>
         </view>
       </view>
       <view wx:else class="inline-empty">
