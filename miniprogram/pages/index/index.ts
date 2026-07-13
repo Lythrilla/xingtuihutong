@@ -6,7 +6,7 @@ const app = getApp<IAppOption>()
 
 Component({
   data: {
-    selectedRole: 'provider',
+    selectedRole: '',
     agreed: false,
     entering: false,
     statusBarHeight: 20,
@@ -29,11 +29,6 @@ Component({
     chooseRole(event: WechatMiniprogram.TouchEvent) {
       const role = event.currentTarget.dataset.role as 'provider' | 'client'
       this.setData({ selectedRole: role })
-      if (!this.data.agreed) {
-        wx.showToast({ title: '请先阅读并同意用户协议与隐私政策', icon: 'none' })
-        return
-      }
-      this.enterApp()
     },
     toggleAgree(event: WechatMiniprogram.CheckboxGroupChange) {
       this.setData({ agreed: event.detail.value.includes('agreed') })
@@ -41,14 +36,28 @@ Component({
     async enterApp() {
       if (this.data.entering) return
       const role = this.data.selectedRole as 'provider' | 'client'
+      if (!role) {
+        wx.showToast({ title: '请先选择使用身份', icon: 'none' })
+        return
+      }
+      if (!this.data.agreed) {
+        wx.showToast({ title: '请先阅读并同意用户协议与隐私政策', icon: 'none' })
+        return
+      }
       this.setData({ entering: true })
       try {
         await ensureSession(role)
         const user = await apiRequest<SessionUser>('/api/me/role', 'PUT', { role })
         app.globalData.role = user.role
+        app.globalData.onboardingStatus = user.onboardingStatus
         app.globalData.apiReady = true
         wx.setStorageSync('starconnect-role', user.role)
-        wx.redirectTo({ url: '/pages/home/home' })
+        wx.setStorageSync('starconnect-onboarding-status', user.onboardingStatus)
+        wx.redirectTo({
+          url: user.onboardingStatus === 'approved' || user.onboardingStatus === 'pending'
+            ? '/pages/home/home'
+            : '/pages/onboarding/onboarding',
+        })
       } catch (error) {
         wx.showToast({ title: error instanceof Error ? error.message : '服务连接失败', icon: 'none' })
       } finally {

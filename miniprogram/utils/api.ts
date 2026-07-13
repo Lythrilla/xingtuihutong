@@ -14,6 +14,8 @@ export interface SessionUser {
   avatar: string
   description: string
   verified: boolean
+  onboardingStatus: 'draft' | 'pending' | 'approved' | 'rejected'
+  reviewNote: string
 }
 
 interface SessionResponse {
@@ -122,6 +124,14 @@ function friendlyError(message?: string): string {
     'conversation not found': '该会话不存在或已失效',
     'partner not found': '该合作伙伴已下架',
     'plan not found': '该推广方案已下架',
+    'submitted role cannot be changed': '已提交入驻申请，暂不能切换身份',
+    'onboarding required fields are missing': '请完整填写必填资料',
+    'creator work information is required': '请填写代表作品及作品链接',
+    'at least one specialty is required': '请至少选择一个能力或风格标签',
+    'onboarding approval required': '入驻审核通过后才能发起合作',
+    'creator role required': '仅创作者可以发布推广匹配',
+    'no approved providers available': '暂无已审核推广方，请稍后再试',
+    'creator wallet is not available': '创作者身份暂无钱包功能',
     'agent message is too long': '消息过长，请精简后重试',
   }
   return messages[message] || message

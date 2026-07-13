@@ -1,6 +1,7 @@
 {
   "pages": [
     "pages/index/index",
+    "pages/onboarding/onboarding",
     "pages/home/home",
     "pages/plaza/plaza",
     "pages/match/match",

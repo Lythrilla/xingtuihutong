@@ -8,24 +8,24 @@
 
   <view class="panel">
     <view class="panel-header">
-      <view class="panel-title">请选择您的角色</view>
-      <view class="panel-subtitle">我们为您提供专属的服务体验</view>
-    </view>
-
-    <view class="role-card provider {{selectedRole === 'provider' ? 'selected' : ''}}" data-role="provider" bindtap="chooseRole" hover-class="pressable">
-      <view class="role-info">
-        <view class="role-name">我是服务方</view>
-        <view class="role-desc">我提供音乐推广、宣发等专业服务</view>
-      </view>
-      <image class="role-icon" src="/assets/images/role-service.png" mode="aspectFit"></image>
+      <view class="panel-title">你想以什么身份加入？</view>
+      <view class="panel-subtitle">两种身份对应完全不同的工作台与合作流程</view>
     </view>
 
     <view class="role-card client {{selectedRole === 'client' ? 'selected' : ''}}" data-role="client" bindtap="chooseRole" hover-class="pressable">
       <view class="role-info">
-        <view class="role-name">我是创作者</view>
-        <view class="role-desc">我希望宣传我的作品，寻求音乐推广</view>
+        <view class="role-name">我是音乐创作者</view>
+        <view class="role-desc">提交作品与创作者资料，审核后发布推广需求</view>
       </view>
       <image class="role-icon" src="/assets/images/role-client.png" mode="aspectFit"></image>
+    </view>
+
+    <view class="role-card provider {{selectedRole === 'provider' ? 'selected' : ''}}" data-role="provider" bindtap="chooseRole" hover-class="pressable">
+      <view class="role-info">
+        <view class="role-name">我是推广服务方</view>
+        <view class="role-desc">提交团队与服务能力，审核后承接创作者项目</view>
+      </view>
+      <image class="role-icon" src="/assets/images/role-service.png" mode="aspectFit"></image>
     </view>
 
     <checkbox-group class="agreement" bindchange="toggleAgree">
@@ -37,6 +37,13 @@
         <view class="agree-text">已阅读并同意 <text class="link">《用户协议》</text>与<text class="link">《隐私政策》</text></view>
       </label>
     </checkbox-group>
+
+    <button
+      class="enter-button"
+      disabled="{{!selectedRole || !agreed || entering}}"
+      loading="{{entering}}"
+      bindtap="enterApp"
+    >{{selectedRole === 'client' ? '进入创作者入驻' : selectedRole === 'provider' ? '进入服务方入驻' : '选择身份后继续'}}</button>
   </view>
 
   <view wx:if="{{entering}}" class="entering-overlay">

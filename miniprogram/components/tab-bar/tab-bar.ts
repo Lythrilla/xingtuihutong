@@ -1,5 +1,7 @@
 export {}
 
+const app = getApp<IAppOption>()
+
 Component({
   properties: {
     active: {
@@ -16,6 +18,33 @@ Component({
       { key: 'messages', label: '消息', iconClass: 'messages', url: '/pages/messages/messages' },
       { key: 'profile', label: '我的', iconClass: 'profile', url: '/pages/profile/profile' },
     ],
+  },
+  lifetimes: {
+    attached() {
+      const isCreator = app.globalData.role === 'client'
+      const isApproved = app.globalData.onboardingStatus === 'approved'
+      this.setData({
+        items: [
+          { key: 'home', label: '首页', iconClass: 'home', url: '/pages/home/home' },
+          {
+            key: 'plaza',
+            label: isCreator ? '找推广' : '找创作者',
+            iconClass: 'plaza',
+            url: '/pages/plaza/plaza',
+          },
+          {
+            key: 'match',
+            label: isApproved ? (isCreator ? '推广' : 'AI') : '入驻',
+            iconClass: 'match',
+            url: isApproved
+              ? (isCreator ? '/pages/match/match' : '/pages/ai/ai')
+              : '/pages/onboarding/onboarding',
+          },
+          { key: 'messages', label: '消息', iconClass: 'messages', url: '/pages/messages/messages' },
+          { key: 'profile', label: '我的', iconClass: 'profile', url: '/pages/profile/profile' },
+        ],
+      })
+    },
   },
   methods: {
     navigate(event: WechatMiniprogram.TouchEvent) {

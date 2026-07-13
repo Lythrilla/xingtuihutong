@@ -26,6 +26,7 @@ interface MatchBootstrap {
   songs: Song[]
   targets: Omit<Target, 'selected'>[]
   budgets: Budget[]
+  availableProviders: number
 }
 
 Component({
@@ -39,6 +40,7 @@ Component({
     selectedTargets: [] as string[],
     budgets: [] as Budget[],
     selectedBudgetId: '',
+    availableProviders: 0,
     canSubmit: false,
     selectionSummary: '完成选择后即可开始匹配',
   },
@@ -65,6 +67,7 @@ Component({
           })),
           selectedTargets,
           budgets: response.budgets,
+          availableProviders: response.availableProviders,
           selectedBudgetId: response.budgets[1]?.id || response.budgets[0]?.id || '',
           loading: false,
         })
@@ -121,7 +124,8 @@ Component({
           targetKeys: this.data.selectedTargets,
           budgetId: this.data.selectedBudgetId,
         })
-        wx.redirectTo({ url: '/pages/ai/ai' })
+        wx.showToast({ title: '已找到合适推广方', icon: 'success' })
+        setTimeout(() => wx.redirectTo({ url: '/pages/plaza/plaza' }), 500)
       } catch (error) {
         wx.showToast({ title: error instanceof Error ? error.message : '智能匹配失败', icon: 'none' })
       } finally {

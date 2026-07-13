@@ -1,14 +1,14 @@
 <view class="page-shell">
-  <page-header title="推广匹配" subtitle="选择歌曲与推广对象，AI 为你智能组局"></page-header>
+  <page-header title="发布推广需求" subtitle="只使用你已审核的作品，匹配真实入驻推广方"></page-header>
 
   <data-state loading="{{loading}}" error="{{error}}" bind:action="retry"></data-state>
 
   <block wx:if="{{!loading && !error}}">
     <data-state
-      wx:if="{{!songs.length || !targets.length || !budgets.length}}"
+      wx:if="{{!songs.length || !targets.length || !budgets.length || !availableProviders}}"
       empty="{{true}}"
       empty-title="匹配资料还未准备好"
-      empty-description="曲库、推广对象或预算配置暂不可用"
+      empty-description="{{!songs.length ? '请先完成创作者入驻并通过作品审核' : !availableProviders ? '暂无已审核推广方，平台不会生成虚假匹配' : '推广对象或预算配置暂不可用'}}"
       action-text="重新加载"
       bind:action="retry"
     ></data-state>
@@ -33,7 +33,7 @@
 
       <view class="form-section card">
         <view class="form-title">选择要推广的歌曲</view>
-        <view class="form-desc">从已入驻版权曲库中选择</view>
+        <view class="form-desc">仅展示你在入驻审核中提交并通过的作品</view>
         <scroll-view class="song-scroll" scroll-x enhanced show-scrollbar="{{false}}">
           <view class="song-row">
             <view
@@ -56,7 +56,7 @@
 
       <view class="form-section card">
         <view class="form-title">希望由谁来推广？</view>
-        <view class="form-desc">可多选，AI 会组合最优推广阵容</view>
+        <view class="form-desc">可多选，用于筛选已审核推广方的真实能力标签</view>
         <view class="target-grid">
           <view
             wx:for="{{targets}}"
@@ -74,7 +74,7 @@
 
       <view class="form-section card">
         <view class="form-title">合作预算</view>
-        <view class="form-desc">用于筛选适配的服务方与推广方案</view>
+        <view class="form-desc">用于筛选可承接该预算的推广服务方</view>
         <view class="budget-list">
           <view
             wx:for="{{budgets}}"
@@ -96,7 +96,7 @@
         loading="{{isSubmitting}}"
         bindtap="startMatching"
       >
-        <text>{{isSubmitting ? '正在生成推荐' : '开始 AI 智能匹配'}}</text>
+        <text>{{isSubmitting ? '正在匹配已入驻推广方' : '匹配真实推广方'}}</text>
         <view class="ui-icon icon-spark button-icon"></view>
       </button>
     </block>

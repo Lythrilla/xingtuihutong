@@ -410,9 +410,9 @@ async fn admin_overview(
                     let key: String = row.get("label");
                     (
                         if key == "provider" {
-                            "服务方"
+                            "推广服务方"
                         } else {
-                            "需求方"
+                            "音乐创作者"
                         }
                         .into(),
                         row.get("total"),
@@ -511,7 +511,7 @@ fn distribution(counts: HashMap<String, i64>) -> AppResult<Vec<DistributionItem>
             },
         })
         .collect();
-    items.sort_by(|left, right| right.value.cmp(&left.value));
+    items.sort_by_key(|item| std::cmp::Reverse(item.value));
     Ok(items)
 }
 

@@ -1,28 +1,24 @@
 <view class="page-shell">
-  <page-header title="合作广场" subtitle="让每一次连接，都更接近理想合作"></page-header>
+  <page-header
+    title="{{isCreator ? '找推广方' : '发现创作者'}}"
+    subtitle="{{isCreator ? '这里只展示审核通过的推广服务方' : '这里只展示审核通过的创作者与作品'}}"
+  ></page-header>
 
   <data-state loading="{{loading}}" error="{{error}}" bind:action="retry"></data-state>
 
   <block wx:if="{{!loading && !error}}">
     <view class="plaza-tabs">
-      <block wx:for="{{types}}" wx:key="key">
-        <view
-          wx:if="{{item.key !== 'latest'}}"
-          class="plaza-tab {{activeType === item.key || (activeType === 'latest' && previousType === item.key) ? 'active' : ''}}"
-          data-key="{{item.key}}"
-          bindtap="changeType"
-        >
-          <text>{{item.key === 'all' ? '广场' : item.key === 'provider' ? '找服务' : '找需求'}}</text>
-          <view class="tab-line"></view>
-        </view>
-      </block>
+      <view class="plaza-tab active">
+        <text>{{isCreator ? '推广服务' : '创作者项目'}}</text>
+        <view class="tab-line"></view>
+      </view>
     </view>
 
     <view class="search">
       <view class="ui-icon icon-search search-icon"></view>
       <input
         value="{{query}}"
-        placeholder="搜索服务、技能或合作需求"
+        placeholder="{{isCreator ? '搜索推广能力、渠道或团队' : '搜索创作者、风格或作品方向'}}"
         placeholder-class="placeholder"
         confirm-type="search"
         bindinput="updateSearch"
@@ -32,8 +28,8 @@
 
     <view class="discovery-line">
       <view class="discovery-copy">
-        <view class="discovery-title">为你发现 {{visibleEntries.length}} 位合作伙伴</view>
-        <view class="discovery-desc">AI 已按能力、预算与交付表现综合排序</view>
+        <view class="discovery-title">已审核 {{visibleEntries.length}} 位{{isCreator ? '推广方' : '创作者'}}</view>
+        <view class="discovery-desc">{{isCreator ? '按服务能力、预算与合作表现排序' : '按作品方向、受众与合作意愿排序'}}</view>
       </view>
       <view class="discovery-actions">
         <button
@@ -75,10 +71,10 @@
             <button
               class="connect-button"
               data-id="{{item.id}}"
-              disabled="{{connectingId !== ''}}"
+              disabled="{{connectingId !== '' || !canConnect}}"
               loading="{{connectingId === item.id}}"
               bindtap="connect"
-            >{{connectingId === item.id ? '进入中...' : '沟通合作'}}</button>
+            >{{connectingId === item.id ? '进入中...' : !canConnect ? '审核后可沟通' : isCreator ? '咨询推广' : '联系创作者'}}</button>
           </view>
         </view>
       </view>
@@ -87,8 +83,8 @@
     <data-state
       wx:else
       empty="{{true}}"
-      empty-title="{{query ? '没有匹配结果' : favoritesOnly ? '还没有收藏伙伴' : '暂无合作伙伴'}}"
-      empty-description="{{query ? '换个名称或标签试试' : favoritesOnly ? '返回广场发现值得合作的人' : '内容上线后会在这里展示'}}"
+      empty-title="{{query ? '没有匹配结果' : favoritesOnly ? '还没有收藏伙伴' : isCreator ? '暂无已审核推广方' : '暂无已审核创作者'}}"
+      empty-description="{{query ? '换个名称或标签试试' : favoritesOnly ? '返回广场发现值得合作的人' : '新入驻资料审核通过后才会在这里展示'}}"
       action-text="{{query ? '清空搜索' : favoritesOnly ? '查看全部' : '重新加载'}}"
       bind:action="handleEmptyAction"
     ></data-state>
@@ -97,8 +93,8 @@
       <view class="ai-invite-glow"></view>
       <image class="ai-invite-orb" src="/assets/images/ai-illustration.png" mode="aspectFit"></image>
       <view class="ai-invite-copy">
-        <view>还没找到理想伙伴？</view>
-        <text>告诉 AI 你的目标，生成专属合作阵容</text>
+        <view>{{isCreator ? '准备发布作品推广？' : '需要梳理合作机会？'}}</view>
+        <text>{{isCreator ? '选择作品、推广方向和预算开始真实匹配' : '让 AI 帮你分析创作者项目与合作重点'}}</text>
       </view>
       <view class="ai-invite-arrow">→</view>
     </view>

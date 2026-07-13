@@ -15,7 +15,7 @@
         <image class="fab-orb" src="/assets/images/ai-illustration.png" mode="aspectFit"></image>
         <view class="fab-shine"></view>
       </view>
-      <text class="fab-label">AI</text>
+      <text class="fab-label">{{item.label}}</text>
     </view>
     <view wx:else class="tab-icon icon-{{item.iconClass}}"></view>
     <text wx:if="{{item.key !== 'match'}}" class="tab-label">{{item.label}}</text>

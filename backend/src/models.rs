@@ -10,6 +10,8 @@ pub struct UserRow {
     pub avatar: String,
     pub description: String,
     pub verified: bool,
+    pub onboarding_status: String,
+    pub review_note: String,
 }
 
 #[derive(Debug, Serialize)]
@@ -22,6 +24,8 @@ pub struct User {
     pub avatar: String,
     pub description: String,
     pub verified: bool,
+    pub onboarding_status: String,
+    pub review_note: String,
 }
 
 impl From<UserRow> for User {
@@ -34,6 +38,8 @@ impl From<UserRow> for User {
             avatar: row.avatar,
             description: row.description,
             verified: row.verified,
+            onboarding_status: row.onboarding_status,
+            review_note: row.review_note,
         }
     }
 }
@@ -186,6 +192,27 @@ pub struct UpdateProfile {
 }
 
 #[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SubmitOnboarding {
+    pub entity_name: String,
+    pub contact_name: String,
+    pub contact_method: String,
+    pub description: String,
+    pub tags: Vec<String>,
+    pub work_title: Option<String>,
+    pub work_url: Option<String>,
+    pub audience_size: Option<String>,
+    pub cooperation_budget: Option<String>,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ReviewOnboarding {
+    pub status: String,
+    pub review_note: Option<String>,
+}
+
+#[derive(Debug, Deserialize)]
 pub struct WithdrawalRequest {
     pub amount: i64,
 }
@@ -255,8 +282,12 @@ pub struct AgentSettings {
     pub follow_up_suggestions: String,
 }
 
-fn serialize_json_string<S: serde::Serializer>(value: &String, serializer: S) -> Result<S::Ok, S::Error> {
-    let parsed: serde_json::Value = serde_json::from_str(value).unwrap_or_else(|_| serde_json::Value::String(value.clone()));
+fn serialize_json_string<S: serde::Serializer>(
+    value: &str,
+    serializer: S,
+) -> Result<S::Ok, S::Error> {
+    let parsed: serde_json::Value =
+        serde_json::from_str(value).unwrap_or_else(|_| serde_json::Value::String(value.to_owned()));
     parsed.serialize(serializer)
 }
 
