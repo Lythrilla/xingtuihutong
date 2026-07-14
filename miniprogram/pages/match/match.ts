@@ -219,7 +219,7 @@ Component({
           taskCount: this.data.selectedTargets.length,
         })
         wx.showToast({ title: '需求已发布', icon: 'success' })
-        setTimeout(() => wx.redirectTo({ url: '/pages/plaza/plaza' }), 500)
+        setTimeout(() => wx.redirectTo({ url: '/pages/demands/demands' }), 500)
       } catch (error) {
         wx.showToast({ title: error instanceof Error ? error.message : '需求发布失败', icon: 'none' })
       } finally {

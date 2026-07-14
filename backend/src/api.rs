@@ -2,9 +2,9 @@ use crate::{
     db,
     error::{AppError, AppResult},
     models::{
-        BudgetOption, Certification, ConnectPartner, Conversation, CreateMatch, CreateSession,
-        Notification, Partner, Plan, PortfolioCase, SendMessage, Song, SubmitOnboarding,
-        TargetType, UpdateProfile, UpdateRole, User, UserRow, WithdrawalRequest,
+        BudgetOption, Certification, ConnectPartner, CreateMatch, CreateSession, Notification,
+        Partner, Plan, PortfolioCase, SendMessage, Song, SubmitOnboarding, TargetType,
+        UpdateProfile, UpdateRole, User, UserRow, WithdrawalRequest,
     },
     state::AppState,
 };
@@ -32,6 +32,7 @@ pub fn routes() -> Router<AppState> {
         .route("/plaza/connect", post(connect_partner))
         .route("/match/bootstrap", get(match_bootstrap))
         .route("/match", post(create_match))
+        .nest("/demands", crate::demands::routes())
         .route("/ai/plans", get(ai_plans))
         .route("/ai/plans/{id}/save", post(save_plan))
         .nest("/agent", crate::agent::routes())
@@ -468,13 +469,16 @@ struct HomeResponse {
 
 async fn home(State(state): State<AppState>, headers: HeaderMap) -> AppResult<Json<HomeResponse>> {
     let user = current_user(&state, &headers).await?;
-    let conversation_count: i64 =
-        sqlx::query_scalar("SELECT COUNT(*) FROM conversations WHERE user_id = ?")
-            .bind(&user.id)
-            .fetch_one(&state.pool)
-            .await?;
+    let conversation_count: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*) FROM conversations WHERE user_id = ? OR participant_user_id = ?",
+    )
+    .bind(&user.id)
+    .bind(&user.id)
+    .fetch_one(&state.pool)
+    .await?;
     let unread_count: i64 = sqlx::query_scalar(
-        "SELECT COALESCE(SUM(unread_count), 0) FROM conversations WHERE user_id = ?",
+        "SELECT COALESCE(SUM(unread_count), 0)
+         FROM conversation_read_states WHERE user_id = ?",
     )
     .bind(&user.id)
     .fetch_one(&state.pool)
@@ -766,47 +770,83 @@ pub(crate) async fn establish_partner_connection(
     agent_session_id: Option<&str>,
 ) -> AppResult<PartnerConnection> {
     require_approved(user)?;
-    let partner_name: Option<String> = sqlx::query_scalar(
-        "SELECT name FROM partners
+    let partner: Option<(String, Option<String>)> = sqlx::query_as(
+        "SELECT name, source_user_id FROM partners
              WHERE id = ? AND active = 1 AND partner_type != ?",
     )
     .bind(partner_id)
     .bind(&user.role)
     .fetch_optional(&state.pool)
     .await?;
-    let partner_name =
-        partner_name.ok_or_else(|| AppError::NotFound("partner not found".into()))?;
-    let welcome_message = "你好，欢迎联系我！我们可以先聊聊合作需求。";
+    let (partner_name, participant_user_id) =
+        partner.ok_or_else(|| AppError::NotFound("partner not found".into()))?;
+    let welcome_message = "双方会话已建立，可以在这里继续沟通合作细节。";
     let mut tx = state.pool.begin().await?;
-    let result = sqlx::query(
-        "INSERT INTO conversations
-         (id, user_id, partner_id, last_message, unread_count)
-         VALUES (?, ?, ?, ?, 1)
-         ON CONFLICT(user_id, partner_id) DO NOTHING",
-    )
-    .bind(Uuid::new_v4().to_string())
-    .bind(&user.id)
-    .bind(partner_id)
-    .bind(welcome_message)
-    .execute(&mut *tx)
-    .await?;
-    let created = result.rows_affected() == 1;
-    let conversation_id: String =
+    let existing_id = if let Some(participant_user_id) = participant_user_id.as_deref() {
+        sqlx::query_scalar(
+            "SELECT id FROM conversations
+             WHERE (user_id = ? AND participant_user_id = ?)
+                OR (user_id = ? AND participant_user_id = ?)
+             ORDER BY updated_at DESC LIMIT 1",
+        )
+        .bind(&user.id)
+        .bind(participant_user_id)
+        .bind(participant_user_id)
+        .bind(&user.id)
+        .fetch_optional(&mut *tx)
+        .await?
+    } else {
         sqlx::query_scalar("SELECT id FROM conversations WHERE user_id = ? AND partner_id = ?")
             .bind(&user.id)
             .bind(partner_id)
-            .fetch_one(&mut *tx)
-            .await?;
+            .fetch_optional(&mut *tx)
+            .await?
+    };
+    let created = existing_id.is_none();
+    let conversation_id = existing_id.unwrap_or_else(|| Uuid::new_v4().to_string());
     if created {
         sqlx::query(
-            "INSERT INTO conversation_messages (id, conversation_id, sender, content)
-             VALUES (?, ?, 'partner', ?)",
+            "INSERT INTO conversations
+             (id, user_id, partner_id, participant_user_id, last_message, unread_count)
+             VALUES (?, ?, ?, ?, ?, 0)",
+        )
+        .bind(&conversation_id)
+        .bind(&user.id)
+        .bind(partner_id)
+        .bind(&participant_user_id)
+        .bind(welcome_message)
+        .execute(&mut *tx)
+        .await?;
+        sqlx::query(
+            "INSERT INTO conversation_messages
+             (id, conversation_id, sender, sender_user_id, content)
+             VALUES (?, ?, 'system', NULL, ?)",
         )
         .bind(Uuid::new_v4().to_string())
         .bind(&conversation_id)
         .bind(welcome_message)
         .execute(&mut *tx)
         .await?;
+        sqlx::query(
+            "INSERT INTO conversation_read_states
+             (conversation_id, user_id, unread_count, last_read_at)
+             VALUES (?, ?, 0, CURRENT_TIMESTAMP)",
+        )
+        .bind(&conversation_id)
+        .bind(&user.id)
+        .execute(&mut *tx)
+        .await?;
+        if let Some(participant_user_id) = participant_user_id.as_deref() {
+            sqlx::query(
+                "INSERT INTO conversation_read_states
+                 (conversation_id, user_id, unread_count)
+                 VALUES (?, ?, 1)",
+            )
+            .bind(&conversation_id)
+            .bind(participant_user_id)
+            .execute(&mut *tx)
+            .await?;
+        }
         if let Some(session_id) = agent_session_id {
             sqlx::query(
                 "INSERT INTO agent_actions
@@ -943,8 +983,8 @@ async fn create_match(
     let mut tx = state.pool.begin().await?;
     sqlx::query(
         "INSERT INTO match_requests
-         (id, user_id, song_id, target_keys, budget_id, goal, cycle)
-         VALUES (?, ?, ?, ?, ?, ?, ?)",
+         (id, user_id, song_id, target_keys, budget_id, goal, cycle, status)
+         VALUES (?, ?, ?, ?, ?, ?, ?, 'open')",
     )
     .bind(&match_id)
     .bind(&user.id)
@@ -968,10 +1008,13 @@ async fn create_match(
             "no approved providers available".into(),
         ));
     }
-    let description = format!("匹配已完成，找到 {} 位已审核推广方", partners.len());
+    let description = format!(
+        "需求已进入大厅，同时为你推荐了 {} 位已审核推广方",
+        partners.len()
+    );
     sqlx::query(
         "INSERT INTO notifications (id, user_id, kind, title, description)
-         VALUES (?, ?, 'spark', '智能匹配完成', ?)",
+         VALUES (?, ?, 'spark', '推广需求已发布', ?)",
     )
     .bind(Uuid::new_v4().to_string())
     .bind(&user.id)
@@ -1120,6 +1163,17 @@ struct ConversationView {
     unread: i64,
 }
 
+#[derive(sqlx::FromRow)]
+struct ConversationListRow {
+    id: String,
+    avatar: String,
+    avatar_class: String,
+    partner_name: String,
+    last_message: String,
+    unread_count: i64,
+    updated_at: String,
+}
+
 async fn messages(
     State(state): State<AppState>,
     headers: HeaderMap,
@@ -1150,12 +1204,30 @@ async fn messages(
         is_read: item.is_read,
     })
     .collect();
-    let chats = sqlx::query_as::<_, Conversation>(
-        "SELECT c.id, c.partner_id, p.avatar, p.avatar_class,
-         p.name AS partner_name, c.last_message, c.unread_count, c.updated_at
-         FROM conversations c JOIN partners p ON p.id = c.partner_id
-         WHERE c.user_id = ? ORDER BY c.updated_at DESC",
+    let chats = sqlx::query_as::<_, ConversationListRow>(
+        "SELECT c.id,
+         CASE WHEN c.user_id = ? THEN target.avatar ELSE owner.avatar END AS avatar,
+         CASE WHEN c.user_id = ? THEN target.avatar_class ELSE owner.avatar_class END
+           AS avatar_class,
+         CASE WHEN c.user_id = ? THEN target.name ELSE owner.name END AS partner_name,
+         c.last_message,
+         COALESCE(rs.unread_count, CASE WHEN c.user_id = ? THEN c.unread_count ELSE 0 END)
+           AS unread_count,
+         c.updated_at
+         FROM conversations c
+         JOIN partners target ON target.id = c.partner_id
+         LEFT JOIN partners owner ON owner.source_user_id = c.user_id AND owner.active = 1
+         LEFT JOIN conversation_read_states rs
+           ON rs.conversation_id = c.id AND rs.user_id = ?
+         WHERE c.user_id = ? OR c.participant_user_id = ?
+         ORDER BY c.updated_at DESC",
     )
+    .bind(&user.id)
+    .bind(&user.id)
+    .bind(&user.id)
+    .bind(&user.id)
+    .bind(&user.id)
+    .bind(&user.id)
     .bind(&user.id)
     .fetch_all(&state.pool)
     .await?
@@ -1178,10 +1250,23 @@ async fn mark_all_read(
     headers: HeaderMap,
 ) -> AppResult<Json<serde_json::Value>> {
     let user = current_user(&state, &headers).await?;
+    let mut tx = state.pool.begin().await?;
     sqlx::query("UPDATE notifications SET is_read = 1 WHERE user_id = ?")
-        .bind(user.id)
-        .execute(&state.pool)
+        .bind(&user.id)
+        .execute(&mut *tx)
         .await?;
+    sqlx::query(
+        "UPDATE conversation_read_states SET unread_count = 0, last_read_at = CURRENT_TIMESTAMP
+         WHERE user_id = ?",
+    )
+    .bind(&user.id)
+    .execute(&mut *tx)
+    .await?;
+    sqlx::query("UPDATE conversations SET unread_count = 0 WHERE user_id = ?")
+        .bind(&user.id)
+        .execute(&mut *tx)
+        .await?;
+    tx.commit().await?;
     Ok(Json(json!({ "success": true })))
 }
 
@@ -1201,23 +1286,49 @@ async fn conversation_detail(
 ) -> AppResult<Json<Vec<MessageItem>>> {
     let user = current_user(&state, &headers).await?;
     let owned: bool = sqlx::query_scalar(
-        "SELECT EXISTS(SELECT 1 FROM conversations WHERE id = ? AND user_id = ?)",
+        "SELECT EXISTS(
+           SELECT 1 FROM conversations
+           WHERE id = ? AND (user_id = ? OR participant_user_id = ?)
+         )",
     )
     .bind(&id)
+    .bind(&user.id)
     .bind(&user.id)
     .fetch_one(&state.pool)
     .await?;
     if !owned {
         return Err(AppError::NotFound("conversation not found".into()));
     }
-    sqlx::query("UPDATE conversations SET unread_count = 0 WHERE id = ?")
+    let mut tx = state.pool.begin().await?;
+    sqlx::query(
+        "INSERT INTO conversation_read_states
+         (conversation_id, user_id, unread_count, last_read_at)
+         VALUES (?, ?, 0, CURRENT_TIMESTAMP)
+         ON CONFLICT(conversation_id, user_id) DO UPDATE SET
+         unread_count = 0, last_read_at = CURRENT_TIMESTAMP",
+    )
+    .bind(&id)
+    .bind(&user.id)
+    .execute(&mut *tx)
+    .await?;
+    sqlx::query("UPDATE conversations SET unread_count = 0 WHERE id = ? AND user_id = ?")
         .bind(&id)
-        .execute(&state.pool)
+        .bind(&user.id)
+        .execute(&mut *tx)
         .await?;
+    tx.commit().await?;
     let items = sqlx::query_as::<_, MessageItem>(
-        "SELECT id, sender, content, created_at FROM conversation_messages
+        "SELECT id,
+         CASE
+           WHEN sender = 'system' THEN 'system'
+           WHEN sender_user_id = ? THEN 'user'
+           WHEN sender_user_id IS NOT NULL THEN 'partner'
+           ELSE sender
+         END AS sender,
+         content, created_at FROM conversation_messages
          WHERE conversation_id = ? ORDER BY created_at",
     )
+    .bind(&user.id)
     .bind(id)
     .fetch_all(&state.pool)
     .await?;
@@ -1235,38 +1346,72 @@ async fn send_message(
     if content.is_empty() {
         return Err(AppError::BadRequest("message content is required".into()));
     }
-    let owned: bool = sqlx::query_scalar(
-        "SELECT EXISTS(SELECT 1 FROM conversations WHERE id = ? AND user_id = ?)",
+    let participants: Option<(String, Option<String>)> = sqlx::query_as(
+        "SELECT user_id, participant_user_id FROM conversations
+         WHERE id = ? AND (user_id = ? OR participant_user_id = ?)",
     )
     .bind(&id)
     .bind(&user.id)
-    .fetch_one(&state.pool)
+    .bind(&user.id)
+    .fetch_optional(&state.pool)
     .await?;
-    if !owned {
-        return Err(AppError::NotFound("conversation not found".into()));
-    }
+    let (owner_user_id, participant_user_id) =
+        participants.ok_or_else(|| AppError::NotFound("conversation not found".into()))?;
     let message_id = Uuid::new_v4().to_string();
     let mut tx = state.pool.begin().await?;
     sqlx::query(
-        "INSERT INTO conversation_messages (id, conversation_id, sender, content)
-         VALUES (?, ?, 'user', ?)",
+        "INSERT INTO conversation_messages
+         (id, conversation_id, sender, sender_user_id, content)
+         VALUES (?, ?, 'user', ?, ?)",
     )
     .bind(&message_id)
     .bind(&id)
+    .bind(&user.id)
     .bind(content)
     .execute(&mut *tx)
     .await?;
     sqlx::query(
-        "UPDATE conversations SET last_message = ?, unread_count = 0,
+        "UPDATE conversations SET last_message = ?,
+         unread_count = CASE WHEN user_id = ? THEN 0 ELSE unread_count END,
          updated_at = CURRENT_TIMESTAMP WHERE id = ?",
     )
     .bind(content)
+    .bind(&user.id)
     .bind(&id)
     .execute(&mut *tx)
     .await?;
+    sqlx::query(
+        "INSERT INTO conversation_read_states
+         (conversation_id, user_id, unread_count, last_read_at)
+         VALUES (?, ?, 0, CURRENT_TIMESTAMP)
+         ON CONFLICT(conversation_id, user_id) DO UPDATE SET
+         unread_count = 0, last_read_at = CURRENT_TIMESTAMP",
+    )
+    .bind(&id)
+    .bind(&user.id)
+    .execute(&mut *tx)
+    .await?;
+    let recipient_user_id = if user.id == owner_user_id {
+        participant_user_id
+    } else {
+        Some(owner_user_id)
+    };
+    if let Some(recipient_user_id) = recipient_user_id {
+        sqlx::query(
+            "INSERT INTO conversation_read_states (conversation_id, user_id, unread_count)
+             VALUES (?, ?, 1)
+             ON CONFLICT(conversation_id, user_id) DO UPDATE SET
+             unread_count = unread_count + 1",
+        )
+        .bind(&id)
+        .bind(recipient_user_id)
+        .execute(&mut *tx)
+        .await?;
+    }
     tx.commit().await?;
     let item = sqlx::query_as::<_, MessageItem>(
-        "SELECT id, sender, content, created_at FROM conversation_messages WHERE id = ?",
+        "SELECT id, 'user' AS sender, content, created_at
+         FROM conversation_messages WHERE id = ?",
     )
     .bind(message_id)
     .fetch_one(&state.pool)

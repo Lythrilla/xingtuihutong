@@ -1,0 +1,6 @@
+{
+  "usingComponents": {
+    "data-state": "/components/data-state/data-state",
+    "page-header": "/components/page-header/page-header"
+  }
+}

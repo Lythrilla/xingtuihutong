@@ -8,6 +8,7 @@
     "pages/membership/membership",
     "pages/payment-result/payment-result",
     "pages/match/match",
+    "pages/demands/demands",
     "pages/ai/ai",
     "pages/analytics/analytics",
     "pages/messages/messages",

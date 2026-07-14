@@ -85,7 +85,7 @@ Component({
               ]
             : isProvider
             ? [
-                { key: 'plaza', label: '找创作者', icon: 'target' },
+                { key: 'demands', label: '需求大厅', icon: 'target' },
                 { key: 'agent', label: 'AI Agent', icon: 'spark' },
                 { key: 'analytics', label: '服务数据', icon: 'target' },
                 { key: 'messages', label: '合作会话', icon: 'audio' },
@@ -93,7 +93,7 @@ Component({
             : [
                 { key: 'agent', label: 'AI Agent', icon: 'spark' },
                 { key: 'match', label: '发推广', icon: 'target' },
-                { key: 'plaza', label: '找推广方', icon: 'target' },
+                { key: 'demands', label: '我的需求', icon: 'target' },
                 { key: 'analytics', label: '推广数据', icon: 'audio' },
               ],
           serviceActions: !isApproved
@@ -108,12 +108,14 @@ Component({
             : isProvider
             ? [
                 { key: 'onboarding', label: '服务方入驻资料', description: '主体、能力与审核状态', icon: 'shield' },
+                { key: 'demands', label: '推广需求大厅', description: '查看需求、提交报价并推进接单', icon: 'target' },
                 { key: 'membership', label: '会员与联系权益', description: '查看额度、按次解锁与使用记录', icon: 'wallet' },
                 { key: 'ai', label: 'AI Agent 工作台', description: '分析创作者项目与合作重点', icon: 'spark' },
                 { key: 'favorites', label: '收藏的创作者', description: '回看感兴趣的创作者项目', icon: 'target' },
               ]
             : [
                 { key: 'onboarding', label: '创作者入驻资料', description: '身份、作品与审核状态', icon: 'shield' },
+                { key: 'demands', label: '我的推广需求', description: '比较报价、选择合作方并进入会话', icon: 'target' },
                 { key: 'ai', label: 'AI Agent 工作台', description: '分析作品、规划推广并寻找合作方', icon: 'spark' },
                 { key: 'match', label: '发布推广需求', description: '选择作品、方向与合作预算', icon: 'spark' },
                 { key: 'favorites', label: '收藏的推广方', description: '回看感兴趣的推广服务', icon: 'target' },
@@ -161,6 +163,7 @@ Component({
         plaza: '/pages/plaza/plaza',
         match: '/pages/match/match',
         messages: '/pages/messages/messages',
+        demands: '/pages/demands/demands',
       }
       const url = routes[key]
       if (url) wx.redirectTo({ url })
@@ -177,6 +180,7 @@ Component({
         favorites: '/pages/plaza/plaza',
         match: '/pages/match/match',
         membership: '/pages/membership/membership',
+        demands: '/pages/demands/demands',
       }
       const url = routes[key]
       if (url) wx.redirectTo({ url })
