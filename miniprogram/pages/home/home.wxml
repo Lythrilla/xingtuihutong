@@ -90,7 +90,7 @@
       <view class="guide-row"><text>1</text><view><view class="guide-row-title">填写真实资料</view><view class="guide-row-desc">{{isCreator ? '创作者身份、代表作品与主页链接' : '团队主体、推广能力与合作预算'}}</view></view></view>
       <view class="guide-row"><text>2</text><view><view class="guide-row-title">平台审核</view><view class="guide-row-desc">审核通过前不进入广场，不参与匹配</view></view></view>
       <view class="guide-row"><text>3</text><view><view class="guide-row-title">进入专属工作台</view><view class="guide-row-desc">{{isCreator ? '发布推广需求并联系推广方' : '发现创作者项目并发起合作'}}</view></view></view>
-      <button class="primary-button guide-button" bindtap="openOnboarding">{{onboardingStatus === 'pending' ? '查看审核进度' : '完善入驻资料'}}</button>
+      <button class="btn-primary" style="margin-top: 36rpx !important;" bindtap="openOnboarding">{{onboardingStatus === 'pending' ? '查看审核进度' : '完善入驻资料'}}</button>
     </view>
   </block>
 </view>

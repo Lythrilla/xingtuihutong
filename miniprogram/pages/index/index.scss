@@ -66,8 +66,8 @@ page {
   flex-direction: column;
   padding: 34rpx 40rpx calc(36rpx + env(safe-area-inset-bottom));
   background: rgba(255, 255, 255, 1);
-  border-top-left-radius: 36rpx;
-  border-top-right-radius: 36rpx;
+  border-top-left-radius: 40rpx;
+  border-top-right-radius: 40rpx;
   box-shadow: 0 -10rpx 40rpx rgba(120, 130, 180, 0.08);
 }
 
@@ -156,6 +156,7 @@ page {
 /* === 协议勾选 === */
 .agreement {
   margin-top: 28rpx;
+  padding: 0 12rpx; /* 增加一点内边距，使其不至于贴边太死 */
 }
 
 .agreement-label {
@@ -208,21 +209,6 @@ page {
 
 .link {
   color: rgba(137, 154, 248, 1);
-}
-
-.enter-button {
-  height: 88rpx;
-  margin-top: 28rpx;
-  color: #fff;
-  font-size: 28rpx;
-  font-weight: 600;
-  background: #2e313e;
-  border-radius: 44rpx;
-}
-
-.enter-button[disabled] {
-  color: rgba(118, 121, 143, 0.7);
-  background: rgba(225, 228, 239, 1);
 }
 
 /* === 进入中遮罩 === */

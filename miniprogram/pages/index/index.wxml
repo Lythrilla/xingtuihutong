@@ -39,7 +39,8 @@
     </checkbox-group>
 
     <button
-      class="enter-button"
+      class="btn-primary"
+      style="margin-top: 28rpx !important;"
       disabled="{{!selectedRole || !agreed || entering}}"
       loading="{{entering}}"
       bindtap="enterApp"

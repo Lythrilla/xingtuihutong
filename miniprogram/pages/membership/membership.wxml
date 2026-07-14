@@ -63,7 +63,7 @@
     <view class="card inline-empty">暂无权益获得、消耗或退回记录</view>
   </view>
 
-  <button class="primary-button purchase-button" loading="{{purchasing}}" disabled="{{purchasing}}" bindtap="purchase">
+  <button class="btn-primary purchase-button" loading="{{purchasing}}" disabled="{{purchasing}}" bindtap="purchase">
     {{selectedPlan === 'single' ? '确认按次购买' : '确认开通会员'}}
   </button>
 </view>

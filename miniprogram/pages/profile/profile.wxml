@@ -58,7 +58,7 @@
           <view class="wallet-title"><view class="ui-icon icon-wallet"></view> 可提现余额</view>
           <view class="wallet-amount"><text class="currency">¥</text>{{walletBalance}}</view>
         </view>
-        <button class="wallet-btn" disabled="{{actionLoading || walletBalanceCents <= 0}}" bindtap="withdraw">去提现</button>
+        <button class="btn-primary" style="margin-top: 24rpx !important; height: 64rpx !important; border-radius: 32rpx !important; width: 140rpx !important;" disabled="{{actionLoading || walletBalanceCents <= 0}}" bindtap="withdraw">去提现</button>
       </view>
     </view>
 
@@ -177,7 +177,8 @@
         />
       </label>
       <button
-        class="sheet-primary"
+        class="btn-primary"
+        style="margin-top: 36rpx !important;"
         disabled="{{actionLoading}}"
         loading="{{actionLoading}}"
         bindtap="saveProfile"
@@ -203,7 +204,8 @@
         </view>
       </label>
       <button
-        class="sheet-primary"
+        class="btn-primary"
+        style="margin-top: 36rpx !important;"
         disabled="{{actionLoading || !withdrawInput}}"
         loading="{{actionLoading}}"
         bindtap="submitWithdrawal"

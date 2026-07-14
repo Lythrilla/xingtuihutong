@@ -139,34 +139,6 @@ view, text, input, textarea {
   text-align: center;
 }
 
-.submit-button {
-  margin-top: 24rpx;
-}
-
-.switch-role-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8rpx;
-  margin: 40rpx auto 0;
-  padding: 16rpx 40rpx;
-  width: fit-content;
-  color: rgba(118, 121, 143, 1);
-  font-size: 24rpx;
-  font-weight: 500;
-  background: rgba(255, 255, 255, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.8);
-  border-radius: 40rpx;
-  box-shadow: 0 4rpx 12rpx rgba(137, 154, 248, 0.05);
-  transition: all 0.2s ease;
-  line-height: 1;
-}
-
-.switch-role-btn:active {
-  transform: scale(0.96);
-  background: rgba(255, 255, 255, 0.8);
-}
-
 .switch-icon {
   font-size: 26rpx;
   font-weight: bold;
@@ -299,15 +271,4 @@ view, text, input, textarea {
 
 .status-line.active {
   background: #899af8;
-}
-
-.status-primary {
-  margin-top: 8rpx;
-}
-
-.text-action {
-  margin-top: 18rpx;
-  color: #5f65b4;
-  font-size: 24rpx;
-  background: transparent;
 }

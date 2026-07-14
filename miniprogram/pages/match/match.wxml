@@ -167,7 +167,8 @@
       </view>
 
       <button
-        class="primary-button publish-button"
+        class="btn-primary"
+        style="margin-top: 26rpx !important;"
         disabled="{{!canSubmit || isSubmitting}}"
         loading="{{isSubmitting}}"
         bindtap="startMatching"

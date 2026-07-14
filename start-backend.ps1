@@ -76,8 +76,7 @@ $env:RUSTUP_TOOLCHAIN = $selectedToolchain
 # 4. 启动后端服务
 Write-Host ""
 Write-Host "[start] Compiling and starting backend (first build may take a few minutes) ..." -ForegroundColor Yellow
-Write-Host "[start] API:   http://127.0.0.1:3000" -ForegroundColor Green
-Write-Host "[start] Admin: http://127.0.0.1:3000/admin/" -ForegroundColor Green
+Write-Host "[start] Server binding on configured address..." -ForegroundColor Green
 Write-Host "[start] Press Ctrl+C to stop" -ForegroundColor DarkGray
 Write-Host ""
 

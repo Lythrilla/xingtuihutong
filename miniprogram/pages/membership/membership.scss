@@ -236,5 +236,6 @@ button {
   right: 40rpx;
   bottom: calc(24rpx + env(safe-area-inset-bottom));
   left: 40rpx;
+  width: calc(100% - 80rpx) !important;
   box-shadow: 0 10rpx 24rpx rgba(46, 49, 62, 0.2);
 }

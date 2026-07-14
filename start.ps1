@@ -33,10 +33,14 @@ if ($Help) {
 # ── Detect LAN IP and patch config files ──
 function Get-LanIp {
     $ip = Get-NetIPAddress -AddressFamily IPv4 |
-          Where-Object { $_.IPAddress -match '^(192\.168|10\.|172\.(1[6-9]|2\d|3[01]))\.' -and $_.PrefixOrigin -ne 'WellKnown' } |
+          Where-Object { $_.IPAddress -match '^(192\.168|10\.|172\.(1[6-9]|2\d|3[01]))\.' -and $_.PrefixOrigin -ne 'WellKnown' -and $_.InterfaceAlias -notmatch 'vEthernet|Hyper-V|VMware|Virtual' } |
           Select-Object -First 1 -ExpandProperty IPAddress
     if (-not $ip) {
-        $ip = (Get-NetIPAddress -AddressFamily IPv4 | Where-Object { $_.IPAddress -ne '127.0.0.1' } |
+        $ip = (Get-NetIPAddress -AddressFamily IPv4 | Where-Object { $_.IPAddress -match '^(192\.168|10\.|172\.(1[6-9]|2\d|3[01]))\.' -and $_.PrefixOrigin -ne 'WellKnown' } |
+               Select-Object -First 1 -ExpandProperty IPAddress)
+    }
+    if (-not $ip) {
+        $ip = (Get-NetIPAddress -AddressFamily IPv4 | Where-Object { $_.IPAddress -ne '127.0.0.1' -and $_.IPAddress -notmatch '^169\.254\.' } |
                Select-Object -First 1).IPAddress
     }
     return $ip
@@ -60,36 +64,36 @@ function Patch-Configs([string]$Ip) {
     # miniprogram/utils/store.ts — dev baseUrl
     $storePath = Join-Path $Root 'miniprogram\utils\store.ts'
     if (Test-Path $storePath) {
-        if (Patch-File $storePath 'http://(127\.0\.0\.1|localhost|192\.168\.\d+\.\d+)[^:]*:\d+' $base) { $patched++ }
+        if (Patch-File $storePath 'http://(127\.0\.0\.1|localhost|192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+|172\.(1[6-9]|2\d|3[01])\.\d+\.\d+|169\.254\.\d+\.\d+)[^:]*:\d+' $base) { $patched++ }
     }
 
     # miniprogram/config.ts
     $configPath = Join-Path $Root 'miniprogram\config.ts'
     if (Test-Path $configPath) {
-        if (Patch-File $configPath 'http://(127\.0\.0\.1|localhost|192\.168\.\d+\.\d+)[^:]*:\d+' $base) { $patched++ }
+        if (Patch-File $configPath 'http://(127\.0\.0\.1|localhost|192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+|172\.(1[6-9]|2\d|3[01])\.\d+\.\d+|169\.254\.\d+\.\d+)[^:]*:\d+' $base) { $patched++ }
     }
 
     # app.ts
     $appTsPath = Join-Path $Root 'miniprogram\app.ts'
     if (Test-Path $appTsPath) {
-        if (Patch-File $appTsPath 'http://(127\.0\.0\.1|localhost|192\.168\.\d+\.\d+)[^:]*:\d+' $base) { $patched++ }
+        if (Patch-File $appTsPath 'http://(127\.0\.0\.1|localhost|192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+|172\.(1[6-9]|2\d|3[01])\.\d+\.\d+|169\.254\.\d+\.\d+)[^:]*:\d+' $base) { $patched++ }
     }
 
     # 替换后端的绑定地址 (.env.example 等)
     $backendEnvExamplePath = Join-Path $Root 'backend\.env.example'
     if (Test-Path $backendEnvExamplePath) {
-        if (Patch-File $backendEnvExamplePath 'BIND_ADDRESS=(127\.0\.0\.1|localhost|0\.0\.0\.0|192\.168\.\d+\.\d+):\d+' "BIND_ADDRESS=${Ip}:3000") { $patched++ }
+        if (Patch-File $backendEnvExamplePath 'BIND_ADDRESS=(127\.0\.0\.1|localhost|0\.0\.0\.0|192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+|172\.(1[6-9]|2\d|3[01])\.\d+\.\d+|169\.254\.\d+\.\d+):\d+' "BIND_ADDRESS=${Ip}:3000") { $patched++ }
     }
     
     $backendEnvPath = Join-Path $Root 'backend\.env'
     if (Test-Path $backendEnvPath) {
-        if (Patch-File $backendEnvPath 'BIND_ADDRESS=(127\.0\.0\.1|localhost|0\.0\.0\.0|192\.168\.\d+\.\d+):\d+' "BIND_ADDRESS=${Ip}:3000") { $patched++ }
+        if (Patch-File $backendEnvPath 'BIND_ADDRESS=(127\.0\.0\.1|localhost|0\.0\.0\.0|192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+|172\.(1[6-9]|2\d|3[01])\.\d+\.\d+|169\.254\.\d+\.\d+):\d+' "BIND_ADDRESS=${Ip}:3000") { $patched++ }
     }
 
     # backend/src/config.rs (Rust 后端代码里的 fallback IP)
     $backendConfigRsPath = Join-Path $Root 'backend\src\config.rs'
     if (Test-Path $backendConfigRsPath) {
-        if (Patch-File $backendConfigRsPath '"(127\.0\.0\.1|localhost|0\.0\.0\.0|192\.168\.\d+\.\d+)(:\d+)?"' "`"${Ip}:3000`"") { $patched++ }
+        if (Patch-File $backendConfigRsPath '"(127\.0\.0\.1|localhost|0\.0\.0\.0|192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+|172\.(1[6-9]|2\d|3[01])\.\d+\.\d+|169\.254\.\d+\.\d+)(:\d+)?"' "`"${Ip}:3000`"") { $patched++ }
     }
 
     Ok "Patched $patched config file(s) -> API/Bind URL: $base"

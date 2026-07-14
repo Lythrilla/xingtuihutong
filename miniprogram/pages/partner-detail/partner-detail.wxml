@@ -69,8 +69,8 @@
 </view>
 
 <view wx:if="{{!loading && !error && partner}}" class="detail-footer">
-  <button class="footer-secondary" bindtap="toggleFavorite">{{favorite ? '已收藏' : '收藏'}}</button>
-  <button class="footer-primary" disabled="{{!contactAvailable}}" bindtap="openAccess">
+  <button class="btn-secondary" style="width: 200rpx !important; height: 84rpx !important; border-radius: 42rpx !important; background: #fff !important;" bindtap="toggleFavorite">{{favorite ? '已收藏' : '收藏'}}</button>
+  <button class="btn-primary" style="flex: 1 !important; width: auto !important; height: 84rpx !important; border-radius: 42rpx !important;" disabled="{{!contactAvailable}}" bindtap="openAccess">
     {{contactAvailable ? '解锁联系方式' : '暂不可解锁'}}
   </button>
 </view>
@@ -111,7 +111,7 @@
       <view>· 解锁不代表对方承诺回复或达成合作</view>
     </view>
 
-    <button class="primary-button access-primary" bindtap="attemptUnlock">确认权益并继续</button>
-    <button class="access-chat" loading="{{connecting}}" disabled="{{connecting}}" bindtap="connect">先发起站内沟通</button>
+    <button class="btn-primary" bindtap="attemptUnlock">确认权益并继续</button>
+    <button class="btn-secondary" style="margin-top: 16rpx !important;" loading="{{connecting}}" disabled="{{connecting}}" bindtap="connect">先发起站内沟通</button>
   </view>
 </view>

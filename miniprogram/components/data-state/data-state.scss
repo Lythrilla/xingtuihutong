@@ -61,16 +61,22 @@
 }
 
 .state-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   min-width: 200rpx;
   height: 72rpx;
   margin-top: 28rpx;
-  padding: 0 32rpx;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  padding: 0 32rpx !important;
   color: rgba(255, 255, 255, 1);
   font-size: 26rpx;
   font-weight: 600;
   background: rgba(46, 49, 62, 1);
   border-radius: 48rpx;
   box-shadow: 0 6rpx 14rpx rgba(46, 49, 62, 0.18);
+  box-sizing: border-box;
 }
 
 @keyframes state-spin {

@@ -20,6 +20,6 @@
     <view>· 联系方式无效时走权益申诉，不在这里申请退款</view>
   </view>
 
-  <button class="primary-button result-primary" bindtap="primaryAction">{{action}}</button>
-  <button class="result-secondary" bindtap="goHome">返回首页</button>
+  <button class="btn-primary" style="margin-top: 30rpx !important;" bindtap="primaryAction">{{action}}</button>
+  <button class="btn-secondary" style="margin-top: 10rpx !important;" bindtap="goHome">返回首页</button>
 </view>

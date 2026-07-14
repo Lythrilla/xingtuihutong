@@ -25,9 +25,9 @@
         <view class="status-line {{status === 'approved' ? 'active' : ''}}"></view>
         <view class="status-step {{status === 'approved' ? 'done' : ''}}"><text>3</text><view>公开合作</view></view>
       </view>
-      <button class="primary-button status-primary" bindtap="goHome">进入{{isCreator ? '创作者' : '推广方'}}工作台</button>
-      <button wx:if="{{status === 'pending' || status === 'approved'}}" class="text-action" bindtap="editApplication">{{status === 'approved' ? '更新入驻资料' : '修改并重新提交'}}</button>
-      <button wx:if="{{status === 'pending' || status === 'rejected'}}" class="switch-role-btn" bindtap="goBackToIndex"><text class="switch-icon">↺</text> 重新选择身份</button>
+      <button class="btn-primary" style="margin-top: 8rpx !important;" bindtap="goHome">进入{{isCreator ? '创作者' : '推广方'}}工作台</button>
+      <button wx:if="{{status === 'pending' || status === 'approved'}}" class="btn-secondary" style="margin-top: 18rpx !important;" bindtap="editApplication">{{status === 'approved' ? '更新入驻资料' : '修改并重新提交'}}</button>
+      <button wx:if="{{status === 'pending' || status === 'rejected'}}" class="btn-secondary" style="margin-top: 18rpx !important;" bindtap="goBackToIndex"><text class="switch-icon">↺</text> 重新选择身份</button>
     </view>
 
     <block wx:else>
@@ -125,13 +125,14 @@
         提交即代表资料真实有效。审核通过后，你只会出现在另一类用户的合作广场中。
       </view>
       <button
-        class="primary-button submit-button"
+        class="btn-primary"
+        style="margin-top: 48rpx !important;"
         disabled="{{submitting}}"
         loading="{{submitting}}"
         bindtap="submitApplication"
       >{{submitting ? '正在提交' : status === 'rejected' ? '重新提交审核' : '提交入驻审核'}}</button>
       
-      <button class="switch-role-btn" bindtap="goBackToIndex"><text class="switch-icon">↺</text> 重新选择身份</button>
+      <button class="btn-secondary" style="margin-top: 24rpx !important;" bindtap="goBackToIndex"><text class="switch-icon">↺</text> 重新选择身份</button>
     </block>
   </block>
 </view>
