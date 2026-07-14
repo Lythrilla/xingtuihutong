@@ -13,3 +13,14 @@ cargo run
 - 健康检查：`http://127.0.0.1:3000/health`
 
 数据库使用 SQLite，首次启动自动执行迁移并创建 `data/xingtuihutong.db`。
+
+## Agent 单模型工具调用
+
+Agent 使用一个 OpenAI-compatible Chat Completions 模型完成意图理解、工具选择和结果总结，工具直接读写 SQLite 业务数据库，不依赖 RAG 或向量模型。
+
+```bash
+AGENT_MODEL_API_URL=https://your-provider.example/v1/chat/completions
+AGENT_MODEL_API_KEY=replace-with-provider-key
+```
+
+模型名称、系统 Prompt、温度和工具调用上限在管理后台的「Agent 设置」中配置。未配置 `AGENT_MODEL_API_URL`，或模型临时不可用时，会自动使用本地确定性工具编排，业务查询和写入能力仍可运行。

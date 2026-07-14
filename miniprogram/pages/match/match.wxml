@@ -37,7 +37,7 @@
         </view>
       </view>
 
-      <view class="form-section card">
+      <view class="form-section">
         <view class="form-heading">
           <view>
             <view class="form-title">选择推广作品</view>
@@ -65,7 +65,7 @@
         </scroll-view>
       </view>
 
-      <view class="form-section card">
+      <view class="form-section">
         <view class="form-heading">
           <view>
             <view class="form-title">这次希望实现什么？</view>
@@ -99,7 +99,7 @@
         </view>
       </view>
 
-      <view class="form-section card">
+      <view class="form-section">
         <view class="form-heading">
           <view>
             <view class="form-title">拆分推广任务</view>
@@ -136,7 +136,7 @@
         </view>
       </view>
 
-      <view class="form-section card">
+      <view class="form-section">
         <view class="form-heading">
           <view>
             <view class="form-title">整体预算</view>

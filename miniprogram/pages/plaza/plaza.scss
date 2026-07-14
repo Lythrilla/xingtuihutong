@@ -149,9 +149,10 @@ view, text, scroll-view, image {
   break-inside: avoid;
   margin-bottom: 20rpx;
   background: #fff;
-  border-radius: 24rpx;
+  border: 1rpx solid rgba(137, 154, 248, 0.12);
+  border-radius: 16rpx;
   overflow: hidden;
-  box-shadow: 0 4rpx 16rpx rgba(140, 153, 255, 0.08);
+  box-shadow: none;
   display: flex;
   flex-direction: column;
   transition: transform 0.18s ease, box-shadow 0.18s ease;
@@ -159,11 +160,11 @@ view, text, scroll-view, image {
 
 .entry-press {
   transform: scale(0.985);
-  box-shadow: 0 2rpx 10rpx rgba(140, 153, 255, 0.12);
+  box-shadow: none;
 }
 
 .entry.focused {
-  box-shadow: 0 0 0 4rpx rgba(112, 105, 211, 0.46), 0 4rpx 16rpx rgba(140, 153, 255, 0.08);
+  box-shadow: 0 0 0 3rpx rgba(112, 105, 211, 0.38);
   animation: focused-entry 1.8s ease-out;
 }
 

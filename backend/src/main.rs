@@ -42,6 +42,9 @@ async fn main() -> Result<()> {
     if !Path::new("data").exists() {
         std::fs::create_dir_all("data")?;
     }
+    if !Path::new("data/uploads").exists() {
+        std::fs::create_dir_all("data/uploads")?;
+    }
     let pool = db::connect(&config.database_url).await?;
     let state = AppState {
         pool,
@@ -57,6 +60,7 @@ async fn main() -> Result<()> {
             "/admin",
             ServeDir::new("admin").append_index_html_on_directories(true),
         )
+        .nest_service("/uploads", ServeDir::new("data/uploads"))
         .layer(cors)
         .layer(TraceLayer::new_for_http())
         .with_state(state);

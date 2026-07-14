@@ -68,6 +68,49 @@ export async function apiRequest<T>(
   }
 }
 
+export interface WorkUploadResponse {
+  url: string
+  fileName: string
+}
+
+export async function uploadWorkFile(filePath: string): Promise<WorkUploadResponse> {
+  const role = (wx.getStorageSync('starconnect-role') || 'provider') as 'provider' | 'client'
+  const session = await ensureSession(role)
+  return new Promise((resolve, reject) => {
+    wx.uploadFile({
+      url: `${API_BASE_URL}/api/uploads/work`,
+      filePath,
+      name: 'file',
+      timeout: 60000,
+      header: {
+        Authorization: `Bearer ${session.token}`,
+      },
+      success(response) {
+        let body: WorkUploadResponse & ApiErrorBody
+        try {
+          body = JSON.parse(response.data) as WorkUploadResponse & ApiErrorBody
+        } catch {
+          reject(new ApiRequestError('上传响应异常，请重试', response.statusCode))
+          return
+        }
+        if (response.statusCode >= 200 && response.statusCode < 300) {
+          resolve(body)
+          return
+        }
+        reject(
+          new ApiRequestError(
+            friendlyError(body.error) || `上传失败（${response.statusCode}）`,
+            response.statusCode,
+          ),
+        )
+      },
+      fail() {
+        reject(new ApiRequestError('作品上传失败，请检查网络后重试', 0))
+      },
+    })
+  })
+}
+
 class ApiRequestError extends Error {
   constructor(
     message: string,
@@ -126,7 +169,10 @@ function friendlyError(message?: string): string {
     'plan not found': '该推广方案已下架',
     'submitted role cannot be changed': '已提交入驻申请，暂不能切换身份',
     'onboarding required fields are missing': '请完整填写必填资料',
-    'creator work information is required': '请填写代表作品及作品链接',
+    'creator work information is required': '请上传一份代表作品',
+    'creator verification checklist is required': '请确认全部作品声明',
+    'unsupported work file type': '请上传音频、视频或图片作品',
+    'work file size is invalid': '作品文件需小于 30MB',
     'at least one specialty is required': '请至少选择一个能力或风格标签',
     'onboarding approval required': '入驻审核通过后才能发起合作',
     'creator role required': '仅创作者可以发布推广匹配',

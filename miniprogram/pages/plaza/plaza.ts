@@ -166,7 +166,7 @@ Component({
       })
     },
     openAI() {
-      wx.redirectTo({ url: this.data.isCreator ? '/pages/match/match' : '/pages/ai/ai' })
+      wx.redirectTo({ url: '/pages/ai/ai' })
     },
     openDetail(event: WechatMiniprogram.TouchEvent) {
       const partnerId = event.currentTarget.dataset.id as string

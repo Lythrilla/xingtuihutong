@@ -25,7 +25,11 @@ pub fn routes() -> Router<AppState> {
         .route("/auth/logout", post(logout))
         .route("/overview", get(overview))
         .route("/users", get(users))
+        .route("/users/{id}", put(update_user))
         .route("/users/{id}/review", put(review_user))
+        .route("/users/{id}/notify", post(notify_user))
+        .route("/matches", get(matches))
+        .route("/matches/{id}", put(update_match))
         .route("/partners", get(partners).post(create_partner))
         .route("/partners/{id}", put(update_partner).delete(delete_partner))
         .route("/songs", get(songs).post(create_song))
@@ -90,6 +94,7 @@ struct Overview {
     active_songs: i64,
     active_plans: i64,
     conversations: i64,
+    pending_onboarding: i64,
     pending_settlements: i64,
     recent_users: Vec<AdminUser>,
 }
@@ -101,6 +106,11 @@ async fn overview(State(state): State<AppState>, headers: HeaderMap) -> AppResul
     let active_songs = count(&state, "SELECT COUNT(*) FROM songs WHERE active = 1").await?;
     let active_plans = count(&state, "SELECT COUNT(*) FROM plans WHERE active = 1").await?;
     let conversations = count(&state, "SELECT COUNT(*) FROM conversations").await?;
+    let pending_onboarding = count(
+        &state,
+        "SELECT COUNT(*) FROM users WHERE onboarding_status = 'pending'",
+    )
+    .await?;
     let pending_settlements = count(
         &state,
         "SELECT COUNT(*) FROM settlements WHERE status = 'pending'",
@@ -115,6 +125,7 @@ async fn overview(State(state): State<AppState>, headers: HeaderMap) -> AppResul
         active_songs,
         active_plans,
         conversations,
+        pending_onboarding,
         pending_settlements,
         recent_users,
     }))
@@ -132,10 +143,37 @@ struct AdminUser {
     contact_name: String,
     contact_method: String,
     application_description: String,
+    tags_json: String,
     work_title: String,
+    work_url: String,
+    work_file_url: String,
+    work_file_name: String,
+    verification_items_json: String,
+    audience_size: String,
     cooperation_budget: String,
     review_note: String,
+    submitted_at: String,
+    reviewed_at: Option<String>,
     created_at: String,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct UpdateAdminUser {
+    organization: String,
+    contact_name: String,
+    contact_method: String,
+    application_description: String,
+    tags: Vec<String>,
+    work_title: String,
+    audience_size: String,
+    cooperation_budget: String,
+}
+
+#[derive(Deserialize)]
+struct AdminNotificationInput {
+    title: String,
+    description: String,
 }
 
 async fn users(
@@ -157,14 +195,150 @@ fn admin_users_query(limited: bool) -> String {
          COALESCE(a.contact_name, '') AS contact_name,
          COALESCE(a.contact_method, '') AS contact_method,
          COALESCE(a.description, '') AS application_description,
+         COALESCE(a.tags, '[]') AS tags_json,
          COALESCE(a.work_title, '') AS work_title,
+         COALESCE(a.work_url, '') AS work_url,
+         COALESCE(a.work_file_url, '') AS work_file_url,
+         COALESCE(a.work_file_name, '') AS work_file_name,
+         COALESCE(a.verification_items, '[]') AS verification_items_json,
+         COALESCE(a.audience_size, '') AS audience_size,
          COALESCE(a.cooperation_budget, '') AS cooperation_budget,
-         u.review_note, u.created_at
+         u.review_note,
+         COALESCE(a.submitted_at, u.created_at) AS submitted_at,
+         a.reviewed_at,
+         u.created_at
          FROM users u
          LEFT JOIN onboarding_applications a ON a.user_id = u.id
-         ORDER BY u.created_at DESC{}",
+         ORDER BY CASE WHEN u.onboarding_status = 'pending' THEN 0 ELSE 1 END,
+         submitted_at DESC{}",
         if limited { " LIMIT 6" } else { "" }
     )
+}
+
+async fn update_user(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    Path(id): Path<String>,
+    Json(input): Json<UpdateAdminUser>,
+) -> AppResult<Json<serde_json::Value>> {
+    require_admin(&state, &headers).await?;
+    let organization = input.organization.trim();
+    let contact_name = input.contact_name.trim();
+    let contact_method = input.contact_method.trim();
+    let description = input.application_description.trim();
+    if organization.is_empty() || contact_name.is_empty() || contact_method.is_empty() {
+        return Err(AppError::BadRequest(
+            "user required fields are missing".into(),
+        ));
+    }
+    let tags: Vec<String> = input
+        .tags
+        .into_iter()
+        .map(|tag| tag.trim().to_string())
+        .filter(|tag| !tag.is_empty())
+        .take(8)
+        .collect();
+    let tags_json =
+        serde_json::to_string(&tags).map_err(|error| AppError::Internal(error.into()))?;
+    let mut tx = state.pool.begin().await?;
+    let result = sqlx::query(
+        "UPDATE onboarding_applications SET entity_name = ?, contact_name = ?,
+         contact_method = ?, description = ?, tags = ?, work_title = ?, audience_size = ?,
+         cooperation_budget = ?, updated_at = CURRENT_TIMESTAMP WHERE user_id = ?",
+    )
+    .bind(organization)
+    .bind(contact_name)
+    .bind(contact_method)
+    .bind(description)
+    .bind(&tags_json)
+    .bind(input.work_title.trim())
+    .bind(input.audience_size.trim())
+    .bind(input.cooperation_budget.trim())
+    .bind(&id)
+    .execute(&mut *tx)
+    .await?;
+    if result.rows_affected() == 0 {
+        return Err(AppError::NotFound(
+            "onboarding application not found".into(),
+        ));
+    }
+    sqlx::query(
+        "UPDATE users SET display_name = ?, organization = ?, description = ?,
+         updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+    )
+    .bind(organization)
+    .bind(organization)
+    .bind(description)
+    .bind(&id)
+    .execute(&mut *tx)
+    .await?;
+    sqlx::query("DELETE FROM user_tags WHERE user_id = ?")
+        .bind(&id)
+        .execute(&mut *tx)
+        .await?;
+    for (index, tag) in tags.iter().enumerate() {
+        sqlx::query("INSERT INTO user_tags (user_id, tag, sort_order) VALUES (?, ?, ?)")
+            .bind(&id)
+            .bind(tag)
+            .bind(index as i64 + 1)
+            .execute(&mut *tx)
+            .await?;
+    }
+    sqlx::query(
+        "UPDATE partners SET name = ?, description = ?, tags = ?,
+         updated_at = CURRENT_TIMESTAMP WHERE source_user_id = ?",
+    )
+    .bind(organization)
+    .bind(description)
+    .bind(&tags_json)
+    .bind(&id)
+    .execute(&mut *tx)
+    .await?;
+    sqlx::query(
+        "UPDATE songs SET name = ?, artist = ?, updated_at = CURRENT_TIMESTAMP
+         WHERE source_user_id = ?",
+    )
+    .bind(input.work_title.trim())
+    .bind(organization)
+    .bind(&id)
+    .execute(&mut *tx)
+    .await?;
+    tx.commit().await?;
+    Ok(Json(json!({ "success": true })))
+}
+
+async fn notify_user(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    Path(id): Path<String>,
+    Json(input): Json<AdminNotificationInput>,
+) -> AppResult<Json<serde_json::Value>> {
+    require_admin(&state, &headers).await?;
+    let title = input.title.trim();
+    let description = input.description.trim();
+    if title.is_empty() || description.is_empty() {
+        return Err(AppError::BadRequest(
+            "notification content is required".into(),
+        ));
+    }
+    let exists: bool = sqlx::query_scalar("SELECT EXISTS(SELECT 1 FROM users WHERE id = ?)")
+        .bind(&id)
+        .fetch_one(&state.pool)
+        .await?;
+    if !exists {
+        return Err(AppError::NotFound("user not found".into()));
+    }
+    sqlx::query(
+        "INSERT INTO notifications (id, user_id, kind, title, description)
+         VALUES (?, ?, 'shield', ?, ?)",
+    )
+    .bind(Uuid::new_v4().to_string())
+    .bind(id)
+    .bind(title)
+    .bind(description)
+    .execute(&state.pool)
+    .await?;
+    Ok(Json(json!({ "success": true })))
 }
 
 async fn review_user(
@@ -316,6 +490,94 @@ async fn review_user(
     .bind(&id)
     .bind(notification_title)
     .bind(notification_description)
+    .execute(&mut *tx)
+    .await?;
+    tx.commit().await?;
+    Ok(Json(json!({ "success": true, "status": input.status })))
+}
+
+#[derive(Serialize, FromRow)]
+#[serde(rename_all = "camelCase")]
+struct AdminMatch {
+    id: String,
+    user_id: String,
+    user_name: String,
+    song_name: String,
+    target_keys_json: String,
+    budget_label: String,
+    goal: String,
+    cycle: String,
+    status: String,
+    plan_count: i64,
+    created_at: String,
+}
+
+#[derive(Deserialize)]
+struct UpdateMatchStatus {
+    status: String,
+}
+
+async fn matches(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+) -> AppResult<Json<Vec<AdminMatch>>> {
+    require_admin(&state, &headers).await?;
+    Ok(Json(
+        sqlx::query_as::<_, AdminMatch>(
+            "SELECT m.id, m.user_id, u.organization AS user_name, s.name AS song_name,
+             m.target_keys AS target_keys_json, b.label AS budget_label, m.goal, m.cycle,
+             m.status, COUNT(mp.plan_id) AS plan_count, m.created_at
+             FROM match_requests m
+             JOIN users u ON u.id = m.user_id
+             JOIN songs s ON s.id = m.song_id
+             JOIN budget_options b ON b.id = m.budget_id
+             LEFT JOIN match_request_plans mp ON mp.match_request_id = m.id
+             GROUP BY m.id
+             ORDER BY m.created_at DESC",
+        )
+        .fetch_all(&state.pool)
+        .await?,
+    ))
+}
+
+async fn update_match(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    Path(id): Path<String>,
+    Json(input): Json<UpdateMatchStatus>,
+) -> AppResult<Json<serde_json::Value>> {
+    require_admin(&state, &headers).await?;
+    if !["completed", "following", "closed"].contains(&input.status.as_str()) {
+        return Err(AppError::BadRequest("invalid match status".into()));
+    }
+    let user_id: Option<String> =
+        sqlx::query_scalar("SELECT user_id FROM match_requests WHERE id = ?")
+            .bind(&id)
+            .fetch_optional(&state.pool)
+            .await?;
+    let user_id = user_id.ok_or_else(|| AppError::NotFound("match request not found".into()))?;
+    let mut tx = state.pool.begin().await?;
+    sqlx::query("UPDATE match_requests SET status = ? WHERE id = ?")
+        .bind(&input.status)
+        .bind(&id)
+        .execute(&mut *tx)
+        .await?;
+    let (title, description) = match input.status.as_str() {
+        "following" => ("推广需求进入跟进", "运营团队已开始跟进你的推广需求。"),
+        "closed" => ("推广需求已关闭", "该推广需求已由运营团队关闭。"),
+        _ => (
+            "推广需求已完成",
+            "该推广需求已完成匹配，可继续联系推荐推广方。",
+        ),
+    };
+    sqlx::query(
+        "INSERT INTO notifications (id, user_id, kind, title, description)
+         VALUES (?, ?, 'spark', ?, ?)",
+    )
+    .bind(Uuid::new_v4().to_string())
+    .bind(user_id)
+    .bind(title)
+    .bind(description)
     .execute(&mut *tx)
     .await?;
     tx.commit().await?;

@@ -203,6 +203,9 @@ pub struct SubmitOnboarding {
     pub tags: Vec<String>,
     pub work_title: Option<String>,
     pub work_url: Option<String>,
+    pub work_file_url: Option<String>,
+    pub work_file_name: Option<String>,
+    pub verification_items: Option<Vec<String>>,
     pub audience_size: Option<String>,
     pub cooperation_budget: Option<String>,
 }

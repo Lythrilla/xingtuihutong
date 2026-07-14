@@ -17,11 +17,11 @@
       </view>
       <view class="hero-copy">
         <view class="hero-title">
-          <text>{{isCreator ? '为你的作品' : '发现真实创作者'}}</text>
-          <text>{{isCreator ? '找到合适推广方' : '承接适合的项目'}}</text>
+          <text>{{isCreator ? '让 AI 读懂作品' : '让 AI 筛选项目'}}</text>
+          <text>{{isCreator ? '规划推广并找到伙伴' : '发现合适的创作者'}}</text>
         </view>
-        <view class="hero-desc">{{isCreator ? '选择已审核作品、推广方向与预算' : '只展示审核通过的创作者与作品信息'}}</view>
-        <view class="hero-action">{{isCreator ? '发布推广需求' : '查看创作者项目'}} →</view>
+        <view class="hero-desc">{{isCreator ? '分析作品、推荐推广方，也能继续发布需求' : '分析项目、推荐创作者并推进跟进'}}</view>
+        <view class="hero-action">打开 AI Agent →</view>
       </view>
     </view>
 

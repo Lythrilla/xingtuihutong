@@ -1,10 +1,13 @@
 <view class="page-shell agent-page">
-  <page-header title="星链智能体" subtitle="查询数据、深度分析并生成方案"></page-header>
+  <page-header
+    title="{{isCreator ? '创作者 AI Agent' : '推广方 AI Agent'}}"
+    subtitle="{{isCreator ? '分析作品、寻找推广方并生成可执行方案' : '分析项目、发现创作者并推进合作'}}"
+  ></page-header>
 
   <data-state loading="{{loading}}" error="{{error}}" bind:action="retry"></data-state>
 
   <block wx:if="{{!loading && !error}}">
-    <view class="hero-card" style="margin-top: 64rpx;">
+    <view class="agent-intro">
       <view class="hero-grid"></view>
       <view class="hero-orb-wrap">
         <view class="hero-orb-halo"></view>
@@ -12,10 +15,32 @@
       </view>
       <view class="hero-copy">
         <view class="hero-title">
-          <text>你的全链路音乐</text>
-          <text>商业智能体</text>
+          <text>{{isCreator ? '让作品推广更清晰' : '让合作判断更高效'}}</text>
+          <text>{{isCreator ? '从分析到对接都能交给 AI' : '从发现到跟进都能交给 AI'}}</text>
         </view>
-        <view class="hero-desc">星链智能运行时 · 数据驱动</view>
+        <view class="hero-desc">{{isCreator ? '作品分析 · 推广方推荐 · 方案规划' : '项目分析 · 创作者推荐 · 合作跟进'}}</view>
+      </view>
+    </view>
+
+    <view class="agent-shortcuts">
+      <button wx:if="{{isCreator}}" bindtap="openMatch">发布推广需求</button>
+      <button bindtap="openPlaza">{{isCreator ? '浏览推广方' : '浏览创作者'}}</button>
+      <button bindtap="openAnalytics">查看合作数据</button>
+    </view>
+
+    <view class="agent-capabilities">
+      <view
+        wx:for="{{quickActions}}"
+        wx:key="title"
+        class="capability-row"
+        data-value="{{item.prompt}}"
+        bindtap="selectSuggestion"
+      >
+        <view>
+          <view>{{item.title}}</view>
+          <text>{{item.description}}</text>
+        </view>
+        <text>立即执行 →</text>
       </view>
     </view>
 

@@ -85,9 +85,9 @@ Component({
           workspaceActions:
             response.role === 'client'
               ? [
+                  { key: 'ai', title: 'AI Agent', description: '分析作品与推广方向', icon: 'spark' },
                   { key: 'match', title: '发布需求', description: '拆分多个推广任务', icon: 'spark' },
                   { key: 'plaza', title: '找推广方', description: '查看能力和认证', icon: 'target' },
-                  { key: 'membership', title: '联系权益', description: '会员与按次解锁', icon: 'wallet' },
                 ]
               : [
                   { key: 'plaza', title: '发现项目', description: '查看真实创作者', icon: 'target' },
@@ -104,9 +104,7 @@ Component({
       }
     },
     openPrimary() {
-      wx.redirectTo({
-        url: this.data.isCreator ? '/pages/match/match' : '/pages/plaza/plaza',
-      })
+      wx.redirectTo({ url: '/pages/ai/ai' })
     },
     openOnboarding() {
       wx.redirectTo({ url: '/pages/onboarding/onboarding' })
