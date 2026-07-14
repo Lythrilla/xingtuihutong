@@ -19,12 +19,21 @@ function renderAgentSettings(settings) {
   return `
     <div class="agent-layout">
       <section class="agent-panel">
-        <div class="panel-head"><div><h2>基础设置</h2><span class="muted">控制 Agent 开关、模型标识与默认话术</span></div></div>
+        <div class="panel-head"><div><h2>基础设置</h2><span class="muted">配置 OpenAI 兼容接口、模型参数与默认话术</span></div></div>
         <form class="agent-form" data-agent-settings>
           <div class="form-grid">
             <label class="checkbox-label full"><input name="enabled" type="checkbox" ${settings.enabled ? "checked" : ""}>启用 Agent 服务</label>
             <label>引擎标识<input name="engine" value="${escapeAttribute(settings.engine)}" required></label>
             <label>模型名称<input name="model" value="${escapeAttribute(settings.model)}" required></label>
+            <label class="full">Chat Completions 接口地址
+              <input name="apiUrl" type="url" value="${escapeAttribute(settings.apiUrl)}" placeholder="https://api.example.com/v1/chat/completions">
+              <span class="muted">留空时使用后端环境变量 AGENT_MODEL_API_URL</span>
+            </label>
+            <label class="full">API Key
+              <input name="apiKey" type="password" value="" autocomplete="new-password" placeholder="${settings.apiKeyConfigured ? "已配置，留空保持不变" : "输入兼容接口的 API Key"}">
+              <span class="muted">${settings.apiKeyConfigured ? "已保存 API Key，不会在页面中回显" : "留空时使用后端环境变量 AGENT_MODEL_API_KEY"}</span>
+            </label>
+            ${settings.apiKeyConfigured ? '<label class="checkbox-label full"><input name="clearApiKey" type="checkbox">清除后台已保存的 API Key</label>' : ""}
             <label>最大 Token 数<input name="maxTokens" type="number" value="${settings.maxTokens}" min="1" required></label>
             <label>温度 (0-2)<input name="temperature" type="number" value="${settings.temperature}" step="0.1" min="0" max="2" required></label>
             <label>最大工具调用数<input name="maxToolCalls" type="number" value="${settings.maxToolCalls}" min="1" required></label>
@@ -259,6 +268,9 @@ async function saveAgentSettings(form) {
     enabled: values.enabled === "on",
     engine: values.engine,
     model: values.model,
+    apiUrl: values.apiUrl,
+    apiKey: values.apiKey,
+    clearApiKey: values.clearApiKey === "on",
     welcomeMessage: values.welcomeMessage,
     systemPrompt: values.systemPrompt,
     maxTokens: Number(values.maxTokens),

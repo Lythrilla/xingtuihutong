@@ -260,6 +260,9 @@ pub struct AgentSettings {
     pub enabled: bool,
     pub engine: String,
     pub model: String,
+    pub api_url: String,
+    #[serde(skip_serializing)]
+    pub api_key: String,
     pub welcome_message: String,
     pub system_prompt: String,
     pub max_tokens: i64,
@@ -289,6 +292,12 @@ pub struct AgentSettingsInput {
     pub enabled: bool,
     pub engine: String,
     pub model: String,
+    #[serde(default)]
+    pub api_url: String,
+    #[serde(default)]
+    pub api_key: Option<String>,
+    #[serde(default)]
+    pub clear_api_key: bool,
     pub welcome_message: String,
     pub system_prompt: String,
     pub max_tokens: i64,

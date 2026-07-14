@@ -25,27 +25,54 @@ pub fn routes() -> Router<AppState> {
         .route("/test", post(test_agent))
 }
 
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+struct AgentSettingsView {
+    #[serde(flatten)]
+    settings: AgentSettings,
+    api_key_configured: bool,
+}
+
+impl From<AgentSettings> for AgentSettingsView {
+    fn from(settings: AgentSettings) -> Self {
+        let api_key_configured = !settings.api_key.trim().is_empty();
+        Self {
+            settings,
+            api_key_configured,
+        }
+    }
+}
+
 async fn get_settings(
     State(state): State<AppState>,
     headers: HeaderMap,
-) -> AppResult<Json<AgentSettings>> {
+) -> AppResult<Json<AgentSettingsView>> {
     require_admin(&state, &headers).await?;
-    Ok(Json(load_settings(&state).await?))
+    Ok(Json(load_settings(&state).await?.into()))
 }
 
 async fn update_settings(
     State(state): State<AppState>,
     headers: HeaderMap,
     Json(input): Json<AgentSettingsInput>,
-) -> AppResult<Json<AgentSettings>> {
+) -> AppResult<Json<AgentSettingsView>> {
     require_admin(&state, &headers).await?;
     let default_suggestions = serde_json::to_string(&input.default_suggestions)
         .map_err(|e| AppError::Internal(e.into()))?;
     let follow_up_suggestions = serde_json::to_string(&input.follow_up_suggestions)
         .map_err(|e| AppError::Internal(e.into()))?;
+    let api_key = if input.clear_api_key {
+        Some(String::new())
+    } else {
+        input
+            .api_key
+            .map(|value| value.trim().to_owned())
+            .filter(|value| !value.is_empty())
+    };
     sqlx::query(
         "UPDATE agent_settings SET
-         enabled = ?, engine = ?, model = ?, welcome_message = ?, system_prompt = ?, max_tokens = ?,
+         enabled = ?, engine = ?, model = ?, api_url = ?, api_key = COALESCE(?, api_key),
+         welcome_message = ?, system_prompt = ?, max_tokens = ?,
          temperature = ?, max_tool_calls = ?, max_history = ?, fallback_reply = ?, suggestion_count = ?,
          default_suggestions = ?, follow_up_suggestions = ?,
          updated_at = CURRENT_TIMESTAMP WHERE id = 'default'",
@@ -53,6 +80,8 @@ async fn update_settings(
     .bind(input.enabled)
     .bind(input.engine)
     .bind(input.model)
+    .bind(input.api_url.trim())
+    .bind(api_key)
     .bind(input.welcome_message)
     .bind(input.system_prompt)
     .bind(input.max_tokens)
@@ -65,7 +94,7 @@ async fn update_settings(
     .bind(follow_up_suggestions)
     .execute(&state.pool)
     .await?;
-    Ok(Json(load_settings(&state).await?))
+    Ok(Json(load_settings(&state).await?.into()))
 }
 
 async fn get_tools(
@@ -106,7 +135,7 @@ async fn update_tool(
 
 pub async fn load_settings(state: &AppState) -> AppResult<AgentSettings> {
     let row = sqlx::query_as::<_, AgentSettings>(
-        "SELECT id, enabled, engine, model, welcome_message, system_prompt, max_tokens, temperature, max_tool_calls, max_history, fallback_reply, suggestion_count, default_suggestions, follow_up_suggestions
+        "SELECT id, enabled, engine, model, api_url, api_key, welcome_message, system_prompt, max_tokens, temperature, max_tool_calls, max_history, fallback_reply, suggestion_count, default_suggestions, follow_up_suggestions
          FROM agent_settings WHERE id = 'default'",
     )
     .fetch_optional(&state.pool)
@@ -118,7 +147,7 @@ pub async fn load_settings(state: &AppState) -> AppResult<AgentSettings> {
         .execute(&state.pool)
         .await?;
     sqlx::query_as::<_, AgentSettings>(
-        "SELECT id, enabled, engine, model, welcome_message, system_prompt, max_tokens, temperature, max_tool_calls, max_history, fallback_reply, suggestion_count, default_suggestions, follow_up_suggestions
+        "SELECT id, enabled, engine, model, api_url, api_key, welcome_message, system_prompt, max_tokens, temperature, max_tool_calls, max_history, fallback_reply, suggestion_count, default_suggestions, follow_up_suggestions
          FROM agent_settings WHERE id = 'default'",
     )
     .fetch_one(&state.pool)

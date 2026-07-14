@@ -23,4 +23,4 @@ AGENT_MODEL_API_URL=https://your-provider.example/v1/chat/completions
 AGENT_MODEL_API_KEY=replace-with-provider-key
 ```
 
-模型名称、系统 Prompt、温度和工具调用上限在管理后台的「Agent 设置」中配置。未配置 `AGENT_MODEL_API_URL`，或模型临时不可用时，会自动使用本地确定性工具编排，业务查询和写入能力仍可运行。
+OpenAI 兼容接口地址、API Key、模型名称、系统 Prompt、温度和工具调用上限均可在管理后台的「Agent 设置」中配置。后台保存的接口配置优先于环境变量；留空时回退到 `AGENT_MODEL_API_URL` 和 `AGENT_MODEL_API_KEY`。未配置接口地址，或模型临时不可用时，会自动使用本地确定性工具编排，业务查询和写入能力仍可运行。
