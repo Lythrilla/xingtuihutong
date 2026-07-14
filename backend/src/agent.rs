@@ -924,6 +924,7 @@ async fn load_tool_calls(
         .collect())
 }
 
+#[allow(clippy::too_many_arguments)]
 async fn persist_tool_call(
     state: &AppState,
     session_id: &str,
