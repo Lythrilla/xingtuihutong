@@ -726,10 +726,9 @@ async fn request_model_turn(
     messages: &[Value],
     tools: &[Value],
 ) -> Result<ModelTurn, String> {
-    let url = state
-        .config
-        .agent_model_api_url
-        .as_deref()
+    let url = (!settings.api_url.trim().is_empty())
+        .then_some(settings.api_url.trim())
+        .or(state.config.agent_model_api_url.as_deref())
         .ok_or_else(|| "model endpoint is not configured".to_string())?;
     let client = reqwest::Client::builder()
         .timeout(std::time::Duration::from_secs(
@@ -745,7 +744,10 @@ async fn request_model_turn(
         "temperature": settings.temperature,
         "max_tokens": settings.max_tokens,
     }));
-    if let Some(api_key) = &state.config.agent_model_api_key {
+    let api_key = (!settings.api_key.trim().is_empty())
+        .then_some(settings.api_key.trim())
+        .or(state.config.agent_model_api_key.as_deref());
+    if let Some(api_key) = api_key {
         request = request.bearer_auth(api_key);
     }
     let response = request.send().await.map_err(|error| error.to_string())?;
@@ -874,7 +876,7 @@ async fn load_messages(
 
 async fn load_agent_settings(state: &AppState) -> AppResult<AgentSettings> {
     let row = sqlx::query_as::<_, AgentSettings>(
-        "SELECT id, enabled, engine, model, welcome_message, system_prompt, max_tokens, temperature, max_tool_calls, max_history, fallback_reply, suggestion_count, default_suggestions, follow_up_suggestions
+        "SELECT id, enabled, engine, model, api_url, api_key, welcome_message, system_prompt, max_tokens, temperature, max_tool_calls, max_history, fallback_reply, suggestion_count, default_suggestions, follow_up_suggestions
          FROM agent_settings WHERE id = 'default'",
     )
     .fetch_optional(&state.pool)
@@ -886,7 +888,7 @@ async fn load_agent_settings(state: &AppState) -> AppResult<AgentSettings> {
         .execute(&state.pool)
         .await?;
     sqlx::query_as::<_, AgentSettings>(
-        "SELECT id, enabled, engine, model, welcome_message, system_prompt, max_tokens, temperature, max_tool_calls, max_history, fallback_reply, suggestion_count, default_suggestions, follow_up_suggestions
+        "SELECT id, enabled, engine, model, api_url, api_key, welcome_message, system_prompt, max_tokens, temperature, max_tool_calls, max_history, fallback_reply, suggestion_count, default_suggestions, follow_up_suggestions
          FROM agent_settings WHERE id = 'default'",
     )
     .fetch_one(&state.pool)

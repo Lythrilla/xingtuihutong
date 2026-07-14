@@ -1,0 +1,2 @@
+ALTER TABLE agent_settings ADD COLUMN api_url TEXT NOT NULL DEFAULT '';
+ALTER TABLE agent_settings ADD COLUMN api_key TEXT NOT NULL DEFAULT '';
