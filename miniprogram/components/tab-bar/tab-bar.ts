@@ -34,11 +34,9 @@ Component({
           },
           {
             key: 'match',
-            label: isApproved ? (isCreator ? '推广' : 'AI') : '入驻',
+            label: isApproved ? 'AI' : '入驻',
             iconClass: 'match',
-            url: isApproved
-              ? (isCreator ? '/pages/match/match' : '/pages/ai/ai')
-              : '/pages/onboarding/onboarding',
+            url: isApproved ? '/pages/ai/ai' : '/pages/onboarding/onboarding',
           },
           { key: 'messages', label: '消息', iconClass: 'messages', url: '/pages/messages/messages' },
           { key: 'profile', label: '我的', iconClass: 'profile', url: '/pages/profile/profile' },

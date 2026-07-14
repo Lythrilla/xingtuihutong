@@ -91,10 +91,10 @@ Component({
                 { key: 'messages', label: '合作会话', icon: 'audio' },
               ]
             : [
-                { key: 'match', label: '发推广', icon: 'spark' },
+                { key: 'agent', label: 'AI Agent', icon: 'spark' },
+                { key: 'match', label: '发推广', icon: 'target' },
                 { key: 'plaza', label: '找推广方', icon: 'target' },
-                { key: 'analytics', label: '推广数据', icon: 'target' },
-                { key: 'messages', label: '合作会话', icon: 'audio' },
+                { key: 'analytics', label: '推广数据', icon: 'audio' },
               ],
           serviceActions: !isApproved
             ? [
@@ -114,7 +114,7 @@ Component({
               ]
             : [
                 { key: 'onboarding', label: '创作者入驻资料', description: '身份、作品与审核状态', icon: 'shield' },
-                { key: 'membership', label: '会员与联系权益', description: '查看额度、按次解锁与使用记录', icon: 'wallet' },
+                { key: 'ai', label: 'AI Agent 工作台', description: '分析作品、规划推广并寻找合作方', icon: 'spark' },
                 { key: 'match', label: '发布推广需求', description: '选择作品、方向与合作预算', icon: 'spark' },
                 { key: 'favorites', label: '收藏的推广方', description: '回看感兴趣的推广服务', icon: 'target' },
               ],

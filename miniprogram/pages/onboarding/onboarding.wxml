@@ -1,13 +1,13 @@
 <view class="page-shell onboarding-page">
   <page-header
     title="{{isCreator ? '创作者入驻' : '推广方入驻'}}"
-    subtitle="{{isCreator ? '先完成真实资料审核，再发布作品推广需求' : '先完成服务能力审核，再承接创作者合作'}}"
+    subtitle="{{isCreator ? '上传作品、确认声明，快速完成入驻审核' : '提交服务能力，审核后承接创作者合作'}}"
   ></page-header>
 
   <data-state loading="{{loading}}" error="{{error}}" bind:action="retry"></data-state>
 
   <block wx:if="{{!loading && !error}}">
-    <view wx:if="{{!editing}}" class="glass-card status-card status-{{status}}">
+    <view wx:if="{{!editing}}" class="status-card status-{{status}}">
       <view class="status-orb">
         <view class="status-icon">{{status === 'approved' ? '✓' : '…'}}</view>
         <view class="status-halo"></view>
@@ -15,45 +15,35 @@
       <view class="status-title">{{status === 'approved' ? '入驻审核已通过' : '资料已提交，正在审核'}}</view>
       <view class="status-description">
         {{status === 'approved'
-          ? (isCreator ? '你的创作者主页与代表作品已公开，可以开始匹配推广方。' : '你的服务主页已公开，可以开始发现创作者项目。')
-          : '审核通过前资料不会进入合作广场，避免无效匹配与虚假合作。'}}
+          ? (isCreator ? '你的创作者主页与代表作品已公开，可以使用 AI 规划推广。' : '你的服务主页已公开，可以发现创作者项目。')
+          : '后台会集中查看作品、声明和基础信息，无需再补充外部链接。'}}
       </view>
       <view class="status-steps">
-        <view class="status-step done"><text>1</text><view>填写资料</view></view>
+        <view class="status-step done"><text>1</text><view>提交资料</view></view>
         <view class="status-line active"></view>
         <view class="status-step {{status === 'approved' ? 'done' : 'active'}}"><text>2</text><view>平台审核</view></view>
         <view class="status-line {{status === 'approved' ? 'active' : ''}}"></view>
         <view class="status-step {{status === 'approved' ? 'done' : ''}}"><text>3</text><view>公开合作</view></view>
       </view>
-      <button class="btn-primary" style="margin-top: 8rpx !important;" bindtap="goHome">进入{{isCreator ? '创作者' : '推广方'}}工作台</button>
-      <button wx:if="{{status === 'pending' || status === 'approved'}}" class="btn-secondary" style="margin-top: 18rpx !important;" bindtap="editApplication">{{status === 'approved' ? '更新入驻资料' : '修改并重新提交'}}</button>
-      <button wx:if="{{status === 'pending' || status === 'rejected'}}" class="btn-secondary" style="margin-top: 18rpx !important;" bindtap="goBackToIndex"><text class="switch-icon">↺</text> 重新选择身份</button>
+      <button class="btn-primary" bindtap="goHome">进入{{isCreator ? '创作者' : '推广方'}}工作台</button>
+      <button wx:if="{{status === 'pending' || status === 'approved'}}" class="btn-secondary" bindtap="editApplication">{{status === 'approved' ? '更新入驻资料' : '修改并重新提交'}}</button>
+      <button wx:if="{{status === 'pending' || status === 'rejected'}}" class="btn-secondary" bindtap="goBackToIndex"><text class="switch-icon">↺</text> 重新选择身份</button>
     </view>
 
     <block wx:else>
       <view wx:if="{{status === 'rejected'}}" class="review-note">
         <view>审核建议</view>
-        <text>{{reviewNote || '请补充真实身份、作品或服务案例后重新提交。'}}</text>
+        <text>{{reviewNote || '请补充真实身份、作品或服务资料后重新提交。'}}</text>
       </view>
 
-      <view class="flow-card">
-        <view class="flow-node"></view>
-        <view class="flow-main">
-          <view class="flow-title">{{isCreator ? '创作者身份' : '团队与品牌'}}</view>
-          <view class="flow-desc">这些信息会在审核通过后对合作对象展示</view>
+      <view class="form-section">
+        <view class="section-heading">
+          <view>{{isCreator ? '创作者身份' : '团队与品牌'}}</view>
+          <text>审核通过后向合作对象展示</text>
         </view>
-      </view>
-
-      <view class="glass-card form-card">
         <label class="field">
           <text>{{isCreator ? '创作者名 / 艺名' : '品牌 / 团队名称'}} *</text>
-          <input
-            value="{{entityName}}"
-            data-field="entityName"
-            maxlength="40"
-            placeholder="{{isCreator ? '请输入公开展示的创作者名称' : '请输入营业主体或团队名称'}}"
-            bindinput="updateField"
-          />
+          <input value="{{entityName}}" data-field="entityName" maxlength="40" placeholder="{{isCreator ? '请输入公开展示的创作者名称' : '请输入营业主体或团队名称'}}" bindinput="updateField" />
         </label>
         <view class="field-row">
           <label class="field">
@@ -67,26 +57,25 @@
         </view>
       </view>
 
-      <view class="flow-card">
-        <view class="flow-node"></view>
-        <view class="flow-main">
-          <view class="flow-title">{{isCreator ? '作品与创作方向' : '推广能力与合作范围'}}</view>
-          <view class="flow-desc">{{isCreator ? '平台据此确认作品归属并生成推广资料' : '平台据此匹配适合你的创作者项目'}}</view>
+      <view class="form-section">
+        <view class="section-heading">
+          <view>{{isCreator ? '上传代表作品' : '推广能力与合作范围'}}</view>
+          <text>{{isCreator ? '无需填写平台链接，直接提交音频、视频或图片' : '平台据此匹配适合你的创作者项目'}}</text>
         </view>
-      </view>
-
-      <view class="glass-card form-card">
         <block wx:if="{{isCreator}}">
+          <view class="upload-work {{workFileUrl ? 'uploaded' : ''}}" bindtap="chooseWork">
+            <view class="upload-mark">{{uploading ? '…' : workFileUrl ? '✓' : '+'}}</view>
+            <view class="upload-copy">
+              <view>{{uploading ? '正在上传作品' : workFileUrl ? workFileName : '选择作品文件'}}</view>
+              <text>{{workFileUrl ? '点击可替换，支持音频、视频或图片' : '单个文件不超过 30MB'}}</text>
+            </view>
+          </view>
           <label class="field">
-            <text>代表作品 *</text>
-            <input value="{{workTitle}}" data-field="workTitle" maxlength="60" placeholder="歌曲或专辑名称" bindinput="updateField" />
+            <text>作品名称（选填）</text>
+            <input value="{{workTitle}}" data-field="workTitle" maxlength="60" placeholder="默认使用上传文件名" bindinput="updateField" />
           </label>
           <label class="field">
-            <text>作品 / 音乐人主页链接 *</text>
-            <input value="{{workUrl}}" data-field="workUrl" maxlength="240" placeholder="网易云、QQ 音乐、汽水音乐等链接" bindinput="updateField" />
-          </label>
-          <label class="field">
-            <text>当前受众规模</text>
+            <text>当前受众规模（选填）</text>
             <input value="{{audienceSize}}" data-field="audienceSize" maxlength="40" placeholder="例如：全平台 5 万粉丝" bindinput="updateField" />
           </label>
         </block>
@@ -98,41 +87,31 @@
         <view class="field">
           <text>{{isCreator ? '音乐风格' : '服务能力'}} *</text>
           <view class="tag-picker">
-            <view
-              wx:for="{{tagOptions}}"
-              wx:key="label"
-              class="tag-option {{item.selected ? 'selected' : ''}}"
-              data-label="{{item.label}}"
-              bindtap="toggleTag"
-            >{{item.label}}</view>
+            <view wx:for="{{tagOptions}}" wx:key="label" class="tag-option {{item.selected ? 'selected' : ''}}" data-label="{{item.label}}" bindtap="toggleTag">{{item.label}}</view>
           </view>
         </view>
 
         <label class="field">
-          <text>{{isCreator ? '创作与合作介绍' : '服务与案例介绍'}} *</text>
-          <textarea
-            value="{{description}}"
-            data-field="description"
-            maxlength="300"
-            placeholder="{{isCreator ? '介绍你的作品、受众和希望获得的推广支持' : '介绍核心渠道、过往案例、交付方式和擅长方向'}}"
-            bindinput="updateField"
-          ></textarea>
+          <text>{{isCreator ? '创作与合作介绍（选填）' : '服务与案例介绍 *'}}</text>
+          <textarea value="{{description}}" data-field="description" maxlength="300" placeholder="{{isCreator ? '简单介绍作品和希望获得的推广支持' : '介绍核心渠道、过往案例、交付方式和擅长方向'}}" bindinput="updateField"></textarea>
           <view class="field-hint">{{description.length}} / 300</view>
         </label>
       </view>
 
-      <view class="submit-note">
-        提交即代表资料真实有效。审核通过后，你只会出现在另一类用户的合作广场中。
+      <view wx:if="{{isCreator}}" class="form-section verification-section">
+        <view class="section-heading">
+          <view>勾选作品声明</view>
+          <text>全部确认后即可提交审核</text>
+        </view>
+        <view wx:for="{{verificationOptions}}" wx:key="key" class="check-item" data-key="{{item.key}}" bindtap="toggleVerification">
+          <view class="check-box {{item.selected ? 'selected' : ''}}">{{item.selected ? '✓' : ''}}</view>
+          <text>{{item.label}}</text>
+        </view>
       </view>
-      <button
-        class="btn-primary"
-        style="margin-top: 48rpx !important;"
-        disabled="{{submitting}}"
-        loading="{{submitting}}"
-        bindtap="submitApplication"
-      >{{submitting ? '正在提交' : status === 'rejected' ? '重新提交审核' : '提交入驻审核'}}</button>
-      
-      <button class="btn-secondary" style="margin-top: 24rpx !important;" bindtap="goBackToIndex"><text class="switch-icon">↺</text> 重新选择身份</button>
+
+      <view class="submit-note">{{isCreator ? '上传作品并完成勾选后即可提交，后台会集中核验资料。' : '审核通过后，你只会出现在创作者的合作广场中。'}}</view>
+      <button class="btn-primary submit-button" disabled="{{submitting || uploading}}" loading="{{submitting}}" bindtap="submitApplication">{{submitting ? '正在提交' : status === 'rejected' ? '重新提交审核' : '提交入驻审核'}}</button>
+      <button class="btn-secondary switch-button" bindtap="goBackToIndex"><text class="switch-icon">↺</text> 重新选择身份</button>
     </block>
   </block>
 </view>

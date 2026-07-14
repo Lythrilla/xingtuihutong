@@ -1,4 +1,4 @@
-import { apiRequest } from '../../utils/api'
+import { apiRequest, uploadWorkFile } from '../../utils/api'
 
 export {}
 
@@ -14,6 +14,9 @@ interface OnboardingApplication {
   tags: string[]
   workTitle: string
   workUrl: string
+  workFileUrl: string
+  workFileName: string
+  verificationItems: string[]
   audienceSize: string
   cooperationBudget: string
   status: OnboardingStatus
@@ -32,6 +35,12 @@ interface TagOption {
   selected: boolean
 }
 
+const verificationOptions = [
+  { key: 'ownership', label: '我确认拥有该作品或已获得完整授权' },
+  { key: 'publishable', label: '我确认平台可将作品用于入驻审核' },
+  { key: 'authentic', label: '我确认提交的身份与作品信息真实有效' },
+]
+
 const creatorTags = ['流行', '说唱', '民谣', '电子', '国风', '摇滚']
 const providerTags = ['短视频宣发', '达人矩阵', '校园推广', '音乐媒体', '品牌联动', '直播推广']
 
@@ -40,6 +49,7 @@ Component({
     loading: true,
     error: '',
     submitting: false,
+    uploading: false,
     editing: true,
     role: 'client' as 'provider' | 'client',
     isCreator: true,
@@ -51,10 +61,14 @@ Component({
     description: '',
     workTitle: '',
     workUrl: '',
+    workFileUrl: '',
+    workFileName: '',
     audienceSize: '',
     cooperationBudget: '',
     selectedTags: [] as string[],
     tagOptions: [] as TagOption[],
+    verificationItems: [] as string[],
+    verificationOptions: verificationOptions.map((item) => ({ ...item, selected: false })),
   },
   lifetimes: {
     attached() {
@@ -87,10 +101,17 @@ Component({
           description: application?.description ?? '',
           workTitle: application?.workTitle ?? '',
           workUrl: application?.workUrl ?? '',
+          workFileUrl: application?.workFileUrl ?? '',
+          workFileName: application?.workFileName ?? '',
           audienceSize: application?.audienceSize ?? '',
           cooperationBudget: application?.cooperationBudget ?? '',
           selectedTags,
           tagOptions: options.map((label) => ({ label, selected: selectedTags.includes(label) })),
+          verificationItems: application?.verificationItems ?? [],
+          verificationOptions: verificationOptions.map((item) => ({
+            ...item,
+            selected: (application?.verificationItems ?? []).includes(item.key),
+          })),
           editing: response.status === 'draft' || response.status === 'rejected',
           loading: false,
         })
@@ -118,6 +139,52 @@ Component({
         })),
       })
     },
+    toggleVerification(event: WechatMiniprogram.TouchEvent) {
+      const key = event.currentTarget.dataset.key as string
+      const verificationItems = this.data.verificationItems.includes(key)
+        ? this.data.verificationItems.filter((item) => item !== key)
+        : [...this.data.verificationItems, key]
+      this.setData({
+        verificationItems,
+        verificationOptions: this.data.verificationOptions.map((item) => ({
+          ...item,
+          selected: verificationItems.includes(item.key),
+        })),
+      })
+    },
+    chooseWork() {
+      if (this.data.uploading) return
+      wx.chooseMessageFile({
+        count: 1,
+        type: 'file',
+        extension: ['mp3', 'wav', 'm4a', 'mp4', 'mov', 'jpg', 'jpeg', 'png'],
+        success: async (result) => {
+          const file = result.tempFiles[0]
+          if (!file) return
+          if (file.size > 30 * 1024 * 1024) {
+            wx.showToast({ title: '作品文件需小于 30MB', icon: 'none' })
+            return
+          }
+          this.setData({ uploading: true })
+          try {
+            const uploaded = await uploadWorkFile(file.path)
+            this.setData({
+              workFileUrl: uploaded.url,
+              workFileName: uploaded.fileName || file.name,
+              workTitle: this.data.workTitle || file.name.replace(/\.[^.]+$/, ''),
+            })
+            wx.showToast({ title: '作品已上传', icon: 'success' })
+          } catch (error) {
+            wx.showToast({
+              title: error instanceof Error ? error.message : '作品上传失败',
+              icon: 'none',
+            })
+          } finally {
+            this.setData({ uploading: false })
+          }
+        },
+      })
+    },
     editApplication() {
       if (this.data.status === 'approved') {
         wx.showModal({
@@ -140,18 +207,18 @@ Component({
     },
     async submitApplication() {
       if (this.data.submitting) return
-      const required = [
-        this.data.entityName,
-        this.data.contactName,
-        this.data.contactMethod,
-        this.data.description,
-      ]
+      const required = [this.data.entityName, this.data.contactName, this.data.contactMethod]
+      if (!this.data.isCreator) required.push(this.data.description)
       if (required.some((value) => !value.trim())) {
         wx.showToast({ title: '请完整填写必填资料', icon: 'none' })
         return
       }
-      if (this.data.isCreator && (!this.data.workTitle.trim() || !this.data.workUrl.trim())) {
-        wx.showToast({ title: '请填写代表作品和作品链接', icon: 'none' })
+      if (this.data.isCreator && !this.data.workFileUrl && !this.data.workUrl) {
+        wx.showToast({ title: '请上传一份代表作品', icon: 'none' })
+        return
+      }
+      if (this.data.isCreator && this.data.verificationItems.length !== verificationOptions.length) {
+        wx.showToast({ title: '请确认全部作品声明', icon: 'none' })
         return
       }
       if (!this.data.selectedTags.length) {
@@ -168,6 +235,9 @@ Component({
           tags: this.data.selectedTags,
           workTitle: this.data.workTitle.trim(),
           workUrl: this.data.workUrl.trim(),
+          workFileUrl: this.data.workFileUrl,
+          workFileName: this.data.workFileName,
+          verificationItems: this.data.verificationItems,
           audienceSize: this.data.audienceSize.trim(),
           cooperationBudget: this.data.cooperationBudget.trim(),
         })

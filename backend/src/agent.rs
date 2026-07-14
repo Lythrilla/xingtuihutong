@@ -36,6 +36,7 @@ struct AgentQuery {
 struct AgentBootstrap {
     session_id: String,
     engine: String,
+    role: String,
     messages: Vec<AgentMessage>,
     recent_tool_calls: Vec<ToolCallView>,
     suggestions: Vec<String>,
@@ -96,6 +97,26 @@ struct ToolExecution {
     artifact: Artifact,
 }
 
+struct AgentOrchestration {
+    reply: String,
+    tool_calls: Vec<ToolCallView>,
+    artifacts: Vec<Artifact>,
+}
+
+#[derive(Debug)]
+struct ModelToolCall {
+    id: String,
+    name: String,
+    raw_arguments: String,
+    arguments: Value,
+}
+
+#[derive(Debug)]
+struct ModelTurn {
+    content: Option<String>,
+    tool_calls: Vec<ModelToolCall>,
+}
+
 #[derive(Clone, Debug)]
 struct RuntimeTool {
     name: String,
@@ -153,9 +174,10 @@ async fn bootstrap(
     Ok(Json(AgentBootstrap {
         session_id,
         engine,
+        role: user.role.clone(),
         messages,
         recent_tool_calls,
-        suggestions: default_suggestions_from(&settings),
+        suggestions: suggestions_for_user(&settings, &user.role, false),
         tools: tool_definitions(&runtime_tools),
     }))
 }
@@ -166,7 +188,9 @@ async fn query(
     Json(input): Json<AgentQuery>,
 ) -> AppResult<Json<AgentResponse>> {
     let user = current_user(&state, &headers).await?;
-    Ok(Json(query_for_user(&state, &user, &input.message, input.session_id).await?))
+    Ok(Json(
+        query_for_user(&state, &user, &input.message, input.session_id).await?,
+    ))
 }
 
 pub(crate) async fn query_for_user(
@@ -206,69 +230,38 @@ pub(crate) async fn query_for_user(
     .execute(&state.pool)
     .await?;
 
-    let tools = select_tools(&runtime_tools, prompt)
-        .into_iter()
-        .take(max_tool_calls as usize)
-        .collect::<Vec<_>>();
-    let mut tool_calls = Vec::new();
-    let mut artifacts = Vec::new();
-    for tool_name in tools {
-        let started = Instant::now();
-        match execute_tool(
-            state,
-            user,
-            &session_id,
-            &user_message_id,
-            &tool_name,
-            prompt,
-        )
-        .await
-        {
-            Ok(execution) => {
-                let duration_ms = started.elapsed().as_millis() as i64;
-                let tool_call = persist_tool_call(
-                    state,
-                    &session_id,
-                    &user_message_id,
-                    &runtime_tools,
-                    &tool_name,
-                    "completed",
-                    json!({ "query": prompt }),
-                    execution.output.clone(),
-                    duration_ms,
-                )
-                .await?;
-                tool_calls.push(tool_call);
-                artifacts.push(execution.artifact);
-            }
-            Err(error) => {
-                let duration_ms = started.elapsed().as_millis() as i64;
-                let message = safe_tool_error(&error);
-                let output = json!({ "error": message });
-                let tool_call = persist_tool_call(
-                    state,
-                    &session_id,
-                    &user_message_id,
-                    &runtime_tools,
-                    &tool_name,
-                    "failed",
-                    json!({ "query": prompt }),
-                    output,
-                    duration_ms,
-                )
-                .await?;
-                tool_calls.push(tool_call);
-                artifacts.push(Artifact {
-                    kind: "error".into(),
-                    title: format!("{}未完成", tool_label(&runtime_tools, &tool_name)),
-                    summary: message,
-                    data: json!({ "tool": tool_name }),
-                });
-            }
+    let orchestration = match run_model_orchestration(
+        state,
+        user,
+        &settings,
+        &runtime_tools,
+        &session_id,
+        &user_message_id,
+        prompt,
+        max_tool_calls as usize,
+    )
+    .await?
+    {
+        Some(orchestration) => orchestration,
+        None => {
+            run_deterministic_orchestration(
+                state,
+                user,
+                &settings,
+                &runtime_tools,
+                &session_id,
+                &user_message_id,
+                prompt,
+                max_tool_calls as usize,
+            )
+            .await?
         }
-    }
-
-    let reply = compose_reply(prompt, &tool_calls, &settings);
+    };
+    let AgentOrchestration {
+        reply,
+        tool_calls,
+        artifacts,
+    } = orchestration;
     let assistant_id = Uuid::new_v4().to_string();
     sqlx::query(
         "INSERT INTO agent_messages (id, session_id, role, content)
@@ -307,7 +300,504 @@ pub(crate) async fn query_for_user(
         message,
         tool_calls,
         artifacts,
-        suggestions: follow_up_suggestions_from(&settings, prompt),
+        suggestions: suggestions_for_user(&settings, &user.role, true),
+    })
+}
+
+#[allow(clippy::too_many_arguments)]
+async fn run_model_orchestration(
+    state: &AppState,
+    user: &UserRow,
+    settings: &AgentSettings,
+    runtime_tools: &[RuntimeTool],
+    session_id: &str,
+    message_id: &str,
+    prompt: &str,
+    max_tool_calls: usize,
+) -> AppResult<Option<AgentOrchestration>> {
+    if state.config.agent_model_api_url.is_none() {
+        return Ok(None);
+    }
+
+    let history = load_messages(state, session_id, settings.max_history).await?;
+    let mut model_messages = vec![json!({
+        "role": "system",
+        "content": model_system_prompt(settings, user),
+    })];
+    model_messages.extend(history.into_iter().map(|message| {
+        json!({
+            "role": message.role,
+            "content": message.content,
+        })
+    }));
+
+    let model_tools = model_tool_definitions(runtime_tools);
+    let mut tool_calls = Vec::new();
+    let mut artifacts = Vec::new();
+    let mut model_turns = 0_usize;
+
+    loop {
+        model_turns += 1;
+        if model_turns > max_tool_calls.saturating_add(2) {
+            return Ok(Some(AgentOrchestration {
+                reply: compose_reply(prompt, &tool_calls, settings),
+                tool_calls,
+                artifacts,
+            }));
+        }
+        let turn = match request_model_turn(state, settings, &model_messages, &model_tools).await {
+            Ok(turn) => turn,
+            Err(error) => {
+                tracing::warn!(error = %error, "agent model request failed; using local fallback");
+                if tool_calls.is_empty() {
+                    return Ok(None);
+                }
+                return Ok(Some(AgentOrchestration {
+                    reply: compose_reply(prompt, &tool_calls, settings),
+                    tool_calls,
+                    artifacts,
+                }));
+            }
+        };
+
+        if turn.tool_calls.is_empty() {
+            let reply = turn
+                .content
+                .filter(|content| !content.trim().is_empty())
+                .unwrap_or_else(|| compose_reply(prompt, &tool_calls, settings));
+            return Ok(Some(AgentOrchestration {
+                reply,
+                tool_calls,
+                artifacts,
+            }));
+        }
+
+        model_messages.push(model_assistant_message(&turn));
+        for requested in turn.tool_calls {
+            if tool_calls.len() >= max_tool_calls {
+                model_messages.push(json!({
+                    "role": "tool",
+                    "tool_call_id": requested.id,
+                    "name": requested.name,
+                    "content": json!({
+                        "error": "已达到本轮最大工具调用数，请基于现有结果回答"
+                    })
+                    .to_string(),
+                }));
+                continue;
+            }
+
+            let runtime_tool = runtime_tools
+                .iter()
+                .find(|tool| tool.name == requested.name);
+            if let Some(runtime_tool) = runtime_tool {
+                for required_name in &runtime_tool.required_tools {
+                    if tool_calls.len() >= max_tool_calls
+                        || tool_calls
+                            .iter()
+                            .any(|call| call.name == *required_name && call.status == "completed")
+                    {
+                        continue;
+                    }
+                    let input = json!({
+                        "query": prompt,
+                        "source": "required_tool",
+                        "requestedBy": requested.name,
+                    });
+                    let (call, artifact) = execute_recorded_tool(
+                        state,
+                        user,
+                        session_id,
+                        message_id,
+                        runtime_tools,
+                        required_name,
+                        prompt,
+                        input,
+                    )
+                    .await?;
+                    tool_calls.push(call);
+                    artifacts.push(artifact);
+                }
+            }
+
+            if tool_calls.len() >= max_tool_calls {
+                model_messages.push(json!({
+                    "role": "tool",
+                    "tool_call_id": requested.id,
+                    "name": requested.name,
+                    "content": json!({
+                        "error": "已达到本轮最大工具调用数，请基于现有结果回答"
+                    })
+                    .to_string(),
+                }));
+                continue;
+            }
+
+            let input = if requested.arguments.is_object() {
+                requested.arguments.clone()
+            } else {
+                json!({ "query": prompt })
+            };
+            let tool_prompt = requested
+                .arguments
+                .get("query")
+                .and_then(Value::as_str)
+                .filter(|value| !value.trim().is_empty())
+                .unwrap_or(prompt);
+
+            let (call, artifact) = if runtime_tool
+                .is_some_and(|tool| tool.mode == "write" && !tool_matches(tool, prompt))
+            {
+                persist_failed_tool(
+                    state,
+                    session_id,
+                    message_id,
+                    runtime_tools,
+                    &requested.name,
+                    input,
+                    "写入工具仅在用户明确要求执行时运行",
+                )
+                .await?
+            } else {
+                execute_recorded_tool(
+                    state,
+                    user,
+                    session_id,
+                    message_id,
+                    runtime_tools,
+                    &requested.name,
+                    tool_prompt,
+                    input,
+                )
+                .await?
+            };
+            let tool_output = call.output.clone();
+            tool_calls.push(call);
+            artifacts.push(artifact);
+            model_messages.push(json!({
+                "role": "tool",
+                "tool_call_id": requested.id,
+                "name": requested.name,
+                "content": tool_output.to_string(),
+            }));
+        }
+    }
+}
+
+#[allow(clippy::too_many_arguments)]
+async fn run_deterministic_orchestration(
+    state: &AppState,
+    user: &UserRow,
+    settings: &AgentSettings,
+    runtime_tools: &[RuntimeTool],
+    session_id: &str,
+    message_id: &str,
+    prompt: &str,
+    max_tool_calls: usize,
+) -> AppResult<AgentOrchestration> {
+    let tools = select_tools(runtime_tools, prompt)
+        .into_iter()
+        .take(max_tool_calls)
+        .collect::<Vec<_>>();
+    let mut tool_calls = Vec::new();
+    let mut artifacts = Vec::new();
+    for tool_name in tools {
+        let (call, artifact) = execute_recorded_tool(
+            state,
+            user,
+            session_id,
+            message_id,
+            runtime_tools,
+            &tool_name,
+            prompt,
+            json!({ "query": prompt, "source": "local_fallback" }),
+        )
+        .await?;
+        tool_calls.push(call);
+        artifacts.push(artifact);
+    }
+    Ok(AgentOrchestration {
+        reply: compose_reply(prompt, &tool_calls, settings),
+        tool_calls,
+        artifacts,
+    })
+}
+
+#[allow(clippy::too_many_arguments)]
+async fn execute_recorded_tool(
+    state: &AppState,
+    user: &UserRow,
+    session_id: &str,
+    message_id: &str,
+    runtime_tools: &[RuntimeTool],
+    tool_name: &str,
+    prompt: &str,
+    input: Value,
+) -> AppResult<(ToolCallView, Artifact)> {
+    let started = Instant::now();
+    match execute_tool(
+        state, user, session_id, message_id, tool_name, prompt, &input,
+    )
+    .await
+    {
+        Ok(execution) => {
+            let call = persist_tool_call(
+                state,
+                session_id,
+                message_id,
+                runtime_tools,
+                tool_name,
+                "completed",
+                input,
+                execution.output,
+                started.elapsed().as_millis() as i64,
+            )
+            .await?;
+            Ok((call, execution.artifact))
+        }
+        Err(error) => {
+            let message = safe_tool_error(&error);
+            persist_failed_tool(
+                state,
+                session_id,
+                message_id,
+                runtime_tools,
+                tool_name,
+                input,
+                &message,
+            )
+            .await
+        }
+    }
+}
+
+async fn persist_failed_tool(
+    state: &AppState,
+    session_id: &str,
+    message_id: &str,
+    runtime_tools: &[RuntimeTool],
+    tool_name: &str,
+    input: Value,
+    message: &str,
+) -> AppResult<(ToolCallView, Artifact)> {
+    let output = json!({ "error": message });
+    let call = persist_tool_call(
+        state,
+        session_id,
+        message_id,
+        runtime_tools,
+        tool_name,
+        "failed",
+        input,
+        output,
+        0,
+    )
+    .await?;
+    Ok((
+        call,
+        Artifact {
+            kind: "error".into(),
+            title: format!("{}未完成", tool_label(runtime_tools, tool_name)),
+            summary: message.into(),
+            data: json!({ "tool": tool_name }),
+        },
+    ))
+}
+
+fn model_system_prompt(settings: &AgentSettings, user: &UserRow) -> String {
+    format!(
+        "{}\n\n当前用户身份：{}。所有业务数据必须通过已注册工具实时读取，禁止编造数据库结果。\
+         你负责理解意图、选择工具和基于工具结果总结；不使用 RAG、向量检索或第二个模型。\
+         每个工具只接受 query 字段。只有用户明确要求执行写入动作时，才可调用 write 工具。\
+         当前用户组织：{}。",
+        settings.system_prompt, user.role, user.organization
+    )
+}
+
+fn model_tool_definitions(tools: &[RuntimeTool]) -> Vec<Value> {
+    tools
+        .iter()
+        .map(|tool| {
+            let parameters = match tool.name.as_str() {
+                "search_partners" => json!({
+                    "type": "object",
+                    "properties": {
+                        "query": { "type": "string", "description": "用户的合作伙伴检索需求" },
+                        "keyword": { "type": "string", "description": "能力、渠道或内容类型关键词" },
+                        "limit": { "type": "integer", "minimum": 1, "maximum": 10 }
+                    },
+                    "required": ["query"],
+                    "additionalProperties": false
+                }),
+                "recommend_plans" => json!({
+                    "type": "object",
+                    "properties": {
+                        "query": { "type": "string", "description": "用户的推广目标和约束" },
+                        "maxBudgetCents": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "description": "最高预算，单位为人民币分"
+                        },
+                        "limit": { "type": "integer", "minimum": 1, "maximum": 8 }
+                    },
+                    "required": ["query"],
+                    "additionalProperties": false
+                }),
+                "connect_partner" => json!({
+                    "type": "object",
+                    "properties": {
+                        "query": { "type": "string", "description": "用户明确发起合作的原始要求" },
+                        "partnerId": {
+                            "type": "string",
+                            "description": "优先使用 search_partners 返回的目标伙伴 ID"
+                        }
+                    },
+                    "required": ["query"],
+                    "additionalProperties": false
+                }),
+                "save_recommended_plan" => json!({
+                    "type": "object",
+                    "properties": {
+                        "query": { "type": "string", "description": "用户明确收藏方案的原始要求" },
+                        "planId": {
+                            "type": "string",
+                            "description": "优先使用 recommend_plans 返回的目标方案 ID"
+                        }
+                    },
+                    "required": ["query"],
+                    "additionalProperties": false
+                }),
+                "create_follow_up_task" => json!({
+                    "type": "object",
+                    "properties": {
+                        "query": { "type": "string", "description": "用户明确创建任务的原始要求" },
+                        "title": { "type": "string", "description": "简短、可执行的跟进任务标题" }
+                    },
+                    "required": ["query"],
+                    "additionalProperties": false
+                }),
+                _ => json!({
+                    "type": "object",
+                    "properties": {
+                        "query": {
+                            "type": "string",
+                            "description": "用于实时业务数据查询的原始需求"
+                        }
+                    },
+                    "required": ["query"],
+                    "additionalProperties": false
+                }),
+            };
+            json!({
+                "type": "function",
+                "function": {
+                    "name": tool.name,
+                    "description": format!(
+                        "{}。模式：{}。结果直接来自业务数据库。",
+                        tool.description, tool.mode
+                    ),
+                    "parameters": parameters
+                }
+            })
+        })
+        .collect()
+}
+
+fn model_assistant_message(turn: &ModelTurn) -> Value {
+    json!({
+        "role": "assistant",
+        "content": turn.content,
+        "tool_calls": turn.tool_calls.iter().map(|call| {
+            json!({
+                "id": call.id,
+                "type": "function",
+                "function": {
+                    "name": call.name,
+                    "arguments": call.raw_arguments,
+                }
+            })
+        }).collect::<Vec<_>>(),
+    })
+}
+
+async fn request_model_turn(
+    state: &AppState,
+    settings: &AgentSettings,
+    messages: &[Value],
+    tools: &[Value],
+) -> Result<ModelTurn, String> {
+    let url = state
+        .config
+        .agent_model_api_url
+        .as_deref()
+        .ok_or_else(|| "model endpoint is not configured".to_string())?;
+    let client = reqwest::Client::builder()
+        .timeout(std::time::Duration::from_secs(
+            state.config.agent_model_timeout_secs,
+        ))
+        .build()
+        .map_err(|error| error.to_string())?;
+    let mut request = client.post(url).json(&json!({
+        "model": settings.model,
+        "messages": messages,
+        "tools": tools,
+        "tool_choice": "auto",
+        "temperature": settings.temperature,
+        "max_tokens": settings.max_tokens,
+    }));
+    if let Some(api_key) = &state.config.agent_model_api_key {
+        request = request.bearer_auth(api_key);
+    }
+    let response = request.send().await.map_err(|error| error.to_string())?;
+    let status = response.status();
+    if !status.is_success() {
+        return Err(format!("model endpoint returned {status}"));
+    }
+    let body: Value = response.json().await.map_err(|error| error.to_string())?;
+    parse_model_turn(&body)
+}
+
+fn parse_model_turn(body: &Value) -> Result<ModelTurn, String> {
+    let message = body
+        .pointer("/choices/0/message")
+        .ok_or_else(|| "model response has no message".to_string())?;
+    let content = message
+        .get("content")
+        .and_then(Value::as_str)
+        .map(str::to_owned);
+    let tool_calls: Vec<ModelToolCall> = message
+        .get("tool_calls")
+        .and_then(Value::as_array)
+        .map(|calls| {
+            calls
+                .iter()
+                .filter_map(|call| {
+                    let id = call.get("id")?.as_str()?.to_owned();
+                    let function = call.get("function")?;
+                    let name = function.get("name")?.as_str()?.to_owned();
+                    let raw_arguments = function
+                        .get("arguments")
+                        .and_then(Value::as_str)
+                        .unwrap_or("{}")
+                        .to_owned();
+                    let arguments =
+                        serde_json::from_str(&raw_arguments).unwrap_or_else(|_| json!({}));
+                    Some(ModelToolCall {
+                        id,
+                        name,
+                        raw_arguments,
+                        arguments,
+                    })
+                })
+                .collect()
+        })
+        .unwrap_or_default();
+    if content.is_none() && tool_calls.is_empty() {
+        return Err("model response is empty".into());
+    }
+    Ok(ModelTurn {
+        content,
+        tool_calls,
     })
 }
 
@@ -364,7 +854,11 @@ async fn ensure_session_owner(state: &AppState, session_id: &str, user_id: &str)
     Ok(())
 }
 
-async fn load_messages(state: &AppState, session_id: &str, max_history: i64) -> AppResult<Vec<AgentMessage>> {
+async fn load_messages(
+    state: &AppState,
+    session_id: &str,
+    max_history: i64,
+) -> AppResult<Vec<AgentMessage>> {
     Ok(sqlx::query_as::<_, AgentMessage>(
         "SELECT id, role, content, created_at FROM agent_messages
          WHERE session_id = ? ORDER BY created_at DESC, rowid DESC LIMIT ?",
@@ -523,15 +1017,20 @@ async fn execute_tool(
     message_id: &str,
     tool_name: &str,
     prompt: &str,
+    input: &Value,
 ) -> AppResult<ToolExecution> {
     match tool_name {
         "query_business_metrics" => query_business_metrics(state, user).await,
         "inspect_collaboration_pipeline" => inspect_pipeline(state, user).await,
-        "search_partners" => search_partners(state, prompt).await,
-        "recommend_plans" => recommend_plans(state, prompt).await,
-        "connect_partner" => connect_partner(state, user, session_id, message_id).await,
-        "save_recommended_plan" => save_recommended_plan(state, user, session_id, message_id).await,
-        "create_follow_up_task" => create_follow_up_task(state, user, session_id, prompt).await,
+        "search_partners" => search_partners(state, user, prompt, input).await,
+        "recommend_plans" => recommend_plans(state, prompt, input).await,
+        "connect_partner" => connect_partner(state, user, session_id, message_id, input).await,
+        "save_recommended_plan" => {
+            save_recommended_plan(state, user, session_id, message_id, input).await
+        }
+        "create_follow_up_task" => {
+            create_follow_up_task(state, user, session_id, prompt, input).await
+        }
         _ => Err(AppError::BadRequest("unknown agent tool".into())),
     }
 }
@@ -631,56 +1130,54 @@ async fn inspect_pipeline(state: &AppState, user: &UserRow) -> AppResult<ToolExe
     })
 }
 
-async fn search_partners(state: &AppState, prompt: &str) -> AppResult<ToolExecution> {
-    let partner_type = if prompt.contains("需求") {
-        Some("client")
-    } else if prompt.contains("服务") {
-        Some("provider")
+async fn search_partners(
+    state: &AppState,
+    user: &UserRow,
+    prompt: &str,
+    input: &Value,
+) -> AppResult<ToolExecution> {
+    let partner_type = if user.role == "provider" {
+        "client"
     } else {
-        None
+        "provider"
     };
-    let keyword = ["短视频", "校园", "品牌", "媒体", "词曲", "混音", "推广"]
-        .into_iter()
-        .find(|keyword| prompt.contains(keyword));
-    let rows = match (partner_type, keyword) {
-        (Some(kind), Some(keyword)) => {
+    let configured_keyword = input
+        .get("keyword")
+        .and_then(Value::as_str)
+        .map(str::trim)
+        .filter(|value| !value.is_empty());
+    let keyword = configured_keyword.or_else(|| {
+        ["短视频", "校园", "品牌", "媒体", "词曲", "混音", "推广"]
+            .into_iter()
+            .find(|keyword| prompt.contains(keyword))
+    });
+    let limit = input
+        .get("limit")
+        .and_then(Value::as_i64)
+        .unwrap_or(5)
+        .clamp(1, 10);
+    let rows = match keyword {
+        Some(keyword) => {
             sqlx::query(
                 "SELECT id, name, identity, description, tags, match_score
                  FROM partners WHERE active = 1 AND partner_type = ?
-                 AND (description LIKE ? OR tags LIKE ?) ORDER BY match_score DESC LIMIT 5",
+                 AND (description LIKE ? OR tags LIKE ?) ORDER BY match_score DESC LIMIT ?",
             )
-            .bind(kind)
+            .bind(partner_type)
             .bind(format!("%{keyword}%"))
             .bind(format!("%{keyword}%"))
+            .bind(limit)
             .fetch_all(&state.pool)
             .await?
         }
-        (Some(kind), None) => {
+        None => {
             sqlx::query(
                 "SELECT id, name, identity, description, tags, match_score
                  FROM partners WHERE active = 1 AND partner_type = ?
-                 ORDER BY match_score DESC LIMIT 5",
+                 ORDER BY match_score DESC LIMIT ?",
             )
-            .bind(kind)
-            .fetch_all(&state.pool)
-            .await?
-        }
-        (None, Some(keyword)) => {
-            sqlx::query(
-                "SELECT id, name, identity, description, tags, match_score
-                 FROM partners WHERE active = 1 AND (description LIKE ? OR tags LIKE ?)
-                 ORDER BY match_score DESC LIMIT 5",
-            )
-            .bind(format!("%{keyword}%"))
-            .bind(format!("%{keyword}%"))
-            .fetch_all(&state.pool)
-            .await?
-        }
-        (None, None) => {
-            sqlx::query(
-                "SELECT id, name, identity, description, tags, match_score
-                 FROM partners WHERE active = 1 ORDER BY match_score DESC LIMIT 5",
-            )
+            .bind(partner_type)
+            .bind(limit)
             .fetch_all(&state.pool)
             .await?
         }
@@ -711,28 +1208,45 @@ async fn search_partners(state: &AppState, prompt: &str) -> AppResult<ToolExecut
     })
 }
 
-async fn recommend_plans(state: &AppState, prompt: &str) -> AppResult<ToolExecution> {
-    let maximum = if prompt.contains("低预算") || prompt.contains("5000") {
-        Some(500_000_i64)
-    } else if prompt.contains("2万") || prompt.contains("20000") {
-        Some(2_000_000_i64)
-    } else {
-        None
-    };
+async fn recommend_plans(
+    state: &AppState,
+    prompt: &str,
+    input: &Value,
+) -> AppResult<ToolExecution> {
+    let maximum = input
+        .get("maxBudgetCents")
+        .and_then(Value::as_i64)
+        .filter(|value| *value > 0)
+        .or_else(|| {
+            if prompt.contains("低预算") || prompt.contains("5000") {
+                Some(500_000_i64)
+            } else if prompt.contains("2万") || prompt.contains("20000") {
+                Some(2_000_000_i64)
+            } else {
+                None
+            }
+        });
+    let limit = input
+        .get("limit")
+        .and_then(Value::as_i64)
+        .unwrap_or(4)
+        .clamp(1, 8);
     let rows = if let Some(maximum) = maximum {
         sqlx::query(
             "SELECT id, title, plan_type, description, tags, budget_amount, score
              FROM plans WHERE active = 1 AND budget_amount <= ?
-             ORDER BY score DESC LIMIT 4",
+             ORDER BY score DESC LIMIT ?",
         )
         .bind(maximum)
+        .bind(limit)
         .fetch_all(&state.pool)
         .await?
     } else {
         sqlx::query(
             "SELECT id, title, plan_type, description, tags, budget_amount, score
-             FROM plans WHERE active = 1 ORDER BY score DESC LIMIT 4",
+             FROM plans WHERE active = 1 ORDER BY score DESC LIMIT ?",
         )
+        .bind(limit)
         .fetch_all(&state.pool)
         .await?
     };
@@ -770,21 +1284,32 @@ async fn save_recommended_plan(
     user: &UserRow,
     session_id: &str,
     message_id: &str,
+    input: &Value,
 ) -> AppResult<ToolExecution> {
-    let previous: Option<String> = sqlx::query_scalar(
-        "SELECT output_json FROM agent_tool_calls
-         WHERE session_id = ? AND message_id = ? AND tool_name = 'recommend_plans'
-         ORDER BY created_at DESC, rowid DESC LIMIT 1",
-    )
-    .bind(session_id)
-    .bind(message_id)
-    .fetch_optional(&state.pool)
-    .await?;
-    let plan_id = previous
-        .as_deref()
-        .and_then(|value| serde_json::from_str::<Value>(value).ok())
-        .and_then(|value| value["plans"][0]["id"].as_str().map(str::to_owned))
-        .ok_or_else(|| AppError::NotFound("当前没有可收藏的推荐方案".into()))?;
+    let plan_id = match input
+        .get("planId")
+        .and_then(Value::as_str)
+        .map(str::trim)
+        .filter(|value| !value.is_empty())
+    {
+        Some(plan_id) => plan_id.to_owned(),
+        None => {
+            let previous: Option<String> = sqlx::query_scalar(
+                "SELECT output_json FROM agent_tool_calls
+                 WHERE session_id = ? AND message_id = ? AND tool_name = 'recommend_plans'
+                 ORDER BY created_at DESC, rowid DESC LIMIT 1",
+            )
+            .bind(session_id)
+            .bind(message_id)
+            .fetch_optional(&state.pool)
+            .await?;
+            previous
+                .as_deref()
+                .and_then(|value| serde_json::from_str::<Value>(value).ok())
+                .and_then(|value| value["plans"][0]["id"].as_str().map(str::to_owned))
+                .ok_or_else(|| AppError::NotFound("当前没有可收藏的推荐方案".into()))?
+        }
+    };
     let active: bool =
         sqlx::query_scalar("SELECT EXISTS(SELECT 1 FROM plans WHERE id = ? AND active = 1)")
             .bind(&plan_id)
@@ -853,21 +1378,32 @@ async fn connect_partner(
     user: &UserRow,
     session_id: &str,
     message_id: &str,
+    input: &Value,
 ) -> AppResult<ToolExecution> {
-    let previous: Option<String> = sqlx::query_scalar(
-        "SELECT output_json FROM agent_tool_calls
-         WHERE session_id = ? AND message_id = ? AND tool_name = 'search_partners'
-         ORDER BY created_at DESC, rowid DESC LIMIT 1",
-    )
-    .bind(session_id)
-    .bind(message_id)
-    .fetch_optional(&state.pool)
-    .await?;
-    let partner_id = previous
-        .as_deref()
-        .and_then(|value| serde_json::from_str::<Value>(value).ok())
-        .and_then(|value| value["partners"][0]["id"].as_str().map(str::to_owned))
-        .ok_or_else(|| AppError::NotFound("当前没有可联系的匹配伙伴".into()))?;
+    let partner_id = match input
+        .get("partnerId")
+        .and_then(Value::as_str)
+        .map(str::trim)
+        .filter(|value| !value.is_empty())
+    {
+        Some(partner_id) => partner_id.to_owned(),
+        None => {
+            let previous: Option<String> = sqlx::query_scalar(
+                "SELECT output_json FROM agent_tool_calls
+                 WHERE session_id = ? AND message_id = ? AND tool_name = 'search_partners'
+                 ORDER BY created_at DESC, rowid DESC LIMIT 1",
+            )
+            .bind(session_id)
+            .bind(message_id)
+            .fetch_optional(&state.pool)
+            .await?;
+            previous
+                .as_deref()
+                .and_then(|value| serde_json::from_str::<Value>(value).ok())
+                .and_then(|value| value["partners"][0]["id"].as_str().map(str::to_owned))
+                .ok_or_else(|| AppError::NotFound("当前没有可联系的匹配伙伴".into()))?
+        }
+    };
     let connection =
         establish_partner_connection(state, user, &partner_id, Some(session_id)).await?;
     let partner_name = connection.partner_name;
@@ -900,8 +1436,15 @@ async fn create_follow_up_task(
     user: &UserRow,
     session_id: &str,
     prompt: &str,
+    input: &Value,
 ) -> AppResult<ToolExecution> {
-    let title = short_title(prompt);
+    let title = input
+        .get("title")
+        .and_then(Value::as_str)
+        .map(str::trim)
+        .filter(|value| !value.is_empty())
+        .map(short_title)
+        .unwrap_or_else(|| short_title(prompt));
     let bucket = Utc::now().timestamp() / 300;
     let dedupe_key = format!("follow_up:{}:{}:{}:{}", session_id, user.id, bucket, title);
     let existing: Option<String> = sqlx::query_scalar(
@@ -1044,8 +1587,21 @@ fn action_is_blocked(prompt: &str, verbs: &[String], informational: &[String]) -
                 .rev()
                 .collect::<String>();
             let negations: Vec<String> = [
-                "不要", "别", "无需", "不必", "暂不", "先不", "请勿", "禁止", "取消",
-                "怎么", "如何", "能否", "是否", "可否", "该不该",
+                "不要",
+                "别",
+                "无需",
+                "不必",
+                "暂不",
+                "先不",
+                "请勿",
+                "禁止",
+                "取消",
+                "怎么",
+                "如何",
+                "能否",
+                "是否",
+                "可否",
+                "该不该",
             ]
             .into_iter()
             .map(String::from)
@@ -1089,16 +1645,38 @@ fn tool_label(tools: &[RuntimeTool], name: &str) -> String {
         .unwrap_or_else(|| name.into())
 }
 
-fn default_suggestions_from(settings: &AgentSettings) -> Vec<String> {
-    parse_string_list(&settings.default_suggestions)
+fn suggestions_for_user(settings: &AgentSettings, role: &str, follow_up: bool) -> Vec<String> {
+    let role_suggestions = match (role, follow_up) {
+        ("client", false) => vec![
+            "分析我的作品推广数据",
+            "帮我找短视频推广方",
+            "推荐一个适合新作品的推广方案",
+        ],
+        ("client", true) => vec![
+            "继续细分预算和渠道",
+            "帮我联系最合适的推广方",
+            "为这个方案创建跟进任务",
+        ],
+        ("provider", false) => vec![
+            "分析我的服务与合作数据",
+            "帮我找合适的创作者项目",
+            "梳理最近的合作转化漏斗",
+        ],
+        _ => vec![
+            "继续分析最有潜力的项目",
+            "帮我联系最合适的创作者",
+            "为这个合作创建跟进任务",
+        ],
+    };
+    let configured = if follow_up {
+        &settings.follow_up_suggestions
+    } else {
+        &settings.default_suggestions
+    };
+    role_suggestions
         .into_iter()
-        .take(settings.suggestion_count.max(1) as usize)
-        .collect()
-}
-
-fn follow_up_suggestions_from(settings: &AgentSettings, _prompt: &str) -> Vec<String> {
-    parse_string_list(&settings.follow_up_suggestions)
-        .into_iter()
+        .map(str::to_owned)
+        .chain(parse_string_list(configured))
         .take(settings.suggestion_count.max(1) as usize)
         .collect()
 }
@@ -1109,7 +1687,8 @@ fn format_money(cents: i64) -> String {
 
 #[cfg(test)]
 mod tests {
-    use super::{select_tools, RuntimeTool};
+    use super::{parse_model_turn, select_tools, RuntimeTool};
+    use serde_json::json;
 
     fn test_tool(
         name: &str,
@@ -1171,7 +1750,14 @@ mod tests {
             test_tool(
                 "connect_partner",
                 &["联系", "沟通", "合作", "会话", "对接"],
-                &["联系过", "已联系", "联系记录", "联系状态", "沟通数据", "沟通记录"],
+                &[
+                    "联系过",
+                    "已联系",
+                    "联系记录",
+                    "联系状态",
+                    "沟通数据",
+                    "沟通记录",
+                ],
                 &[
                     &["帮我联系"],
                     &["请联系"],
@@ -1197,7 +1783,14 @@ mod tests {
             test_tool(
                 "save_recommended_plan",
                 &["收藏", "保存"],
-                &["取消收藏", "已收藏", "收藏了", "收藏多少", "收藏数据", "收藏记录"],
+                &[
+                    "取消收藏",
+                    "已收藏",
+                    "收藏了",
+                    "收藏多少",
+                    "收藏数据",
+                    "收藏记录",
+                ],
                 &[
                     &["帮我收藏"],
                     &["请收藏"],
@@ -1274,5 +1867,40 @@ mod tests {
         assert!(!select("先不保存这个方案").contains(&"save_recommended_plan".into()));
         assert!(!select("有哪些任务").contains(&"create_follow_up_task".into()));
         assert!(select("请创建本周跟进任务").contains(&"create_follow_up_task".into()));
+    }
+
+    #[test]
+    fn parses_openai_compatible_tool_calls() {
+        let turn = parse_model_turn(&json!({
+            "choices": [{
+                "message": {
+                    "role": "assistant",
+                    "content": null,
+                    "tool_calls": [{
+                        "id": "call-1",
+                        "type": "function",
+                        "function": {
+                            "name": "search_partners",
+                            "arguments": "{\"query\":\"找短视频推广方\"}"
+                        }
+                    }]
+                }
+            }]
+        }))
+        .expect("valid model response");
+        assert_eq!(turn.tool_calls.len(), 1);
+        assert_eq!(turn.tool_calls[0].name, "search_partners");
+        assert_eq!(
+            turn.tool_calls[0].arguments["query"],
+            json!("找短视频推广方")
+        );
+    }
+
+    #[test]
+    fn rejects_empty_model_responses() {
+        let result = parse_model_turn(&json!({
+            "choices": [{ "message": { "role": "assistant", "content": null } }]
+        }));
+        assert!(result.is_err());
     }
 }

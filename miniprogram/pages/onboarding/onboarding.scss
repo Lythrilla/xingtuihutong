@@ -6,52 +6,24 @@ view, text, input, textarea {
   padding-bottom: calc(56rpx + env(safe-area-inset-bottom));
 }
 
-.glass-card {
-  background: rgba(255, 255, 255, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.9);
-  border-radius: 32rpx;
-  box-shadow: 0 16rpx 40rpx rgba(137, 154, 248, 0.08);
-  backdrop-filter: blur(20px) saturate(140%);
+.form-section {
+  margin-top: 38rpx;
+  padding: 30rpx 0 34rpx;
+  border-top: 1rpx solid rgba(137, 154, 248, 0.2);
+  border-bottom: 1rpx solid rgba(137, 154, 248, 0.12);
 }
 
-.flow-card {
-  display: flex;
-  align-items: flex-start;
-  gap: 20rpx;
-  margin-top: 48rpx;
-  padding: 0 12rpx;
-}
-
-.flow-node {
-  width: 8rpx;
-  height: 32rpx;
-  margin-top: 6rpx;
-  flex: none;
-  background: linear-gradient(180deg, rgba(137, 154, 248, 1), rgba(137, 154, 248, 0.1));
-  border-radius: 8rpx;
-  box-shadow: 0 4rpx 12rpx rgba(137, 154, 248, 0.3);
-}
-
-.flow-main {
-  min-width: 0;
-  flex: 1;
-}
-
-.flow-title {
+.section-heading view {
   color: rgba(46, 49, 62, 1);
   font-size: 32rpx;
   font-weight: 700;
 }
 
-.flow-desc {
+.section-heading text {
+  display: block;
   margin-top: 6rpx;
   color: rgba(118, 121, 143, 1);
   font-size: 22rpx;
-}
-
-.form-card {
-  margin-top: 24rpx;
-  padding: 40rpx;
 }
 
 .field {
@@ -77,10 +49,9 @@ view, text, input, textarea {
   padding: 0 24rpx;
   color: #343b56;
   font-size: 27rpx;
-  background: rgba(255, 255, 255, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.9);
-  border-radius: 20rpx;
-  box-shadow: inset 0 2rpx 6rpx rgba(137, 154, 248, 0.05);
+  background: rgba(255, 255, 255, 0.5);
+  border: 1rpx solid rgba(137, 154, 248, 0.18);
+  border-radius: 14rpx;
 }
 
 .field input {
@@ -119,9 +90,9 @@ view, text, input, textarea {
   padding: 12rpx 24rpx;
   color: #76798f;
   font-size: 23rpx;
-  background: rgba(255, 255, 255, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.9);
-  border-radius: 24rpx;
+  background: rgba(255, 255, 255, 0.45);
+  border: 1rpx solid rgba(137, 154, 248, 0.16);
+  border-radius: 12rpx;
 }
 
 .tag-option.selected {
@@ -137,6 +108,104 @@ view, text, input, textarea {
   font-size: 22rpx;
   line-height: 1.6;
   text-align: center;
+}
+
+.upload-work {
+  display: flex;
+  align-items: center;
+  gap: 22rpx;
+  margin-top: 28rpx;
+  padding: 28rpx;
+  border: 2rpx dashed rgba(137, 154, 248, 0.42);
+  border-radius: 18rpx;
+}
+
+.upload-work.uploaded {
+  background: rgba(45, 216, 167, 0.05);
+  border-style: solid;
+  border-color: rgba(45, 176, 135, 0.28);
+}
+
+.upload-mark {
+  width: 58rpx;
+  height: 58rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  color: #fff;
+  font-size: 32rpx;
+  background: #899af8;
+  border-radius: 50%;
+}
+
+.uploaded .upload-mark {
+  background: #2db087;
+}
+
+.upload-copy {
+  min-width: 0;
+  flex: 1;
+}
+
+.upload-copy view {
+  overflow: hidden;
+  color: #343b56;
+  font-size: 26rpx;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.upload-copy text {
+  display: block;
+  margin-top: 6rpx;
+  color: #76798f;
+  font-size: 21rpx;
+}
+
+.verification-section {
+  padding-bottom: 20rpx;
+}
+
+.check-item {
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+  padding: 22rpx 0;
+  color: #4b5068;
+  font-size: 24rpx;
+  border-bottom: 1rpx solid rgba(137, 154, 248, 0.1);
+}
+
+.check-item:last-child {
+  border-bottom: 0;
+}
+
+.check-box {
+  width: 38rpx;
+  height: 38rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  color: #fff;
+  border: 2rpx solid #c9cde0;
+  border-radius: 8rpx;
+}
+
+.check-box.selected {
+  background: #899af8;
+  border-color: #899af8;
+}
+
+.submit-button {
+  margin-top: 40rpx !important;
+}
+
+.switch-button,
+.status-card .btn-secondary {
+  margin-top: 18rpx !important;
 }
 
 .switch-icon {
@@ -170,6 +239,9 @@ view, text, input, textarea {
   margin-top: 42rpx;
   padding: 52rpx 34rpx 38rpx;
   text-align: center;
+  background: rgba(255, 255, 255, 0.42);
+  border-top: 1rpx solid rgba(137, 154, 248, 0.16);
+  border-bottom: 1rpx solid rgba(137, 154, 248, 0.16);
 }
 
 .status-orb {

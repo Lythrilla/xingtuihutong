@@ -2,7 +2,9 @@ const state = {
   view: location.hash.slice(1) || "overview",
   records: [],
   editingId: null,
+  modalMode: "entity",
   query: "",
+  reviewFilter: "pending",
 };
 
 const titles = {
@@ -11,6 +13,7 @@ const titles = {
   partners: "公开主页管理",
   songs: "曲库管理",
   plans: "推广方案",
+  matches: "推广需求管理",
   users: "入驻审核",
   conversations: "合作会话",
   settlements: "结算记录",
@@ -81,12 +84,47 @@ content.addEventListener("click", async (event) => {
   const create = event.target.closest("[data-create]");
   const settlementAction = event.target.closest("[data-settlement-action]");
   const reviewAction = event.target.closest("[data-review-action]");
+  const reviewFilter = event.target.closest("[data-review-filter]");
+  const matchAction = event.target.closest("[data-match-action]");
+  const notify = event.target.closest("[data-notify]");
+  if (reviewFilter) {
+    state.reviewFilter = reviewFilter.dataset.reviewFilter;
+    renderReviewQueue(state.records);
+    return;
+  }
   if (retry) {
     await loadView();
     return;
   }
   if (create) {
     openModal();
+    return;
+  }
+  if (notify) {
+    const record = state.records.find((item) => item.id === notify.dataset.notify);
+    if (record) openNotificationModal(record);
+    return;
+  }
+  if (matchAction) {
+    const status = matchAction.dataset.matchAction;
+    const label = matchStatusLabel(status);
+    const accepted = await confirmAction(
+      `确认将需求标记为“${label}”？`,
+      "状态变更后会同步发送一条站内通知给申请用户。",
+    );
+    if (!accepted) return;
+    setButtonBusy(matchAction, true, "处理中");
+    try {
+      await api(`/api/admin/matches/${matchAction.dataset.id}`, {
+        method: "PUT",
+        body: { status },
+      });
+      toast(`推广需求已更新为${label}`);
+      await loadView();
+    } catch (error) {
+      toast(error.message);
+      setButtonBusy(matchAction, false);
+    }
     return;
   }
   if (reviewAction) {
@@ -258,6 +296,7 @@ function renderOverview(data) {
     ["在架歌曲", data.activeSongs],
     ["有效方案", data.activePlans],
     ["合作会话", data.conversations],
+    ["待审核入驻", data.pendingOnboarding],
     ["待处理结算", data.pendingSettlements],
   ];
   content.innerHTML = `
@@ -397,6 +436,10 @@ function distributionBars(items, percentKey, suffix) {
 }
 
 function renderTable(view, records) {
+  if (view === "users") {
+    renderReviewQueue(records);
+    return;
+  }
   const definitions = {
     partners: {
       headers: ["合作方", "类型", "匹配度", "标签", "状态", "操作"],
@@ -431,20 +474,17 @@ function renderTable(view, records) {
         actions(item.id),
       ],
     },
-    users: {
-      headers: ["申请主体", "身份", "联系信息", "申请内容", "入驻状态", "注册时间", "操作"],
+    matches: {
+      headers: ["申请用户", "作品", "目标渠道", "预算", "需求", "方案", "状态", "操作"],
       row: (item) => [
-        identity(item.avatar, item.organization, item.workTitle || item.cooperationBudget),
-        roleLabel(item.role),
-        item.contactName
-          ? titleCell(item.contactName, item.contactMethod)
-          : '<span class="muted">尚未填写</span>',
-        item.applicationDescription
-          ? `<div class="cell-subtitle">${escapeHtml(item.applicationDescription)}</div>`
-          : '<span class="muted">等待提交</span>',
-        badge(onboardingLabel(item.onboardingStatus), item.onboardingStatus === "approved"),
-        formatDate(item.createdAt),
-        onboardingActions(item),
+        titleCell(item.userName, formatDate(item.createdAt)),
+        escapeHtml(item.songName),
+        tags(parseJsonList(item.targetKeysJson)),
+        escapeHtml(item.budgetLabel),
+        titleCell(item.goal || "未填写目标", item.cycle || "未填写周期"),
+        `${item.planCount} 个`,
+        badge(matchStatusLabel(item.status), item.status === "completed"),
+        matchActions(item),
       ],
     },
     conversations: {
@@ -495,6 +535,121 @@ function renderTable(view, records) {
     </section>`;
 }
 
+function renderReviewQueue(records) {
+  const pending = records.filter((item) => item.onboardingStatus === "pending").length;
+  const rejected = records.filter((item) => item.onboardingStatus === "rejected").length;
+  const approved = records.filter((item) => item.onboardingStatus === "approved").length;
+  const query = state.query.trim().toLowerCase();
+  const filtered = records.filter((item) => {
+    const matchesStatus =
+      state.reviewFilter === "all" || item.onboardingStatus === state.reviewFilter;
+    const haystack = [
+      item.organization,
+      item.contactName,
+      item.contactMethod,
+      item.workTitle,
+      item.applicationDescription,
+    ]
+      .join(" ")
+      .toLowerCase();
+    return matchesStatus && (!query || haystack.includes(query));
+  });
+  content.innerHTML = `
+    <section class="review-workbench">
+      <div class="review-toolbar">
+        <div class="review-tabs">
+          ${reviewTab("pending", `待审核 ${pending}`)}
+          ${reviewTab("rejected", `需补充 ${rejected}`)}
+          ${reviewTab("approved", `已通过 ${approved}`)}
+          ${reviewTab("all", `全部 ${records.length}`)}
+        </div>
+        <label class="table-search">
+          <input data-search value="${escapeAttribute(state.query)}" placeholder="搜索主体、联系人或作品" />
+        </label>
+      </div>
+      <div class="review-list">
+        ${filtered.length ? filtered.map(reviewRow).join("") : '<div class="empty compact">当前筛选下没有申请</div>'}
+      </div>
+    </section>`;
+}
+
+function reviewTab(key, label) {
+  return `<button class="review-tab ${state.reviewFilter === key ? "active" : ""}" data-review-filter="${key}">${escapeHtml(label)}</button>`;
+}
+
+function reviewRow(item) {
+  const itemTags = parseJsonList(item.tagsJson);
+  const verificationItems = parseJsonList(item.verificationItemsJson);
+  const verificationLabels = {
+    ownership: "作品归属",
+    publishable: "审核授权",
+    authentic: "资料真实",
+  };
+  const checklist =
+    item.role === "client"
+      ? Object.entries(verificationLabels)
+          .map(
+            ([key, label]) =>
+              `<span class="${verificationItems.includes(key) ? "confirmed" : ""}">${verificationItems.includes(key) ? "✓" : "—"} ${label}</span>`,
+          )
+          .join("")
+      : '<span class="confirmed">✓ 服务资料已提交</span>';
+  const work = item.workFileUrl
+    ? `<a class="work-link" href="${escapeAttribute(item.workFileUrl)}" target="_blank" rel="noreferrer">查看上传作品 · ${escapeHtml(item.workFileName || item.workTitle)}</a>`
+    : item.workUrl
+      ? `<a class="work-link" href="${escapeAttribute(item.workUrl)}" target="_blank" rel="noreferrer">查看历史作品链接</a>`
+      : '<span class="review-missing">未提交作品</span>';
+  return `
+    <article class="review-row">
+      <div class="review-summary">
+        ${identity(item.avatar, item.organization, item.workTitle || item.cooperationBudget)}
+        <div class="review-meta">
+          ${badge(onboardingLabel(item.onboardingStatus), item.onboardingStatus === "approved")}
+          <span>${roleLabel(item.role)}</span>
+          <span>提交 ${formatDate(item.submittedAt)}</span>
+        </div>
+        ${onboardingActions(item)}
+      </div>
+      <div class="review-details">
+        <div><small>联系信息</small><strong>${escapeHtml(item.contactName || "未填写")}</strong><span>${escapeHtml(item.contactMethod || "—")}</span></div>
+        <div><small>${item.role === "client" ? "代表作品" : "合作预算"}</small><strong>${escapeHtml(item.workTitle || item.cooperationBudget || "未填写")}</strong><span>${escapeHtml(item.audienceSize || "未填写受众规模")}</span></div>
+        <div><small>资料完整度</small><strong>${reviewCompleteness(item)}%</strong><span>${item.reviewedAt ? `审核 ${formatDate(item.reviewedAt)}` : "等待审核"}</span></div>
+      </div>
+      <div class="review-description">${escapeHtml(item.applicationDescription || "未填写介绍")}</div>
+      <div class="review-foot">
+        <div class="review-tags">${itemTags.length ? tags(itemTags) : '<span class="muted">暂无标签</span>'}</div>
+        <div class="review-checklist">${checklist}</div>
+        <div>${work}</div>
+      </div>
+      ${item.reviewNote ? `<div class="review-note-line">审核备注：${escapeHtml(item.reviewNote)}</div>` : ""}
+    </article>`;
+}
+
+function reviewCompleteness(item) {
+  const fields = [
+    item.organization,
+    item.contactName,
+    item.contactMethod,
+    item.applicationDescription,
+    parseJsonList(item.tagsJson).length,
+  ];
+  if (item.role === "client") {
+    fields.push(item.workFileUrl || item.workUrl, parseJsonList(item.verificationItemsJson).length >= 3);
+  } else {
+    fields.push(item.cooperationBudget);
+  }
+  return Math.round((fields.filter(Boolean).length / fields.length) * 100);
+}
+
+function parseJsonList(value) {
+  try {
+    const parsed = JSON.parse(value || "[]");
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
 function table(headers, rows, emptyMessage = "暂无数据") {
   if (!rows.length) return `<div class="empty">${emptyMessage}</div>`;
   return `
@@ -524,6 +679,7 @@ function filterRecords(records, query) {
 }
 
 function openModal(record = null) {
+  state.modalMode = "entity";
   state.editingId = record?.id ?? null;
   document.querySelector("#modalTitle").textContent =
     `${record ? "编辑" : "新增"}${titles[state.view].replace("管理", "")}`;
@@ -534,10 +690,25 @@ function openModal(record = null) {
   requestAnimationFrame(() => modalLayer.querySelector("input, select, textarea")?.focus());
 }
 
+function openNotificationModal(record) {
+  state.modalMode = "notification";
+  state.editingId = record.id;
+  document.querySelector("#modalTitle").textContent = `通知 ${record.organization}`;
+  document.querySelector("#formFields").innerHTML = [
+    inputField("title", "通知标题", "平台运营通知", true, "full"),
+    textareaField("description", "通知内容", "", "full"),
+  ].join("");
+  document.querySelector("#formError").textContent = "";
+  modalLayer.classList.remove("hidden");
+  document.body.classList.add("modal-open");
+  requestAnimationFrame(() => modalLayer.querySelector("input, select, textarea")?.focus());
+}
+
 function closeModal() {
   modalLayer.classList.add("hidden");
   document.body.classList.remove("modal-open");
   state.editingId = null;
+  state.modalMode = "entity";
 }
 
 function formFields(view, item = {}) {
@@ -566,6 +737,29 @@ function formFields(view, item = {}) {
       checkboxField("active", "启用", item.active ?? true),
     ].join("");
   }
+  if (view === "users") {
+    return [
+      inputField("organization", "公开名称", item.organization, true),
+      inputField("contactName", "联系人", item.contactName, true),
+      inputField("contactMethod", "联系方式", item.contactMethod, true),
+      textareaField(
+        "applicationDescription",
+        item.role === "client" ? "创作与合作介绍" : "服务与案例介绍",
+        item.applicationDescription,
+        "full",
+      ),
+      inputField(
+        "tags",
+        "标签（逗号分隔）",
+        parseJsonList(item.tagsJson).join(","),
+        false,
+        "full",
+      ),
+      inputField("workTitle", "代表作品", item.workTitle),
+      inputField("audienceSize", "受众规模", item.audienceSize),
+      inputField("cooperationBudget", "合作预算", item.cooperationBudget),
+    ].join("");
+  }
   return [
     inputField("title", "方案名称", item.title, true),
     inputField("planType", "方案类型", item.planType, true),
@@ -588,19 +782,22 @@ async function saveEntity(event) {
   event.preventDefault();
   const button = document.querySelector("#saveButton");
   const values = Object.fromEntries(new FormData(event.currentTarget));
-  const body = normalizeForm(state.view, values);
-  const path = state.editingId
-    ? `/api/admin/${state.view}/${state.editingId}`
-    : `/api/admin/${state.view}`;
+  const notification = state.modalMode === "notification";
+  const body = notification ? values : normalizeForm(state.view, values);
+  const path = notification
+    ? `/api/admin/users/${state.editingId}/notify`
+    : state.editingId
+      ? `/api/admin/${state.view}/${state.editingId}`
+      : `/api/admin/${state.view}`;
   try {
     document.querySelector("#formError").textContent = "";
     setButtonBusy(button, true, "保存中");
     await api(path, {
-      method: state.editingId ? "PUT" : "POST",
+      method: notification ? "POST" : state.editingId ? "PUT" : "POST",
       body,
     });
     closeModal();
-    toast("已保存");
+    toast(notification ? "通知已发送" : "已保存");
     await loadView();
   } catch (error) {
     document.querySelector("#formError").textContent = error.message;
@@ -620,6 +817,12 @@ function normalizeForm(view, values) {
     };
   }
   if (view === "songs") return { ...values, active };
+  if (view === "users") {
+    return {
+      ...values,
+      tags: splitTags(values.tags),
+    };
+  }
   return {
     ...values,
     active,
@@ -773,12 +976,25 @@ function settlementActions(item) {
 }
 
 function onboardingActions(item) {
-  if (item.onboardingStatus !== "pending") {
-    return item.reviewNote
-      ? `<span class="cell-subtitle">${escapeHtml(item.reviewNote)}</span>`
-      : "—";
-  }
-  return `<div class="row-actions"><button class="text-button" data-id="${item.id}" data-review-action="approved">通过</button><button class="text-button danger" data-id="${item.id}" data-review-action="rejected">退回</button></div>`;
+  const review =
+    item.onboardingStatus === "pending"
+      ? `<button class="text-button" data-id="${item.id}" data-review-action="approved">通过</button><button class="text-button danger" data-id="${item.id}" data-review-action="rejected">退回</button>`
+      : "";
+  const edit =
+    item.onboardingStatus === "draft"
+      ? ""
+      : `<button class="text-button" data-edit="${item.id}">编辑资料</button>`;
+  return `<div class="row-actions">${review}${edit}<button class="text-button" data-notify="${item.id}">发通知</button></div>`;
+}
+
+function matchActions(item) {
+  const options = ["following", "completed", "closed"].filter((status) => status !== item.status);
+  return `<div class="row-actions">${options
+    .map(
+      (status) =>
+        `<button class="text-button ${status === "closed" ? "danger" : ""}" data-id="${item.id}" data-match-action="${status}">${matchStatusLabel(status)}</button>`,
+    )
+    .join("")}</div>`;
 }
 
 function badge(text, active) {
@@ -804,6 +1020,14 @@ function onboardingLabel(status) {
 
 function settlementLabel(status) {
   return { completed: "已完成", pending: "待处理", rejected: "已拒绝" }[status] ?? status;
+}
+
+function matchStatusLabel(status) {
+  return {
+    completed: "已完成",
+    following: "跟进中",
+    closed: "已关闭",
+  }[status] ?? status;
 }
 
 function money(cents) {

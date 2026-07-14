@@ -98,8 +98,8 @@
       <view class="ai-invite-glow"></view>
       <image class="ai-invite-orb" src="/assets/images/ai-illustration.png" mode="aspectFit"></image>
       <view class="ai-invite-copy">
-        <view>{{isCreator ? '准备发布作品推广？' : '需要梳理合作机会？'}}</view>
-        <text>{{isCreator ? '选择作品、推广方向和预算开始真实匹配' : '让 AI 帮你分析创作者项目与合作重点'}}</text>
+        <view>{{isCreator ? '需要 AI 帮你规划作品推广？' : '需要梳理合作机会？'}}</view>
+        <text>{{isCreator ? '分析作品、筛选推广方，再决定如何发布需求' : '让 AI 帮你分析创作者项目与合作重点'}}</text>
       </view>
       <view class="ai-invite-arrow">→</view>
     </view>

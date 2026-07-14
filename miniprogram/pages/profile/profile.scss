@@ -34,7 +34,8 @@ view, text, scroll-view, image {
   font-weight: 700;
   background: #fff;
   border-radius: 50%;
-  box-shadow: 0 8rpx 20rpx rgba(137, 154, 248, 0.2);
+  border: 1rpx solid rgba(137, 154, 248, 0.16);
+  box-shadow: none;
 }
 
 .profile-main {
@@ -263,10 +264,11 @@ view, text, scroll-view, image {
 }
 
 .profile-card {
-  background: #fff;
-  border-radius: 24rpx;
+  background: rgba(255, 255, 255, 0.48);
+  border-radius: 14rpx;
   padding: 0 32rpx;
-  border: 1rpx solid rgba(137, 154, 248, 0.06);
+  border-top: 1rpx solid rgba(137, 154, 248, 0.12);
+  border-bottom: 1rpx solid rgba(137, 154, 248, 0.12);
 }
 
 /* === 我的能力 === */

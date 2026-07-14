@@ -90,7 +90,9 @@ scroll-view {
 
 .form-section {
   margin-bottom: 24rpx;
-  padding: 30rpx;
+  padding: 30rpx 0;
+  border-top: 1rpx solid rgba(137, 154, 248, 0.16);
+  border-bottom: 1rpx solid rgba(137, 154, 248, 0.1);
 }
 
 .form-heading {
@@ -142,13 +144,13 @@ scroll-view {
   padding: 10rpx 10rpx 18rpx;
   background: rgba(247, 248, 253, 0.76);
   border: 2rpx solid transparent;
-  border-radius: 24rpx;
+  border-radius: 16rpx;
 }
 
 .song-card.selected {
-  background: #fff;
+  background: rgba(255, 255, 255, 0.72);
   border-color: #899af8;
-  box-shadow: 0 6rpx 18rpx rgba(95, 101, 180, 0.14);
+  box-shadow: none;
 }
 
 .song-cover {

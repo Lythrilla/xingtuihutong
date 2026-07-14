@@ -9,7 +9,7 @@ use crate::{
     state::AppState,
 };
 use axum::{
-    extract::{Path, Query, State},
+    extract::{Multipart, Path, Query, State},
     http::HeaderMap,
     routing::{get, post, put},
     Json, Router,
@@ -25,6 +25,7 @@ pub fn routes() -> Router<AppState> {
         .route("/auth/session", post(create_session))
         .route("/me/role", put(update_role))
         .route("/onboarding", get(onboarding).put(submit_onboarding))
+        .route("/uploads/work", post(upload_work))
         .route("/home", get(home))
         .route("/plaza", get(plaza))
         .route("/partners/{id}", get(partner_detail))
@@ -145,6 +146,9 @@ struct OnboardingApplicationView {
     tags: Vec<String>,
     work_title: String,
     work_url: String,
+    work_file_url: String,
+    work_file_name: String,
+    verification_items: Vec<String>,
     audience_size: String,
     cooperation_budget: String,
     status: String,
@@ -167,7 +171,8 @@ async fn onboarding(
     let user = current_user(&state, &headers).await?;
     let row = sqlx::query(
         "SELECT entity_name, contact_name, contact_method, description, tags,
-         work_title, work_url, audience_size, cooperation_budget, status, review_note
+         work_title, work_url, work_file_url, work_file_name, verification_items,
+         audience_size, cooperation_budget, status, review_note
          FROM onboarding_applications WHERE user_id = ?",
     )
     .bind(&user.id)
@@ -181,6 +186,10 @@ async fn onboarding(
         tags: serde_json::from_str(&row.get::<String, _>("tags")).unwrap_or_default(),
         work_title: row.get("work_title"),
         work_url: row.get("work_url"),
+        work_file_url: row.get("work_file_url"),
+        work_file_name: row.get("work_file_name"),
+        verification_items: serde_json::from_str(&row.get::<String, _>("verification_items"))
+            .unwrap_or_default(),
         audience_size: row.get("audience_size"),
         cooperation_budget: row.get("cooperation_budget"),
         status: row.get("status"),
@@ -206,6 +215,9 @@ async fn submit_onboarding(
     let description = input.description.trim();
     let work_title = input.work_title.unwrap_or_default().trim().to_string();
     let work_url = input.work_url.unwrap_or_default().trim().to_string();
+    let work_file_url = input.work_file_url.unwrap_or_default().trim().to_string();
+    let work_file_name = input.work_file_name.unwrap_or_default().trim().to_string();
+    let verification_items = input.verification_items.unwrap_or_default();
     let audience_size = input.audience_size.unwrap_or_default().trim().to_string();
     let cooperation_budget = input
         .cooperation_budget
@@ -215,17 +227,40 @@ async fn submit_onboarding(
     if entity_name.is_empty()
         || contact_name.is_empty()
         || contact_method.is_empty()
-        || description.is_empty()
+        || (user.role == "provider" && description.is_empty())
     {
         return Err(AppError::BadRequest(
             "onboarding required fields are missing".into(),
         ));
     }
-    if user.role == "client" && (work_title.is_empty() || work_url.is_empty()) {
+    if user.role == "client" && work_file_url.is_empty() && work_url.is_empty() {
         return Err(AppError::BadRequest(
             "creator work information is required".into(),
         ));
     }
+    if user.role == "client"
+        && !["ownership", "publishable", "authentic"]
+            .iter()
+            .all(|item| verification_items.iter().any(|selected| selected == item))
+    {
+        return Err(AppError::BadRequest(
+            "creator verification checklist is required".into(),
+        ));
+    }
+    let work_title = if user.role == "client" && work_title.is_empty() {
+        std::path::Path::new(&work_file_name)
+            .file_stem()
+            .and_then(|value| value.to_str())
+            .unwrap_or("上传作品")
+            .to_string()
+    } else {
+        work_title
+    };
+    let description = if user.role == "client" && description.is_empty() {
+        format!("内容创作者，代表作品：{work_title}")
+    } else {
+        description.to_string()
+    };
     let tags: Vec<String> = input
         .tags
         .into_iter()
@@ -240,12 +275,15 @@ async fn submit_onboarding(
     }
     let tags_json =
         serde_json::to_string(&tags).map_err(|error| AppError::Internal(error.into()))?;
+    let verification_items_json = serde_json::to_string(&verification_items)
+        .map_err(|error| AppError::Internal(error.into()))?;
     let mut tx = state.pool.begin().await?;
     sqlx::query(
         "INSERT INTO onboarding_applications
          (user_id, role, entity_name, contact_name, contact_method, description, tags,
-          work_title, work_url, audience_size, cooperation_budget, status, review_note)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', '')
+          work_title, work_url, work_file_url, work_file_name, verification_items,
+          audience_size, cooperation_budget, status, review_note)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', '')
          ON CONFLICT(user_id) DO UPDATE SET
           role = excluded.role,
           entity_name = excluded.entity_name,
@@ -255,6 +293,9 @@ async fn submit_onboarding(
           tags = excluded.tags,
           work_title = excluded.work_title,
           work_url = excluded.work_url,
+          work_file_url = excluded.work_file_url,
+          work_file_name = excluded.work_file_name,
+          verification_items = excluded.verification_items,
           audience_size = excluded.audience_size,
           cooperation_budget = excluded.cooperation_budget,
           status = 'pending',
@@ -268,10 +309,13 @@ async fn submit_onboarding(
     .bind(entity_name)
     .bind(contact_name)
     .bind(contact_method)
-    .bind(description)
+    .bind(&description)
     .bind(tags_json)
     .bind(work_title)
     .bind(work_url)
+    .bind(work_file_url)
+    .bind(work_file_name)
+    .bind(verification_items_json)
     .bind(audience_size)
     .bind(cooperation_budget)
     .execute(&mut *tx)
@@ -315,6 +359,77 @@ async fn submit_onboarding(
     .await?;
     tx.commit().await?;
     onboarding(State(state), headers).await
+}
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+struct WorkUploadResponse {
+    url: String,
+    file_name: String,
+}
+
+async fn upload_work(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    mut multipart: Multipart,
+) -> AppResult<Json<WorkUploadResponse>> {
+    let _user = current_user(&state, &headers).await?;
+    while let Some(field) = multipart
+        .next_field()
+        .await
+        .map_err(|_| AppError::BadRequest("invalid upload payload".into()))?
+    {
+        if field.name() != Some("file") {
+            continue;
+        }
+        let file_name = field.file_name().unwrap_or("work").to_string();
+        let content_type = field.content_type().unwrap_or("").to_string();
+        let extension = upload_extension(&file_name, &content_type)
+            .ok_or_else(|| AppError::BadRequest("unsupported work file type".into()))?;
+        let bytes = field
+            .bytes()
+            .await
+            .map_err(|_| AppError::BadRequest("invalid upload payload".into()))?;
+        if bytes.is_empty() || bytes.len() > 30 * 1024 * 1024 {
+            return Err(AppError::BadRequest("work file size is invalid".into()));
+        }
+        let stored_name = format!("{}.{}", Uuid::new_v4(), extension);
+        tokio::fs::write(format!("data/uploads/{stored_name}"), bytes)
+            .await
+            .map_err(|error| AppError::Internal(error.into()))?;
+        return Ok(Json(WorkUploadResponse {
+            url: format!("/uploads/{stored_name}"),
+            file_name,
+        }));
+    }
+    Err(AppError::BadRequest("work file is required".into()))
+}
+
+fn upload_extension(file_name: &str, content_type: &str) -> Option<&'static str> {
+    match content_type {
+        "audio/mpeg" => Some("mp3"),
+        "audio/wav" | "audio/x-wav" => Some("wav"),
+        "audio/mp4" | "audio/x-m4a" => Some("m4a"),
+        "video/mp4" => Some("mp4"),
+        "video/quicktime" => Some("mov"),
+        "image/jpeg" => Some("jpg"),
+        "image/png" => Some("png"),
+        _ => match std::path::Path::new(file_name)
+            .extension()
+            .and_then(|value| value.to_str())
+            .map(str::to_ascii_lowercase)
+            .as_deref()
+        {
+            Some("mp3") => Some("mp3"),
+            Some("wav") => Some("wav"),
+            Some("m4a") => Some("m4a"),
+            Some("mp4") => Some("mp4"),
+            Some("mov") => Some("mov"),
+            Some("jpg") | Some("jpeg") => Some("jpg"),
+            Some("png") => Some("png"),
+            _ => None,
+        },
+    }
 }
 
 #[derive(Serialize)]

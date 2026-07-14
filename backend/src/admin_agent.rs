@@ -13,7 +13,6 @@ use axum::{
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 
-
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/settings", get(get_settings).put(update_settings))
@@ -40,8 +39,8 @@ async fn update_settings(
     Json(input): Json<AgentSettingsInput>,
 ) -> AppResult<Json<AgentSettings>> {
     require_admin(&state, &headers).await?;
-    let default_suggestions =
-        serde_json::to_string(&input.default_suggestions).map_err(|e| AppError::Internal(e.into()))?;
+    let default_suggestions = serde_json::to_string(&input.default_suggestions)
+        .map_err(|e| AppError::Internal(e.into()))?;
     let follow_up_suggestions = serde_json::to_string(&input.follow_up_suggestions)
         .map_err(|e| AppError::Internal(e.into()))?;
     sqlx::query(
@@ -100,11 +99,9 @@ async fn update_tool(
         return Err(AppError::BadRequest("tool name mismatch".into()));
     }
     upsert_tool(&state, &input).await?;
-    Ok(Json(
-        load_tool(&state, &name)
-            .await?
-            .ok_or_else(|| AppError::NotFound("tool not found".into()))?,
-    ))
+    Ok(Json(load_tool(&state, &name).await?.ok_or_else(|| {
+        AppError::NotFound("tool not found".into())
+    })?))
 }
 
 pub async fn load_settings(state: &AppState) -> AppResult<AgentSettings> {
@@ -151,12 +148,12 @@ async fn load_tool(state: &AppState, name: &str) -> AppResult<Option<AgentTool>>
 async fn upsert_tool(state: &AppState, input: &AgentToolInput) -> AppResult<()> {
     let keywords =
         serde_json::to_string(&input.keywords).map_err(|e| AppError::Internal(e.into()))?;
-    let blocked_keywords = serde_json::to_string(&input.blocked_keywords)
-        .map_err(|e| AppError::Internal(e.into()))?;
-    let keyword_groups = serde_json::to_string(&input.keyword_groups)
-        .map_err(|e| AppError::Internal(e.into()))?;
-    let required_tools = serde_json::to_string(&input.required_tools)
-        .map_err(|e| AppError::Internal(e.into()))?;
+    let blocked_keywords =
+        serde_json::to_string(&input.blocked_keywords).map_err(|e| AppError::Internal(e.into()))?;
+    let keyword_groups =
+        serde_json::to_string(&input.keyword_groups).map_err(|e| AppError::Internal(e.into()))?;
+    let required_tools =
+        serde_json::to_string(&input.required_tools).map_err(|e| AppError::Internal(e.into()))?;
     sqlx::query(
         "INSERT INTO agent_tools
          (name, enabled, label, description, mode, keywords, blocked_keywords, keyword_groups, required_tools, sort_order, updated_at)
