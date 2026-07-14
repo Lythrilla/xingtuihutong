@@ -7,45 +7,15 @@
   <data-state loading="{{loading}}" error="{{error}}" bind:action="retry"></data-state>
 
   <block wx:if="{{!loading && !error}}">
-    <view class="card role-banner {{isApproved ? 'approved' : 'review'}}" bindtap="openStatus">
-      <view class="role-banner-icon">{{isApproved ? '✓' : onboardingStatus === 'pending' ? '…' : '!'}}</view>
-      <view class="role-banner-copy">
-        <view>{{statusTitle}}</view>
-        <text>{{statusDescription}}</text>
-      </view>
-      <view class="role-banner-action">{{isApproved ? (isCreator ? '创作者' : '推广方') : '查看资料'}} ›</view>
-    </view>
-
-    <view wx:if="{{isApproved}}" class="card metric-row">
-      <view class="metric-item" wx:for="{{metrics}}" wx:key="label">
-        <text>{{item.value}}</text>
-        <view>{{item.label}}</view>
-      </view>
-    </view>
-
-    <view wx:if="{{isApproved}}" class="workspace-actions">
-      <view
-        class="card workspace-action"
-        wx:for="{{workspaceActions}}"
-        wx:key="key"
-        data-key="{{item.key}}"
-        bindtap="openWorkspaceAction"
-        hover-class="pressable"
-      >
-        <view class="workspace-icon"><view class="ui-icon icon-{{item.icon}}"></view></view>
-        <view class="workspace-title">{{item.title}}</view>
-        <view class="workspace-desc">{{item.description}}</view>
-      </view>
-    </view>
 
     <view wx:if="{{isApproved}}" class="hero-card role-hero {{isCreator ? 'creator' : 'provider'}}" bindtap="openPrimary" hover-class="pressable">
+      <view class="hero-card-glass"></view>
       <view class="hero-grid"></view>
       <view class="hero-orb-wrap">
         <view class="hero-orb-halo"></view>
         <image class="hero-orb" src="/assets/images/ai-illustration.png" mode="aspectFit"></image>
       </view>
       <view class="hero-copy">
-        <view class="hero-state"><text></text>{{isCreator ? 'CREATOR WORKSPACE' : 'SERVICE WORKSPACE'}}</view>
         <view class="hero-title">
           <text>{{isCreator ? '为你的作品' : '发现真实创作者'}}</text>
           <text>{{isCreator ? '找到合适推广方' : '承接适合的项目'}}</text>

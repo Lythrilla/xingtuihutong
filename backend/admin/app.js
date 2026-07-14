@@ -545,7 +545,7 @@ function formFields(view, item = {}) {
     return [
       selectField("partnerType", "类型", item.partnerType, [
         ["provider", "推广服务方"],
-        ["client", "音乐创作者"],
+        ["client", "内容创作者"],
       ]),
       inputField("name", "名称", item.name, true),
       inputField("avatar", "头像文字", item.avatar, true),
@@ -790,7 +790,7 @@ function tags(items) {
 }
 
 function roleLabel(role) {
-  return role === "provider" ? "推广服务方" : "音乐创作者";
+  return role === "provider" ? "推广服务方" : "内容创作者";
 }
 
 function onboardingLabel(status) {

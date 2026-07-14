@@ -10,7 +10,7 @@
   <view class="doc-section">
     <view class="doc-h2">2. 我们如何收集您的信息</view>
     <view class="doc-p"><text class="doc-strong">2.1 账号注册信息：</text>当您通过微信授权登录时，我们会收集您的微信 OpenID、头像、昵称等基础信息，以为您创建平台账号。</view>
-    <view class="doc-p"><text class="doc-strong">2.2 业务入驻信息：</text>为了提供精准的匹配服务，您在选择“音乐创作者”或“推广服务方”身份时，主动填写的机构名称、业务简介、能力标签、作品链接、成功案例等将被我们收集并展示在合作广场中。</view>
+    <view class="doc-p"><text class="doc-strong">2.2 业务入驻信息：</text>为了提供精准的匹配服务，您在选择“内容创作者”或“推广服务方”身份时，主动填写的机构名称、业务简介、能力标签、作品链接、成功案例等将被我们收集并展示在合作广场中。</view>
     <view class="doc-p"><text class="doc-strong">2.3 AI 交互数据：</text>当您使用平台内的 AI 智能体（Agent）服务时，您发送的对话指令、查询诉求及相关业务数据将被系统记录，以便 AI 能够理解并执行您的任务（如数据洞察、文案生成）。</view>
     <view class="doc-p"><text class="doc-strong">2.4 交易与提现信息：</text>当您使用钱包功能进行提现时，我们需要收集您的真实姓名、银行卡号或微信支付账户信息，该信息仅用于资金结算，平台将进行严格加密。</view>
   </view>

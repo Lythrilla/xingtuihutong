@@ -224,7 +224,7 @@ async fn review_user(
         let identity = if role == "provider" {
             "已审核推广服务方"
         } else {
-            "已审核音乐创作者"
+            "已审核内容创作者"
         };
         let result_text = if role == "provider" {
             if cooperation_budget.is_empty() {

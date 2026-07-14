@@ -1,5 +1,5 @@
 <view class="header-shell" style="padding-top: {{statusBarHeight}}px;">
-  <view class="header-inner" style="padding-right: {{rightInset}}px;">
+  <view class="header-inner" style="height: {{navigationHeight}}px; padding-right: {{rightInset}}px;">
     <button wx:if="{{back}}" class="header-back" bindtap="goBack" aria-label="返回">‹</button>
     <view class="header-copy">
       <view class="header-title">{{title}}</view>

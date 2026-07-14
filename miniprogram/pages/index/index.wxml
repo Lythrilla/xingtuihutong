@@ -14,7 +14,7 @@
 
     <view class="role-card client {{selectedRole === 'client' ? 'selected' : ''}}" data-role="client" bindtap="chooseRole" hover-class="pressable">
       <view class="role-info">
-        <view class="role-name">我是音乐创作者</view>
+        <view class="role-name">我是内容创作者</view>
         <view class="role-desc">提交作品与创作者资料，发布推广需求</view>
       </view>
       <image class="role-icon" src="../../assets/images/role-client.png" mode="aspectFit"></image>

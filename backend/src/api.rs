@@ -465,7 +465,7 @@ async fn home(State(state): State<AppState>, headers: HeaderMap) -> AppResult<Js
         header_subtitle: if user.role == "provider" {
             "推广服务方工作台".into()
         } else {
-            "音乐创作者工作台".into()
+            "内容创作者工作台".into()
         },
         name: user.organization.clone(),
         role: user.role.clone(),
@@ -1382,7 +1382,7 @@ async fn profile_payload(state: &AppState, user: UserRow) -> AppResult<ProfileRe
     let role_label = if user.role == "provider" {
         "推广服务方"
     } else {
-        "音乐创作者"
+        "内容创作者"
     }
     .into();
     Ok(ProfileResponse {

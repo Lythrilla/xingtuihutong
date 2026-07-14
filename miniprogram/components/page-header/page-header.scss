@@ -1,6 +1,9 @@
 .header-shell {
   width: 100%;
   background: rgba(237, 239, 253, 1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
 .header-inner {

@@ -1,4 +1,4 @@
-import { apiRequest, ensureSession, SessionUser } from '../../utils/api'
+import { ensureSession } from '../../utils/api'
 
 export {}
 
@@ -52,8 +52,10 @@ Component({
       }
       this.setData({ entering: true })
       try {
-        await ensureSession(role)
-        const user = await apiRequest<SessionUser>('/api/me/role', 'PUT', { role })
+        // 清除旧 token，确保以选定角色创建全新会话
+        wx.removeStorageSync('starconnect-token')
+        const session = await ensureSession(role)
+        const user = session.user
         app.globalData.role = user.role
         app.globalData.onboardingStatus = user.onboardingStatus
         app.globalData.apiReady = true

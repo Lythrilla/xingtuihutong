@@ -412,7 +412,7 @@ async fn admin_overview(
                         if key == "provider" {
                             "推广服务方"
                         } else {
-                            "音乐创作者"
+                            "内容创作者"
                         }
                         .into(),
                         row.get("total"),
