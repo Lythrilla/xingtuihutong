@@ -475,14 +475,19 @@ function renderTable(view, records) {
       ],
     },
     matches: {
-      headers: ["申请用户", "作品", "目标渠道", "预算", "需求", "方案", "状态", "操作"],
+      headers: ["申请用户", "作品", "目标渠道", "预算", "需求", "报价", "状态", "操作"],
       row: (item) => [
         titleCell(item.userName, formatDate(item.createdAt)),
         escapeHtml(item.songName),
         tags(parseJsonList(item.targetKeysJson)),
         escapeHtml(item.budgetLabel),
         titleCell(item.goal || "未填写目标", item.cycle || "未填写周期"),
-        `${item.planCount} 个`,
+        titleCell(
+          `${item.proposalCount} 份`,
+          item.acceptedProviderName
+            ? `已选 ${item.acceptedProviderName} · ${money(item.acceptedAmount)}`
+            : "尚未选定推广方",
+        ),
         badge(matchStatusLabel(item.status), item.status === "completed"),
         matchActions(item),
       ],
@@ -988,7 +993,7 @@ function onboardingActions(item) {
 }
 
 function matchActions(item) {
-  const options = ["following", "completed", "closed"].filter((status) => status !== item.status);
+  const options = ["open", "following", "completed", "closed"].filter((status) => status !== item.status);
   return `<div class="row-actions">${options
     .map(
       (status) =>
@@ -1024,6 +1029,7 @@ function settlementLabel(status) {
 
 function matchStatusLabel(status) {
   return {
+    open: "报价中",
     completed: "已完成",
     following: "跟进中",
     closed: "已关闭",

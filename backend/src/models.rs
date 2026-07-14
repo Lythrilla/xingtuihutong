@@ -121,19 +121,6 @@ pub struct Notification {
 
 #[derive(Debug, Serialize, FromRow)]
 #[serde(rename_all = "camelCase")]
-pub struct Conversation {
-    pub id: String,
-    pub partner_id: String,
-    pub avatar: String,
-    pub avatar_class: String,
-    pub partner_name: String,
-    pub last_message: String,
-    pub unread_count: i64,
-    pub updated_at: String,
-}
-
-#[derive(Debug, Serialize, FromRow)]
-#[serde(rename_all = "camelCase")]
 pub struct Certification {
     pub id: String,
     pub title: String,

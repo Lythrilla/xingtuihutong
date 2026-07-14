@@ -25,6 +25,14 @@
       </view>
     </view>
 
+    <view wx:if="{{isApproved}}" class="demand-entry" bindtap="openDemands" hover-class="pressable">
+      <view>
+        <view class="demand-entry-title">{{isCreator ? '我的推广需求' : '推广需求大厅'}}</view>
+        <text>{{isCreator ? '查看报价、选择服务方并进入合作会话' : '查看创作者目标、预算与周期并提交报价'}}</text>
+      </view>
+      <view class="demand-entry-action">{{isCreator ? '管理需求' : '去接单'}} →</view>
+    </view>
+
     <view wx:if="{{isApproved}}" class="section">
       <view class="section-head">
         <text class="section-title">{{isCreator ? '已入驻推广方' : '已认证创作者'}}</text>

@@ -115,6 +115,9 @@ Component({
     openPlaza() {
       wx.redirectTo({ url: '/pages/plaza/plaza' })
     },
+    openDemands() {
+      wx.redirectTo({ url: '/pages/demands/demands' })
+    },
     openWorkspaceAction(event: WechatMiniprogram.TouchEvent) {
       const key = event.currentTarget.dataset.key as string
       const routes: Record<string, string> = {
@@ -122,6 +125,7 @@ Component({
         plaza: '/pages/plaza/plaza',
         ai: '/pages/ai/ai',
         membership: '/pages/membership/membership',
+        demands: '/pages/demands/demands',
       }
       const url = routes[key]
       if (url) wx.redirectTo({ url })

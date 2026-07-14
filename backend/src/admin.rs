@@ -508,7 +508,9 @@ struct AdminMatch {
     goal: String,
     cycle: String,
     status: String,
-    plan_count: i64,
+    proposal_count: i64,
+    accepted_provider_name: Option<String>,
+    accepted_amount: Option<i64>,
     created_at: String,
 }
 
@@ -526,12 +528,18 @@ async fn matches(
         sqlx::query_as::<_, AdminMatch>(
             "SELECT m.id, m.user_id, u.organization AS user_name, s.name AS song_name,
              m.target_keys AS target_keys_json, b.label AS budget_label, m.goal, m.cycle,
-             m.status, COUNT(mp.plan_id) AS plan_count, m.created_at
+             m.status, COUNT(dp.id) AS proposal_count,
+             MAX(CASE WHEN dp.status = 'accepted' THEN pu.organization END)
+               AS accepted_provider_name,
+             MAX(CASE WHEN dp.status = 'accepted' THEN dp.amount END) AS accepted_amount,
+             m.created_at
              FROM match_requests m
              JOIN users u ON u.id = m.user_id
              JOIN songs s ON s.id = m.song_id
              JOIN budget_options b ON b.id = m.budget_id
-             LEFT JOIN match_request_plans mp ON mp.match_request_id = m.id
+             LEFT JOIN demand_proposals dp
+               ON dp.match_request_id = m.id AND dp.status != 'withdrawn'
+             LEFT JOIN users pu ON pu.id = dp.provider_user_id
              GROUP BY m.id
              ORDER BY m.created_at DESC",
         )
@@ -547,7 +555,7 @@ async fn update_match(
     Json(input): Json<UpdateMatchStatus>,
 ) -> AppResult<Json<serde_json::Value>> {
     require_admin(&state, &headers).await?;
-    if !["completed", "following", "closed"].contains(&input.status.as_str()) {
+    if !["open", "completed", "following", "closed"].contains(&input.status.as_str()) {
         return Err(AppError::BadRequest("invalid match status".into()));
     }
     let user_id: Option<String> =
@@ -562,7 +570,17 @@ async fn update_match(
         .bind(&id)
         .execute(&mut *tx)
         .await?;
+    if input.status == "closed" {
+        sqlx::query(
+            "UPDATE demand_proposals SET status = 'rejected', updated_at = CURRENT_TIMESTAMP
+             WHERE match_request_id = ? AND status = 'pending'",
+        )
+        .bind(&id)
+        .execute(&mut *tx)
+        .await?;
+    }
     let (title, description) = match input.status.as_str() {
+        "open" => ("推广需求已重新开放", "运营团队已重新开放你的推广需求。"),
         "following" => ("推广需求进入跟进", "运营团队已开始跟进你的推广需求。"),
         "closed" => ("推广需求已关闭", "该推广需求已由运营团队关闭。"),
         _ => (

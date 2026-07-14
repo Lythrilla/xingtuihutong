@@ -17,7 +17,7 @@
       wx:for="{{messages}}"
       wx:key="id"
       id="message-{{item.id}}"
-      class="message-row {{item.sender === 'user' ? 'mine' : ''}}"
+      class="message-row {{item.sender === 'user' ? 'mine' : item.sender === 'system' ? 'system' : ''}}"
     >
       <view class="message">
         <text>{{item.content}}</text>

@@ -1,0 +1,122 @@
+<view class="page-shell demand-page">
+  <page-header
+    back="{{true}}"
+    title="{{isCreator ? '我的推广需求' : '推广需求大厅'}}"
+    subtitle="{{isCreator ? '比较报价并选择合作方' : '查看真实需求并提交执行报价'}}"
+  ></page-header>
+
+  <data-state loading="{{loading}}" error="{{error}}" bind:action="retry"></data-state>
+
+  <block wx:if="{{!loading && !error}}">
+    <view class="board-summary">
+      <view>
+        <text>{{demands.length}}</text>
+        <view>{{isCreator ? '个推广需求' : '个可跟进需求'}}</view>
+      </view>
+      <button wx:if="{{isCreator}}" bindtap="publishDemand">+ 发布需求</button>
+    </view>
+
+    <view wx:if="{{!demands.length}}" class="empty-board">
+      <view class="empty-title">{{isCreator ? '还没有推广需求' : '暂时没有开放需求'}}</view>
+      <view class="empty-description">{{isCreator ? '发布作品推广目标后，已认证推广方可提交报价。' : '新的创作者需求会在审核通过后出现在这里。'}}</view>
+      <button wx:if="{{isCreator}}" class="btn-primary" bindtap="publishDemand">发布第一个需求</button>
+    </view>
+
+    <view wx:else class="demand-list">
+      <view class="demand-item" wx:for="{{demands}}" wx:key="id">
+        <view class="demand-head">
+          <view class="creator">
+            <view class="creator-avatar">{{item.creatorAvatarText}}</view>
+            <view>
+              <view class="song-name">{{item.songName}}</view>
+              <text>{{isCreator ? item.createdAtLabel : item.creatorName + ' · ' + item.createdAtLabel}}</text>
+            </view>
+          </view>
+          <view class="status status-{{item.status}}">{{item.statusLabel}}</view>
+        </view>
+
+        <view class="demand-goal">{{item.goal}}</view>
+        <view class="demand-meta">
+          <text>{{item.targetText}}</text>
+          <text>{{item.budgetLabel}}</text>
+          <text>{{item.cycle}}</text>
+        </view>
+
+        <block wx:if="{{!isCreator}}">
+          <view wx:if="{{item.ownProposal}}" class="own-proposal">
+            <view>
+              <text>我的报价</text>
+              <view>{{item.ownProposal.amountLabel}} · {{item.ownProposal.cycle}}</view>
+            </view>
+            <view class="proposal-status status-{{item.ownProposal.status}}">{{item.ownProposal.statusLabel}}</view>
+          </view>
+          <view class="demand-actions" wx:if="{{item.status === 'open'}}">
+            <button class="action-primary" data-id="{{item.id}}" bindtap="openProposalSheet">{{item.ownProposal ? '修改报价' : '提交报价'}}</button>
+            <button wx:if="{{item.ownProposal && item.ownProposal.status === 'pending'}}" class="action-plain" data-id="{{item.id}}" bindtap="withdrawProposal">撤回</button>
+          </view>
+          <button wx:if="{{item.ownProposal && item.ownProposal.status === 'accepted'}}" class="action-primary full" bindtap="openMessages">进入合作会话</button>
+        </block>
+
+        <block wx:else>
+          <view class="proposal-header">
+            <text>推广报价</text>
+            <view>{{item.proposalCount}} 份</view>
+          </view>
+          <view wx:if="{{!item.proposals.length}}" class="proposal-empty">暂未收到报价，可继续等待推广方响应。</view>
+          <view class="proposal-row" wx:for="{{item.proposals}}" wx:for-item="proposal" wx:key="id">
+            <view class="proposal-main">
+              <view class="proposal-name">
+                <text>{{proposal.providerName}}</text>
+                <view class="proposal-status status-{{proposal.status}}">{{proposal.statusLabel}}</view>
+              </view>
+              <view class="proposal-price">{{proposal.amountLabel}} <text>· {{proposal.cycle}}</text></view>
+              <view class="proposal-deliverables">{{proposal.deliverables}}</view>
+              <view wx:if="{{proposal.message}}" class="proposal-message">{{proposal.message}}</view>
+            </view>
+            <button
+              wx:if="{{item.status === 'open' && proposal.status === 'pending'}}"
+              class="accept-button"
+              data-id="{{proposal.id}}"
+              bindtap="acceptProposal"
+            >接受</button>
+          </view>
+          <view class="creator-actions">
+            <button wx:if="{{item.status === 'open'}}" class="action-plain" data-id="{{item.id}}" bindtap="closeDemand">关闭需求</button>
+            <button wx:if="{{item.status === 'following'}}" class="action-primary" bindtap="openMessages">进入合作会话</button>
+          </view>
+        </block>
+      </view>
+    </view>
+  </block>
+</view>
+
+<view wx:if="{{sheetOpen}}" class="sheet-layer" bindtap="closeSheet">
+  <view class="sheet-card" catchtap="preventClose">
+    <view class="sheet-head">
+      <view>
+        <view class="sheet-title">提交推广报价</view>
+        <view class="sheet-description">说明费用、执行周期和明确交付内容</view>
+      </view>
+      <button class="sheet-close" disabled="{{actionLoading}}" bindtap="closeSheet">×</button>
+    </view>
+    <label class="field">
+      <text>报价金额（元）</text>
+      <input value="{{amountInput}}" type="digit" placeholder="例如 5000" bindinput="updateAmount" />
+    </label>
+    <label class="field">
+      <text>执行周期</text>
+      <input value="{{cycleInput}}" maxlength="40" placeholder="例如 14 天" bindinput="updateCycle" />
+    </label>
+    <label class="field">
+      <text>交付说明</text>
+      <textarea value="{{deliverablesInput}}" maxlength="500" placeholder="写明渠道、内容数量、投放动作与复盘交付" bindinput="updateDeliverables"></textarea>
+    </label>
+    <label class="field">
+      <text>补充说明（可选）</text>
+      <textarea value="{{messageInput}}" maxlength="500" placeholder="档期、合作前提或需要创作者补充的资料" bindinput="updateMessage"></textarea>
+    </label>
+    <button class="btn-primary" disabled="{{!canSubmitProposal || actionLoading}}" loading="{{actionLoading}}" bindtap="submitProposal">
+      {{actionLoading ? '提交中' : '确认报价'}}
+    </button>
+  </view>
+</view>

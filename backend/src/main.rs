@@ -5,6 +5,7 @@ mod analytics;
 mod api;
 mod config;
 mod db;
+mod demands;
 mod error;
 mod models;
 mod state;
