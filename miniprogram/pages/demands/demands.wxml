@@ -16,6 +16,22 @@
       <button wx:if="{{isCreator}}" bindtap="publishDemand">+ 发布需求</button>
     </view>
 
+    <view class="filter-bar">
+      <view class="search-row">
+        <input class="search-input" value="{{searchQuery}}" placeholder="搜索需求、歌曲或预算" confirm-type="search" bindinput="updateSearch" bindconfirm="confirmSearch" />
+        <button class="search-btn" bindtap="confirmSearch">搜索</button>
+      </view>
+      <scroll-view class="filter-chips" scroll-x enhanced show-scrollbar="{{false}}">
+        <view class="chip {{statusFilter === 'all' ? 'active' : ''}}" data-status="all" bindtap="updateStatusFilter">全部</view>
+        <view class="chip {{statusFilter === 'open' ? 'active' : ''}}" data-status="open" bindtap="updateStatusFilter">报价中</view>
+        <view class="chip {{statusFilter === 'following' ? 'active' : ''}}" data-status="following" bindtap="updateStatusFilter">进行中</view>
+        <view class="chip {{statusFilter === 'completed' ? 'active' : ''}}" data-status="completed" bindtap="updateStatusFilter">已完成</view>
+        <view class="chip {{statusFilter === 'closed' ? 'active' : ''}}" data-status="closed" bindtap="updateStatusFilter">已关闭</view>
+        <view wx:for="{{targetOptions}}" wx:key="key" class="chip {{targetFilter === item.key ? 'active' : ''}}" data-key="{{item.key}}" bindtap="updateTargetFilter">{{item.label}}</view>
+      </scroll-view>
+      <view wx:if="{{searchQuery || statusFilter !== 'all' || targetFilter}}" class="clear-filters" bindtap="clearSearch">清除筛选</view>
+    </view>
+
     <view wx:if="{{!demands.length}}" class="empty-board">
       <view class="empty-title">{{isCreator ? '还没有推广需求' : '暂时没有开放需求'}}</view>
       <view class="empty-description">{{isCreator ? '发布作品推广目标后，已认证推广方可提交报价。' : '新的创作者需求会在审核通过后出现在这里。'}}</view>

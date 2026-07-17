@@ -627,6 +627,20 @@ h2 {
   box-shadow: none;
 }
 
+.table-tools {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.table-tools .btn-secondary {
+  height: 38px;
+  padding: 0 16px;
+  line-height: 38px;
+  font-size: 13px;
+  text-decoration: none;
+}
+
 .table-wrap {
   overflow-x: auto;
 }
@@ -1500,6 +1514,12 @@ textarea:focus {
     flex-direction: column;
     gap: 13px;
     padding: 17px 16px;
+  }
+
+  .table-tools {
+    align-items: stretch;
+    flex-direction: column;
+    width: 100%;
   }
 
   .table-search {

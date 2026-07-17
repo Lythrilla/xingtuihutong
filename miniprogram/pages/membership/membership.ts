@@ -1,52 +1,95 @@
+import { getMembershipPlans, purchaseMembership } from '../../utils/api'
+
 export {}
+
+interface PlanView {
+  key: string
+  name: string
+  description: string
+  price: string
+  badge: string
+}
 
 Component({
   data: {
     selectedPlan: 'monthly',
     purchasing: false,
-    plans: [
-      {
-        key: 'monthly',
-        name: '月度会员',
-        description: '适合持续寻找合作方',
-        price: '待定价',
-        badge: '推荐',
-      },
-      {
-        key: 'quarterly',
-        name: '季度会员',
-        description: '额度按周期发放，规则清晰',
-        price: '待定价',
-        badge: '',
-      },
-      {
-        key: 'single',
-        name: '按次解锁',
-        description: '没有会员也可单次购买',
-        price: '新人优惠待配置',
-        badge: '新人',
-      },
-    ],
+    loading: true,
+    balance: '¥0.00',
+    activeUntil: '',
+    plans: [] as PlanView[],
+  },
+  lifetimes: {
+    attached() {
+      void this.loadPlans()
+    },
   },
   methods: {
+    async loadPlans() {
+      this.setData({ loading: true })
+      try {
+        const response = await getMembershipPlans()
+        const plans = response.plans.map((plan) => ({
+          key: plan.key,
+          name: plan.name,
+          description: plan.description,
+          price: `¥${(plan.price / 100).toFixed(2)}`,
+          badge: plan.key === 'monthly' ? '推荐' : '',
+        }))
+        const activeUntil = response.activeUntil
+          ? `会员有效期至 ${response.activeUntil.slice(0, 10)}`
+          : ''
+        this.setData({
+          plans,
+          balance: `¥${(response.balance / 100).toFixed(2)}`,
+          activeUntil,
+          loading: false,
+        })
+      } catch (error) {
+        wx.showToast({
+          title: error instanceof Error ? error.message : '套餐加载失败',
+          icon: 'none',
+        })
+        this.setData({ loading: false })
+      }
+    },
     selectPlan(event: WechatMiniprogram.TouchEvent) {
       this.setData({ selectedPlan: event.currentTarget.dataset.key as string })
     },
     purchase() {
       if (this.data.purchasing) return
-      this.setData({ purchasing: true })
+      const plan = this.data.selectedPlan
+      const planView = this.data.plans.find((item) => item.key === plan)
+      if (!planView) return
       wx.showModal({
-        title: '当前不会扣款',
-        content: '套餐价格、权益账本与微信支付仍在接入。本页面先确认购买前信息结构，当前不会创建订单或扣除费用。',
-        confirmText: '查看结果页',
-        cancelText: '暂不购买',
+        title: '确认开通会员',
+        content: `使用钱包余额购买 ${planView.name}（${planView.price}），立即生效。`,
+        confirmText: '确认购买',
         success: (result) => {
-          if (result.confirm) {
-            wx.navigateTo({ url: '/pages/payment-result/payment-result?status=unavailable' })
-          }
+          if (!result.confirm) return
+          void this.doPurchase(plan)
         },
-        complete: () => this.setData({ purchasing: false }),
       })
+    },
+    async doPurchase(plan: string) {
+      this.setData({ purchasing: true })
+      try {
+        const result = await purchaseMembership(plan)
+        wx.showToast({ title: '会员开通成功', icon: 'success' })
+        this.setData({
+          activeUntil: result.activeUntil
+            ? `会员有效期至 ${result.activeUntil.slice(0, 10)}`
+            : '',
+          balance: `¥${(result.balance / 100).toFixed(2)}`,
+        })
+      } catch (error) {
+        wx.showToast({
+          title: error instanceof Error ? error.message : '购买失败',
+          icon: 'none',
+        })
+      } finally {
+        this.setData({ purchasing: false })
+      }
     },
     openRules() {
       wx.showModal({

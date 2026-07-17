@@ -111,6 +111,69 @@ export async function uploadWorkFile(filePath: string): Promise<WorkUploadRespon
   })
 }
 
+export async function uploadAvatarFile(filePath: string): Promise<WorkUploadResponse> {
+  const role = (wx.getStorageSync('starconnect-role') || 'provider') as 'provider' | 'client'
+  const session = await ensureSession(role)
+  return new Promise((resolve, reject) => {
+    wx.uploadFile({
+      url: `${API_BASE_URL}/api/uploads/avatar`,
+      filePath,
+      name: 'file',
+      timeout: 30000,
+      header: {
+        Authorization: `Bearer ${session.token}`,
+      },
+      success(response) {
+        let body: WorkUploadResponse & ApiErrorBody
+        try {
+          body = JSON.parse(response.data) as WorkUploadResponse & ApiErrorBody
+        } catch {
+          reject(new ApiRequestError('上传响应异常，请重试', response.statusCode))
+          return
+        }
+        if (response.statusCode >= 200 && response.statusCode < 300) {
+          resolve(body)
+          return
+        }
+        reject(
+          new ApiRequestError(
+            friendlyError(body.error) || `上传失败（${response.statusCode}）`,
+            response.statusCode,
+          ),
+        )
+      },
+      fail() {
+        reject(new ApiRequestError('头像上传失败，请检查网络后重试', 0))
+      },
+    })
+  })
+}
+
+export interface MembershipPlan {
+  key: string
+  name: string
+  price: number
+  description: string
+}
+
+export interface MembershipPlansResponse {
+  plans: MembershipPlan[]
+  activeUntil?: string
+  balance: number
+}
+
+export async function getMembershipPlans(): Promise<MembershipPlansResponse> {
+  return apiRequest<MembershipPlansResponse>('/api/membership/plans')
+}
+
+export async function purchaseMembership(plan: string): Promise<{ success: boolean; activeUntil?: string; balance: number }> {
+  return apiRequest<{ success: boolean; activeUntil?: string; balance: number }>('/api/membership/purchase', 'POST', { plan })
+}
+
+export async function unlockPartnerContact(partnerId: string): Promise<{ contactMethod: string; unlocked: boolean; balance: number }> {
+  return apiRequest<{ contactMethod: string; unlocked: boolean; balance: number }>(`/api/partners/${encodeURIComponent(partnerId)}/unlock`, 'POST')
+}
+
 class ApiRequestError extends Error {
   constructor(
     message: string,
@@ -179,6 +242,12 @@ function friendlyError(message?: string): string {
     'no approved providers available': '暂无已审核推广方，请稍后再试',
     'creator wallet is not available': '创作者身份暂无钱包功能',
     'agent message is too long': '消息过长，请精简后重试',
+    'unsupported avatar image type': '请上传 jpg/png/webp 格式头像',
+    'avatar image must be <= 2MB': '头像需小于 2MB',
+    'invalid membership plan': '会员套餐选择错误',
+    'contact not available': '该主页暂未配置可解锁联系方式',
+    'cannot unlock same role contact': '不能解锁同身份联系方式',
+    'cannot unlock own contact': '不能解锁自己的联系方式',
   }
   return messages[message] || message
 }

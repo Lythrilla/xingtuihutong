@@ -44,6 +44,7 @@ pub fn routes() -> Router<AppState> {
         .route("/target-types/{key}", put(update_target_type).delete(delete_target_type))
         .route("/budget-options", get(budget_options).post(create_budget_option))
         .route("/budget-options/{id}", put(update_budget_option).delete(delete_budget_option))
+        .route("/export/{type}", get(export_csv))
         .nest("/analytics", crate::analytics::admin_routes())
         .nest("/agent", crate::admin_agent::routes())
 }
@@ -1357,4 +1358,219 @@ fn with_partner_tags(mut partner: Partner) -> Partner {
 fn with_plan_tags(mut plan: Plan) -> Plan {
     plan.tags = serde_json::from_str(&plan.tags_json).unwrap_or_default();
     plan
+}
+
+async fn export_csv(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    Path(export_type): Path<String>,
+) -> AppResult<impl IntoResponse> {
+    require_admin(&state, &headers).await?;
+    let (filename, content) = match export_type.as_str() {
+        "users" => build_users_csv(&state).await?,
+        "partners" => build_partners_csv(&state).await?,
+        "songs" => build_songs_csv(&state).await?,
+        "plans" => build_plans_csv(&state).await?,
+        "matches" => build_matches_csv(&state).await?,
+        "settlements" => build_settlements_csv(&state).await?,
+        "demands" => build_demands_csv(&state).await?,
+        _ => return Err(AppError::BadRequest("unknown export type".into())),
+    };
+    let mut response_headers = HeaderMap::new();
+    response_headers.insert(
+        header::CONTENT_TYPE,
+        HeaderValue::from_static("text/csv; charset=utf-8"),
+    );
+    let disposition = format!("attachment; filename=\"{filename}\"");
+    response_headers.insert(
+        header::CONTENT_DISPOSITION,
+        HeaderValue::from_str(&disposition)
+            .map_err(|error| AppError::Internal(error.into()))?,
+    );
+    Ok((StatusCode::OK, response_headers, content))
+}
+
+fn csv_line(fields: &[&str]) -> String {
+    fields.iter().map(|field| csv_escape(field)).collect::<Vec<_>>().join(",") + "\n"
+}
+
+fn csv_escape(value: &str) -> String {
+    if value.contains(',') || value.contains('"') || value.contains('\n') || value.contains('\r') {
+        format!("\"{}\"", value.replace('"', "\"\""))
+    } else {
+        value.to_string()
+    }
+}
+
+async fn build_users_csv(state: &AppState) -> AppResult<(String, String)> {
+    let mut output = csv_line(&["id", "display_name", "organization", "role", "verified", "onboarding_status", "created_at"]);
+    let rows = sqlx::query(
+        "SELECT id, display_name, organization, role, verified, onboarding_status, created_at
+         FROM users ORDER BY created_at DESC",
+    )
+    .fetch_all(&state.pool)
+    .await?;
+    for row in rows {
+        output.push_str(&csv_line(&[
+            row.get::<String, _>("id").as_str(),
+            row.get::<String, _>("display_name").as_str(),
+            row.get::<String, _>("organization").as_str(),
+            row.get::<String, _>("role").as_str(),
+            if row.get::<i64, _>("verified") == 1 { "是" } else { "否" },
+            row.get::<String, _>("onboarding_status").as_str(),
+            row.get::<String, _>("created_at").as_str(),
+        ]));
+    }
+    Ok(("users.csv".into(), output))
+}
+
+async fn build_partners_csv(state: &AppState) -> AppResult<(String, String)> {
+    let mut output = csv_line(&["id", "partner_type", "name", "identity", "description", "tags", "match_score", "result_text", "active", "created_at"]);
+    let rows = sqlx::query(
+        "SELECT id, partner_type, name, identity, description, tags, match_score, result_text, active, created_at
+         FROM partners ORDER BY created_at DESC",
+    )
+    .fetch_all(&state.pool)
+    .await?;
+    for row in rows {
+        output.push_str(&csv_line(&[
+            row.get::<String, _>("id").as_str(),
+            row.get::<String, _>("partner_type").as_str(),
+            row.get::<String, _>("name").as_str(),
+            row.get::<String, _>("identity").as_str(),
+            row.get::<String, _>("description").as_str(),
+            row.get::<String, _>("tags").as_str(),
+            row.get::<i64, _>("match_score").to_string().as_str(),
+            row.get::<String, _>("result_text").as_str(),
+            if row.get::<i64, _>("active") == 1 { "是" } else { "否" },
+            row.get::<String, _>("created_at").as_str(),
+        ]));
+    }
+    Ok(("partners.csv".into(), output))
+}
+
+async fn build_songs_csv(state: &AppState) -> AppResult<(String, String)> {
+    let mut output = csv_line(&["id", "name", "artist", "cover_class", "active", "created_at"]);
+    let rows = sqlx::query(
+        "SELECT id, name, artist, cover_class, active, created_at FROM songs ORDER BY created_at DESC",
+    )
+    .fetch_all(&state.pool)
+    .await?;
+    for row in rows {
+        output.push_str(&csv_line(&[
+            row.get::<String, _>("id").as_str(),
+            row.get::<String, _>("name").as_str(),
+            row.get::<String, _>("artist").as_str(),
+            row.get::<String, _>("cover_class").as_str(),
+            if row.get::<i64, _>("active") == 1 { "是" } else { "否" },
+            row.get::<String, _>("created_at").as_str(),
+        ]));
+    }
+    Ok(("songs.csv".into(), output))
+}
+
+async fn build_plans_csv(state: &AppState) -> AppResult<(String, String)> {
+    let mut output = csv_line(&["id", "title", "plan_type", "description", "tags", "budget_amount", "score", "active", "created_at"]);
+    let rows = sqlx::query(
+        "SELECT id, title, plan_type, description, tags, budget_amount, score, active, created_at FROM plans ORDER BY created_at DESC",
+    )
+    .fetch_all(&state.pool)
+    .await?;
+    for row in rows {
+        output.push_str(&csv_line(&[
+            row.get::<String, _>("id").as_str(),
+            row.get::<String, _>("title").as_str(),
+            row.get::<String, _>("plan_type").as_str(),
+            row.get::<String, _>("description").as_str(),
+            row.get::<String, _>("tags").as_str(),
+            row.get::<i64, _>("budget_amount").to_string().as_str(),
+            row.get::<i64, _>("score").to_string().as_str(),
+            if row.get::<i64, _>("active") == 1 { "是" } else { "否" },
+            row.get::<String, _>("created_at").as_str(),
+        ]));
+    }
+    Ok(("plans.csv".into(), output))
+}
+
+async fn build_matches_csv(state: &AppState) -> AppResult<(String, String)> {
+    let mut output = csv_line(&["id", "user_name", "song_name", "budget_label", "goal", "cycle", "status", "target_keys", "created_at"]);
+    let rows = sqlx::query(
+        "SELECT m.id, u.organization AS user_name, s.name AS song_name, b.label AS budget_label,
+         m.goal, m.cycle, m.status, m.target_keys, m.created_at
+         FROM match_requests m
+         JOIN users u ON u.id = m.user_id
+         JOIN songs s ON s.id = m.song_id
+         JOIN budget_options b ON b.id = m.budget_id
+         ORDER BY m.created_at DESC",
+    )
+    .fetch_all(&state.pool)
+    .await?;
+    for row in rows {
+        output.push_str(&csv_line(&[
+            row.get::<String, _>("id").as_str(),
+            row.get::<String, _>("user_name").as_str(),
+            row.get::<String, _>("song_name").as_str(),
+            row.get::<String, _>("budget_label").as_str(),
+            row.get::<String, _>("goal").as_str(),
+            row.get::<String, _>("cycle").as_str(),
+            row.get::<String, _>("status").as_str(),
+            row.get::<String, _>("target_keys").as_str(),
+            row.get::<String, _>("created_at").as_str(),
+        ]));
+    }
+    Ok(("matches.csv".into(), output))
+}
+
+async fn build_settlements_csv(state: &AppState) -> AppResult<(String, String)> {
+    let mut output = csv_line(&["id", "user_name", "title", "amount", "status", "created_at"]);
+    let rows = sqlx::query(
+        "SELECT s.id, u.organization AS user_name, s.title, s.amount, s.status, s.created_at
+         FROM settlements s JOIN users u ON u.id = s.user_id
+         ORDER BY s.created_at DESC",
+    )
+    .fetch_all(&state.pool)
+    .await?;
+    for row in rows {
+        output.push_str(&csv_line(&[
+            row.get::<String, _>("id").as_str(),
+            row.get::<String, _>("user_name").as_str(),
+            row.get::<String, _>("title").as_str(),
+            row.get::<i64, _>("amount").to_string().as_str(),
+            row.get::<String, _>("status").as_str(),
+            row.get::<String, _>("created_at").as_str(),
+        ]));
+    }
+    Ok(("settlements.csv".into(), output))
+}
+
+async fn build_demands_csv(state: &AppState) -> AppResult<(String, String)> {
+    let mut output = csv_line(&["id", "creator_name", "song_name", "budget_label", "goal", "cycle", "status", "target_keys", "proposal_count", "created_at"]);
+    let rows = sqlx::query(
+        "SELECT m.id, u.organization AS creator_name, s.name AS song_name, b.label AS budget_label,
+         m.goal, m.cycle, m.status, m.target_keys,
+         (SELECT COUNT(*) FROM demand_proposals dp WHERE dp.match_request_id = m.id AND dp.status != 'withdrawn') AS proposal_count,
+         m.created_at
+         FROM match_requests m
+         JOIN users u ON u.id = m.user_id
+         JOIN songs s ON s.id = m.song_id
+         JOIN budget_options b ON b.id = m.budget_id
+         ORDER BY m.created_at DESC",
+    )
+    .fetch_all(&state.pool)
+    .await?;
+    for row in rows {
+        output.push_str(&csv_line(&[
+            row.get::<String, _>("id").as_str(),
+            row.get::<String, _>("creator_name").as_str(),
+            row.get::<String, _>("song_name").as_str(),
+            row.get::<String, _>("budget_label").as_str(),
+            row.get::<String, _>("goal").as_str(),
+            row.get::<String, _>("cycle").as_str(),
+            row.get::<String, _>("status").as_str(),
+            row.get::<String, _>("target_keys").as_str(),
+            row.get::<i64, _>("proposal_count").to_string().as_str(),
+            row.get::<String, _>("created_at").as_str(),
+        ]));
+    }
+    Ok(("demands.csv".into(), output))
 }

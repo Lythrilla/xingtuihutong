@@ -544,6 +544,7 @@ function renderTable(view, records) {
   };
   const definition = definitions[view];
   const filtered = filterRecords(records, state.query);
+  const exportType = { users: "users", partners: "partners", songs: "songs", plans: "plans", matches: "matches", settlements: "settlements" }[view];
   content.innerHTML = `
     <section class="table-panel">
       <div class="table-head">
@@ -551,10 +552,13 @@ function renderTable(view, records) {
           <h2>${titles[view]}</h2>
           <span class="muted">共 ${records.length} 条${state.query ? `，筛选出 ${filtered.length} 条` : ""}</span>
         </div>
-        <label class="table-search">
-          <span aria-hidden="true">⌕</span>
-          <input data-search value="${escapeAttribute(state.query)}" placeholder="搜索当前列表" aria-label="搜索当前列表" />
-        </label>
+        <div class="table-tools">
+          ${exportType ? `<a class="btn-secondary" href="/api/admin/export/${exportType}">导出 CSV</a>` : ""}
+          <label class="table-search">
+            <span aria-hidden="true">⌕</span>
+            <input data-search value="${escapeAttribute(state.query)}" placeholder="搜索当前列表" aria-label="搜索当前列表" />
+          </label>
+        </div>
       </div>
       ${table(
         definition.headers,

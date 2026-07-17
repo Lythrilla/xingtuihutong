@@ -178,6 +178,7 @@ pub struct UpdateProfile {
     pub display_name: Option<String>,
     pub description: Option<String>,
     pub tags: Option<Vec<String>>,
+    pub avatar: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -188,6 +189,7 @@ pub struct SubmitOnboarding {
     pub contact_method: String,
     pub description: String,
     pub tags: Vec<String>,
+    pub avatar: Option<String>,
     pub work_title: Option<String>,
     pub work_url: Option<String>,
     pub work_file_url: Option<String>,

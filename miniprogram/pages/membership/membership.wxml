@@ -3,13 +3,13 @@
 
   <view class="hero-card membership-hero">
     <view class="hero-grid"></view>
-    <view class="membership-kicker">当前身份</view>
-    <view class="membership-title">普通用户</view>
-    <view class="membership-desc">可浏览审核通过的公开资料，联系时选择会员额度或按次购买。</view>
+    <view class="membership-kicker">{{activeUntil ? '会员状态' : '当前身份'}}</view>
+    <view class="membership-title">{{activeUntil ? activeUntil : '普通用户'}}</view>
+    <view class="membership-desc">会员期内可无限解锁合作方联系方式，也可在合作方详情页按次解锁。</view>
     <view class="quota-row">
-      <view><text>0</text><label>会员剩余额度</label></view>
-      <view><text>0</text><label>按次可用额度</label></view>
-      <view><text>0</text><label>已解锁联系人</label></view>
+      <view><text>{{balance}}</text><label>钱包余额</label></view>
+      <view><text>{{activeUntil ? '∞' : '0'}}</text><label>会员期内解锁</label></view>
+      <view><text>{{activeUntil ? '∞' : '0'}}</text><label>按次购买可用</label></view>
     </view>
   </view>
 
@@ -63,7 +63,7 @@
     <view class="card inline-empty">暂无权益获得、消耗或退回记录</view>
   </view>
 
-  <button class="btn-primary purchase-button" loading="{{purchasing}}" disabled="{{purchasing}}" bindtap="purchase">
-    {{selectedPlan === 'single' ? '确认按次购买' : '确认开通会员'}}
+  <button class="btn-primary purchase-button" loading="{{purchasing || loading}}" disabled="{{purchasing || loading}}" bindtap="purchase">
+    确认开通会员
   </button>
 </view>

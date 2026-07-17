@@ -1,4 +1,4 @@
-import { apiRequest, SessionUser } from '../../utils/api'
+import { apiRequest, SessionUser, uploadAvatarFile } from '../../utils/api'
 
 export {}
 
@@ -46,6 +46,9 @@ Component({
     descriptionInput: '',
     tagsInput: '',
     withdrawInput: '',
+    avatarInput: '' as string,
+    avatarUploading: false,
+    userAvatarIsImage: false,
     quickActions: [] as Array<{ key: string; label: string; icon: string }>,
     serviceActions: [] as Array<{
       key: string
@@ -122,6 +125,7 @@ Component({
               ],
           walletBalance: formatMoney(profile.walletBalance),
           walletBalanceCents: profile.walletBalance,
+          userAvatarIsImage: isImageAvatar(profile.user.avatar),
           loading: false,
         })
       } catch (error) {
@@ -132,7 +136,14 @@ Component({
       }
     },
     editProfile() {
-      wx.redirectTo({ url: '/pages/onboarding/onboarding' })
+      const avatar = this.data.user.avatar || ''
+      this.setData({
+        sheetMode: 'edit',
+        organizationInput: this.data.user.organization || '',
+        descriptionInput: this.data.user.description || '',
+        tagsInput: (this.data.tags || []).join(', '),
+        avatarInput: isImageAvatar(avatar) ? avatar : '',
+      })
     },
     updateOrganization(event: WechatMiniprogram.Input) {
       this.setData({ organizationInput: event.detail.value })
@@ -145,6 +156,31 @@ Component({
     },
     updateWithdraw(event: WechatMiniprogram.Input) {
       this.setData({ withdrawInput: event.detail.value })
+    },
+    chooseAvatar() {
+      if (this.data.avatarUploading) return
+      wx.chooseMedia({
+        count: 1,
+        mediaType: ['image'],
+        sourceType: ['album', 'camera'],
+        success: async (result) => {
+          const file = result.tempFiles[0]
+          if (!file) return
+          this.setData({ avatarUploading: true })
+          try {
+            const uploaded = await uploadAvatarFile(file.tempFilePath)
+            this.setData({ avatarInput: uploaded.url })
+            wx.showToast({ title: '头像已上传', icon: 'success' })
+          } catch (error) {
+            wx.showToast({
+              title: error instanceof Error ? error.message : '头像上传失败',
+              icon: 'none',
+            })
+          } finally {
+            this.setData({ avatarUploading: false })
+          }
+        },
+      })
     },
     closeSheet() {
       if (this.data.actionLoading) return
@@ -201,9 +237,10 @@ Component({
         .map((tag) => tag.trim())
         .filter(Boolean)
         .slice(0, 8)
+      const avatar = this.data.avatarInput.trim()
       this.setData({ actionLoading: true })
       try {
-        await apiRequest('/api/profile', 'PUT', { organization, description, tags })
+        await apiRequest('/api/profile', 'PUT', { organization, description, tags, avatar })
         this.setData({ sheetMode: '' })
         await this.loadProfile()
         wx.showToast({ title: '资料已更新', icon: 'none' })
@@ -246,4 +283,8 @@ Component({
 
 function formatMoney(cents: number): string {
   return `¥${(cents / 100).toFixed(2)}`
+}
+
+function isImageAvatar(value: string): boolean {
+  return !!value && (value.indexOf('http') === 0 || value.indexOf('/') === 0)
 }
