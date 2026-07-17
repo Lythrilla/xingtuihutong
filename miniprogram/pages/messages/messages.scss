@@ -15,14 +15,10 @@ view, text, scroll-view, image {
   gap: 24rpx;
   padding: 28rpx;
   background: #fff;
-  border-radius: 32rpx;
-  box-shadow: 0 4rpx 20rpx rgba(140, 153, 255, 0.05);
-  transition: transform 0.2s ease, opacity 0.2s ease;
+  border-radius: 32rpx;  transition: transform 0.2s ease, opacity 0.2s ease;
 }
 
-.notice-card:active {
-  transform: scale(0.98);
-}
+.notice-card:active {}
 
 .notice-icon-wrap {
   position: relative;
@@ -124,14 +120,10 @@ view, text, scroll-view, image {
   gap: 24rpx;
   padding: 28rpx;
   background: #fff;
-  border-radius: 32rpx;
-  box-shadow: 0 4rpx 20rpx rgba(140, 153, 255, 0.05);
-  transition: transform 0.2s ease;
+  border-radius: 32rpx;  transition: transform 0.2s ease;
 }
 
-.chat-card:active {
-  transform: scale(0.98);
-}
+.chat-card:active {}
 
 .chat-avatar-wrap {
   position: relative;

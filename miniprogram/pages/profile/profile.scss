@@ -34,9 +34,7 @@ view, text, scroll-view, image {
   font-weight: 700;
   background: #fff;
   border-radius: 50%;
-  border: 1rpx solid rgba(137, 154, 248, 0.16);
-  box-shadow: none;
-}
+  border: 1rpx solid rgba(137, 154, 248, 0.16);}
 
 .profile-main {
   min-width: 0;
@@ -133,9 +131,7 @@ view, text, scroll-view, image {
   font-size: 24rpx;
   font-weight: 500;
   /* 入场动画 */
-  opacity: 0;
-  animation: slide-up-fade 0.5s ease forwards;
-}
+  opacity: 0;}
 
 /* 为四个图标添加错峰延迟 */
 .workspace-item:nth-child(1) { animation-delay: 0.1s; }
@@ -168,9 +164,7 @@ view, text, scroll-view, image {
   transition: transform 0.3s ease;
 }
 
-.workspace-item:active .ui-icon {
-  transform: scale(0.95);
-}
+.workspace-item:active .ui-icon {}
 
 .workspace-spark {
   position: absolute;
@@ -179,9 +173,7 @@ view, text, scroll-view, image {
   width: 14rpx;
   height: 14rpx;
   background: #ff4757;
-  border-radius: 50%;
-  animation: state-pulse 2s ease-in-out infinite;
-}
+  border-radius: 50%;}
 
 /* === 极简钱包 === */
 .wallet-card {
@@ -191,16 +183,11 @@ view, text, scroll-view, image {
   border-radius: 24rpx;
   border: 1rpx solid rgba(137, 154, 248, 0.12);
   background: rgba(255,255,255,0.7);
-  opacity: 0;
-  animation: slide-up-fade 0.6s ease forwards;
-  animation-delay: 0.3s;
+  opacity: 0;  animation-delay: 0.3s;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.wallet-card:active {
-  transform: scale(0.98);
-  box-shadow: 0 4rpx 12rpx rgba(137, 154, 248, 0.08);
-}
+.wallet-card:active {}
 
 .wallet-content {
   display: flex;
@@ -237,9 +224,7 @@ view, text, scroll-view, image {
 /* === 通用 Section 与 轻量卡片 === */
 .section {
   margin-top: 32rpx;
-  opacity: 0;
-  animation: slide-up-fade 0.6s ease forwards;
-}
+  opacity: 0;}
 
 .section:nth-of-type(1) { animation-delay: 0.4s; }
 .section:nth-of-type(2) { animation-delay: 0.5s; }
@@ -367,7 +352,7 @@ view, text, scroll-view, image {
   overflow: hidden;
   padding: 28rpx;
   color: #2e3146;
-  background: linear-gradient(135deg, rgba(137, 154, 248, 0.8), #e1e6f9);
+  background: #eef2ff;
   border-radius: 28rpx;
 }
 
@@ -483,9 +468,9 @@ view, text, scroll-view, image {
 }
 
 @keyframes state-pulse {
-  0% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.4); }
-  70% { box-shadow: 0 0 0 10rpx rgba(255, 71, 87, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0); }
+  0% { }
+  70% { }
+  100% { }
 }
 
 /* === 底部抽屉 === */
@@ -504,9 +489,7 @@ view, text, scroll-view, image {
   overflow-y: auto;
   padding: 36rpx 32rpx calc(36rpx + env(safe-area-inset-bottom));
   background: rgba(255, 255, 255, 1);
-  border-radius: 32rpx 32rpx 0 0;
-  box-shadow: 0 -12rpx 30rpx rgba(46, 49, 62, 0.16);
-}
+  border-radius: 32rpx 32rpx 0 0;}
 
 .sheet-head {
   display: flex;

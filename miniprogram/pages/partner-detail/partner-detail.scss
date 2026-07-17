@@ -33,9 +33,7 @@ button {
   font-size: 40rpx;
   font-weight: 700;
   background: #fff;
-  border-radius: 28rpx;
-  box-shadow: 0 8rpx 20rpx rgba(137, 154, 248, 0.18);
-}
+  border-radius: 28rpx;}
 
 .detail-identity {
   min-width: 0;
@@ -141,7 +139,7 @@ button {
   flex: none;
   color: #fff;
   font-size: 20rpx;
-  background: linear-gradient(135deg, #899af8, #6f7bd7);
+  background: var(--brand-primary);
   border-radius: 14rpx;
 }
 
@@ -193,9 +191,7 @@ button {
   gap: 18rpx;
   padding: 22rpx 40rpx calc(22rpx + env(safe-area-inset-bottom));
   background: rgba(247, 248, 253, 0.94);
-  border-top: 1rpx solid rgba(137, 154, 248, 0.12);
-  backdrop-filter: blur(18px);
-}
+  border-top: 1rpx solid rgba(137, 154, 248, 0.12);}
 
 .sheet-layer {
   position: fixed;
@@ -246,9 +242,7 @@ button {
 }
 
 .access-option.selected {
-  border-color: #899af8;
-  box-shadow: 0 8rpx 20rpx rgba(137, 154, 248, 0.12);
-}
+  border-color: #899af8;}
 
 .access-name {
   color: #343b56;
