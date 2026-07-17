@@ -1,4 +1,4 @@
-import { apiRequest, uploadAvatarFile, uploadWorkFile } from '../../utils/api'
+import { apiRequest, uploadAvatarFile, uploadWorkFile, toAssetUrl } from '../../utils/api'
 
 export {}
 
@@ -16,6 +16,7 @@ interface OnboardingApplication {
   workUrl: string
   workFileUrl: string
   workFileName: string
+  avatar?: string
   verificationItems: string[]
   audienceSize: string
   cooperationBudget: string
@@ -107,7 +108,7 @@ Component({
           workFileName: application?.workFileName ?? '',
           audienceSize: application?.audienceSize ?? '',
           cooperationBudget: application?.cooperationBudget ?? '',
-          avatarUrl: '',
+          avatarUrl: toAssetUrl(application?.avatar ?? ''),
           selectedTags,
           tagOptions: options.map((label) => ({ label, selected: selectedTags.includes(label) })),
           verificationItems: application?.verificationItems ?? [],
@@ -167,7 +168,7 @@ Component({
           this.setData({ avatarUploading: true })
           try {
             const uploaded = await uploadAvatarFile(file.tempFilePath)
-            this.setData({ avatarUrl: uploaded.url })
+            this.setData({ avatarUrl: toAssetUrl(uploaded.url) })
             wx.showToast({ title: '头像已上传', icon: 'success' })
           } catch (error) {
             wx.showToast({

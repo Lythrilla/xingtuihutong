@@ -1,4 +1,4 @@
-import { apiRequest, SessionUser, uploadAvatarFile } from '../../utils/api'
+import { apiRequest, SessionUser, uploadAvatarFile, toAssetUrl } from '../../utils/api'
 
 export {}
 
@@ -125,7 +125,8 @@ Component({
               ],
           walletBalance: formatMoney(profile.walletBalance),
           walletBalanceCents: profile.walletBalance,
-          userAvatarIsImage: isImageAvatar(profile.user.avatar),
+          userAvatarIsImage: isImageAvatar(toAssetUrl(profile.user.avatar)),
+          userAvatarUrl: toAssetUrl(profile.user.avatar),
           loading: false,
         })
       } catch (error) {
@@ -142,7 +143,7 @@ Component({
         organizationInput: this.data.user.organization || '',
         descriptionInput: this.data.user.description || '',
         tagsInput: (this.data.tags || []).join(', '),
-        avatarInput: isImageAvatar(avatar) ? avatar : '',
+        avatarInput: isImageAvatar(avatar) ? toAssetUrl(avatar) : '',
       })
     },
     updateOrganization(event: WechatMiniprogram.Input) {
@@ -169,7 +170,7 @@ Component({
           this.setData({ avatarUploading: true })
           try {
             const uploaded = await uploadAvatarFile(file.tempFilePath)
-            this.setData({ avatarInput: uploaded.url })
+            this.setData({ avatarInput: toAssetUrl(uploaded.url) })
             wx.showToast({ title: '头像已上传', icon: 'success' })
           } catch (error) {
             wx.showToast({
