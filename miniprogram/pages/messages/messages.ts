@@ -1,4 +1,4 @@
-import { apiRequest } from '../../utils/api'
+import { apiRequest, goTo } from '../../utils/api'
 
 export {}
 
@@ -103,7 +103,7 @@ Component({
     },
     openPlaza() {
       wx.switchTab({ url: '/pages/plaza/plaza' }).catch(() => {
-        wx.redirectTo({ url: '/pages/plaza/plaza' })
+        goTo('/pages/plaza/plaza')
       })
     },
   },

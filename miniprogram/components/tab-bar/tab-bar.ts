@@ -49,7 +49,7 @@ Component({
       const item = event.currentTarget.dataset.item as { key: string; url: string }
       if (item.key === this.data.active || this.data.navigating) return
       this.setData({ navigating: true })
-      wx.redirectTo({
+      wx.reLaunch({
         url: item.url,
         fail: () => this.setData({ navigating: false }),
       })

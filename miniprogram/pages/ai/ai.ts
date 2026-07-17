@@ -1,4 +1,4 @@
-import { apiRequest } from '../../utils/api'
+import { apiRequest, goTo } from '../../utils/api'
 
 export {}
 
@@ -256,19 +256,19 @@ Component({
     openPartner(event: WechatMiniprogram.TouchEvent) {
       const id = event.currentTarget.dataset.id as string
       wx.setStorageSync('starconnect-agent-partner', id)
-      wx.redirectTo({ url: '/pages/plaza/plaza' })
+      goTo('/pages/plaza/plaza')
     },
     openMessages() {
-      wx.redirectTo({ url: '/pages/messages/messages' })
+      goTo('/pages/messages/messages')
     },
     openMatch() {
-      wx.redirectTo({ url: '/pages/match/match' })
+      goTo('/pages/match/match')
     },
     openPlaza() {
-      wx.redirectTo({ url: '/pages/plaza/plaza' })
+      goTo('/pages/plaza/plaza')
     },
     openAnalytics() {
-      wx.redirectTo({ url: '/pages/analytics/analytics' })
+      goTo('/pages/analytics/analytics')
     },
     openAction(event: WechatMiniprogram.TouchEvent) {
       const conversationId = event.currentTarget.dataset.conversationId as string

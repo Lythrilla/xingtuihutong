@@ -1,4 +1,4 @@
-import { apiRequest, SessionUser, uploadAvatarFile, toAssetUrl } from '../../utils/api'
+import { apiRequest, SessionUser, uploadAvatarFile, toAssetUrl, goTo } from '../../utils/api'
 
 export {}
 
@@ -191,7 +191,7 @@ Component({
     openQuickAction(event: WechatMiniprogram.TouchEvent) {
       const key = event.currentTarget.dataset.key as string
       if (key === 'onboarding') {
-        wx.redirectTo({ url: '/pages/onboarding/onboarding' })
+        goTo('/pages/onboarding/onboarding')
         return
       }
       const routes: Record<string, string> = {
@@ -203,12 +203,12 @@ Component({
         demands: '/pages/demands/demands',
       }
       const url = routes[key]
-      if (url) wx.redirectTo({ url })
+      if (url) goTo(url)
     },
     openServiceAction(event: WechatMiniprogram.TouchEvent) {
       const key = event.currentTarget.dataset.key as string
       if (key === 'onboarding') {
-        wx.redirectTo({ url: '/pages/onboarding/onboarding' })
+        goTo('/pages/onboarding/onboarding')
         return
       }
       const routes: Record<string, string> = {
@@ -220,7 +220,7 @@ Component({
         demands: '/pages/demands/demands',
       }
       const url = routes[key]
-      if (url) wx.redirectTo({ url })
+      if (url) goTo(url)
     },
     async saveProfile() {
       const organization = this.data.organizationInput.trim()

@@ -23,7 +23,9 @@
   margin-bottom: 22rpx;
   border: 4rpx solid rgba(99, 102, 241, 0.25);
   border-top-color: var(--brand-primary);
-  border-radius: 50%;}
+  border-radius: 50%;
+  animation: state-spin 0.8s linear infinite;
+}
 
 .state-symbol {
   width: 64rpx;

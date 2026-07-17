@@ -1,4 +1,4 @@
-import { apiRequest } from '../../utils/api'
+import { apiRequest, goTo } from '../../utils/api'
 
 export {}
 
@@ -258,9 +258,7 @@ Component({
         )
         wx.showToast({ title: '已建立合作会话', icon: 'success' })
         setTimeout(() => {
-          wx.redirectTo({
-            url: `/pages/conversation/conversation?id=${encodeURIComponent(response.conversationId)}&name=${encodeURIComponent(response.providerName)}`,
-          })
+          goTo(`/pages/conversation/conversation?id=${encodeURIComponent(response.conversationId)}&name=${encodeURIComponent(response.providerName)}`)
         }, 400)
       } catch (error) {
         wx.showToast({ title: error instanceof Error ? error.message : '接单失败', icon: 'none' })
@@ -289,10 +287,10 @@ Component({
       }
     },
     openMessages() {
-      wx.redirectTo({ url: '/pages/messages/messages' })
+      goTo('/pages/messages/messages')
     },
     publishDemand() {
-      wx.redirectTo({ url: '/pages/match/match' })
+      goTo('/pages/match/match')
     },
     findProposal(proposalId: string): Proposal | undefined {
       for (const demand of this.data.demands) {

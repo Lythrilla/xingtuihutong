@@ -2,6 +2,14 @@ export {}
 
 type PaymentStatus = 'success' | 'pending' | 'failed' | 'unavailable'
 
+interface PaymentResultPageData {
+  status: PaymentStatus
+  symbol: string
+  title: string
+  description: string
+  action: string
+}
+
 const CONTENT: Record<
   PaymentStatus,
   { symbol: string; title: string; description: string; action: string }
@@ -32,34 +40,32 @@ const CONTENT: Record<
   },
 }
 
-Component({
+Page<PaymentResultPageData, WechatMiniprogram.IAnyObject>({
   data: {
-    status: 'unavailable' as PaymentStatus,
+    status: 'unavailable',
     symbol: '—',
     title: '',
     description: '',
     action: '',
   },
-  methods: {
-    onLoad(options: Record<string, string | undefined>) {
-      const status = isPaymentStatus(options.status) ? options.status : 'unavailable'
-      this.setData({ status, ...CONTENT[status] })
-    },
-    primaryAction() {
-      if (this.data.status === 'pending') {
-        wx.showToast({ title: '支付查单接口尚未接入', icon: 'none' })
-        return
-      }
-      const pages = getCurrentPages()
-      if (pages.length > 1) {
-        wx.navigateBack()
-        return
-      }
-      wx.redirectTo({ url: '/pages/membership/membership' })
-    },
-    goHome() {
-      wx.redirectTo({ url: '/pages/home/home' })
-    },
+  onLoad(options: Record<string, string | undefined>) {
+    const status = isPaymentStatus(options.status) ? options.status : 'unavailable'
+    this.setData({ status, ...CONTENT[status] })
+  },
+  primaryAction() {
+    if (this.data.status === 'pending') {
+      wx.showToast({ title: '支付查单接口尚未接入', icon: 'none' })
+      return
+    }
+    const pages = getCurrentPages()
+    if (pages.length > 1) {
+      wx.navigateBack()
+      return
+    }
+    wx.redirectTo({ url: '/pages/membership/membership' })
+  },
+  goHome() {
+    wx.redirectTo({ url: '/pages/home/home' })
   },
 })
 

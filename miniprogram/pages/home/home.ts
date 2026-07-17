@@ -1,4 +1,4 @@
-import { apiRequest } from '../../utils/api'
+import { apiRequest, goTo } from '../../utils/api'
 
 export {}
 
@@ -104,19 +104,19 @@ Component({
       }
     },
     openPrimary() {
-      wx.redirectTo({ url: '/pages/ai/ai' })
+      goTo('/pages/ai/ai')
     },
     openOnboarding() {
-      wx.redirectTo({ url: '/pages/onboarding/onboarding' })
+      goTo('/pages/onboarding/onboarding')
     },
     openStatus() {
       if (!this.data.isApproved) this.openOnboarding()
     },
     openPlaza() {
-      wx.redirectTo({ url: '/pages/plaza/plaza' })
+      goTo('/pages/plaza/plaza')
     },
     openDemands() {
-      wx.redirectTo({ url: '/pages/demands/demands' })
+      goTo('/pages/demands/demands')
     },
     openWorkspaceAction(event: WechatMiniprogram.TouchEvent) {
       const key = event.currentTarget.dataset.key as string
@@ -128,7 +128,7 @@ Component({
         demands: '/pages/demands/demands',
       }
       const url = routes[key]
-      if (url) wx.redirectTo({ url })
+      if (url) goTo(url)
     },
     openPartner(event: WechatMiniprogram.TouchEvent) {
       if (!this.data.isApproved) {
