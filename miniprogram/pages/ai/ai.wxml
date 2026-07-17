@@ -57,7 +57,9 @@
       </view>
 
       <view class="thinking" wx:if="{{thinking}}">
-        <image src="/assets/images/ai-illustration.png" mode="aspectFit"></image>
+        <view class="thinking-avatar">
+          <image src="/assets/images/ai-illustration.png" mode="aspectFit"></image>
+        </view>
         <view>
           <view>正在思考与规划</view>
           <text>理解需求 · 检索数据 · 生成方案</text>
