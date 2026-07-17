@@ -7,6 +7,23 @@ export function toAssetUrl(path: string): string {
   return path
 }
 
+const TAB_PAGES = new Set([
+  '/pages/home/home',
+  '/pages/plaza/plaza',
+  '/pages/ai/ai',
+  '/pages/messages/messages',
+  '/pages/profile/profile',
+])
+
+export function goTo(url: string) {
+  const path = url.split('?')[0]
+  if (TAB_PAGES.has(path)) {
+    wx.redirectTo({ url })
+  } else {
+    wx.navigateTo({ url })
+  }
+}
+
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE'
 
 interface ApiErrorBody {

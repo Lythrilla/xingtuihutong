@@ -1,4 +1,4 @@
-import { apiRequest } from '../../utils/api'
+import { apiRequest, goTo } from '../../utils/api'
 
 export {}
 
@@ -183,7 +183,7 @@ Component({
       }
       const prompt = `请帮我完善《${song.name}》的推广需求草稿。当前目标：${this.data.goal || '尚未填写'}；计划任务：${taskNames}；周期：${this.data.selectedCycle}。请只生成需求描述和交付要点，不生成报价。`
       wx.setStorageSync('starconnect-ai-prefill', prompt)
-      wx.redirectTo({ url: '/pages/ai/ai' })
+      goTo('/pages/ai/ai')
     },
     startMatching() {
       if (!this.data.canSubmit || this.data.isSubmitting) {
@@ -219,7 +219,7 @@ Component({
           taskCount: this.data.selectedTargets.length,
         })
         wx.showToast({ title: '需求已发布', icon: 'success' })
-        setTimeout(() => wx.redirectTo({ url: '/pages/demands/demands' }), 500)
+        setTimeout(() => goTo('/pages/demands/demands'), 500)
       } catch (error) {
         wx.showToast({ title: error instanceof Error ? error.message : '需求发布失败', icon: 'none' })
       } finally {

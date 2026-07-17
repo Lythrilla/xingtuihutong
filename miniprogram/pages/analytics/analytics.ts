@@ -1,4 +1,4 @@
-import { apiRequest } from '../../utils/api'
+import { apiRequest, goTo } from '../../utils/api'
 
 export {}
 
@@ -83,10 +83,10 @@ Component({
       }
     },
     askAgent() {
-      wx.redirectTo({ url: '/pages/ai/ai' })
+      goTo('/pages/ai/ai')
     },
     openPlaza() {
-      wx.redirectTo({ url: '/pages/plaza/plaza' })
+      goTo('/pages/plaza/plaza')
     },
   },
 })

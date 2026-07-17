@@ -1,4 +1,4 @@
-import { apiRequest } from '../../utils/api'
+import { apiRequest, goTo } from '../../utils/api'
 
 export {}
 
@@ -166,7 +166,7 @@ Component({
       })
     },
     openAI() {
-      wx.redirectTo({ url: '/pages/ai/ai' })
+      goTo('/pages/ai/ai')
     },
     openDetail(event: WechatMiniprogram.TouchEvent) {
       const partnerId = event.currentTarget.dataset.id as string

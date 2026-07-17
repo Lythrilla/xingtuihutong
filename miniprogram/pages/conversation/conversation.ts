@@ -9,81 +9,96 @@ interface MessageItem {
   createdAt: string
 }
 
-Component({
+interface ConversationPageData {
+  loading: boolean
+  error: string
+  sending: boolean
+  conversationId: string
+  partnerName: string
+  messages: MessageItem[]
+  draft: string
+  canSend: boolean
+  scrollTarget: string
+}
+
+Page<ConversationPageData, WechatMiniprogram.IAnyObject>({
   data: {
     loading: true,
     error: '',
     sending: false,
     conversationId: '',
     partnerName: '',
-    messages: [] as MessageItem[],
+    messages: [],
     draft: '',
     canSend: false,
     scrollTarget: '',
   },
-  methods: {
-    onLoad(options: Record<string, string | undefined>) {
-      const conversationId = options.id || ''
-      const partnerName = decodeURIComponent(options.name || '')
-      this.setData({ conversationId, partnerName })
+  onLoad(options: Record<string, string | undefined>) {
+    const conversationId = options.id || ''
+    const partnerName = decodeURIComponent(options.name || '')
+    this.setData({ conversationId, partnerName })
+    this.loadMessages()
+  },
+  onShow() {
+    if (this.data.conversationId) {
       this.loadMessages()
-    },
-    retry() {
-      return this.loadMessages()
-    },
-    async loadMessages() {
-      if (!this.data.conversationId) {
-        this.setData({ loading: false, error: '会话信息不完整，请返回后重试' })
-        return
-      }
-      this.setData({ loading: true, error: '' })
-      try {
-        const messages = await apiRequest<MessageItem[]>(
-          `/api/conversations/${this.data.conversationId}`,
-        )
-        const formatted = messages.map((message) => ({
-          ...message,
-          createdAt: formatMessageTime(message.createdAt),
-        }))
-        this.setData({
-          loading: false,
-          messages: formatted,
-          scrollTarget: formatted.length ? `message-${formatted[formatted.length - 1].id}` : '',
-        })
-      } catch (error) {
-        this.setData({
-          loading: false,
-          error: error instanceof Error ? error.message : '会话加载失败',
-        })
-      }
-    },
-    updateDraft(event: WechatMiniprogram.Input) {
-      const draft = event.detail.value
-      this.setData({ draft, canSend: Boolean(draft.trim()) })
-    },
-    async sendMessage() {
-      const content = this.data.draft.trim()
-      if (!content || this.data.sending) return
-      this.setData({ sending: true })
-      try {
-        const message = await apiRequest<MessageItem>(
-          `/api/conversations/${this.data.conversationId}`,
-          'POST',
-          { content },
-        )
-        const formatted = { ...message, createdAt: formatMessageTime(message.createdAt) }
-        this.setData({
-          draft: '',
-          canSend: false,
-          messages: [...this.data.messages, formatted],
-          scrollTarget: `message-${message.id}`,
-        })
-      } catch (error) {
-        wx.showToast({ title: error instanceof Error ? error.message : '发送失败', icon: 'none' })
-      } finally {
-        this.setData({ sending: false })
-      }
-    },
+    }
+  },
+  retry() {
+    return this.loadMessages()
+  },
+  async loadMessages() {
+    if (!this.data.conversationId) {
+      this.setData({ loading: false, error: '会话信息不完整，请返回后重试' })
+      return
+    }
+    this.setData({ loading: true, error: '' })
+    try {
+      const messages = await apiRequest<MessageItem[]>(
+        `/api/conversations/${this.data.conversationId}`,
+      )
+      const formatted = messages.map((message) => ({
+        ...message,
+        createdAt: formatMessageTime(message.createdAt),
+      }))
+      this.setData({
+        loading: false,
+        messages: formatted,
+        scrollTarget: formatted.length ? `message-${formatted[formatted.length - 1].id}` : '',
+      })
+    } catch (error) {
+      this.setData({
+        loading: false,
+        error: error instanceof Error ? error.message : '会话加载失败',
+      })
+    }
+  },
+  updateDraft(event: WechatMiniprogram.Input) {
+    const draft = event.detail.value
+    this.setData({ draft, canSend: Boolean(draft.trim()) })
+  },
+  async sendMessage() {
+    const content = this.data.draft.trim()
+    if (!content || this.data.sending) return
+    this.setData({ sending: true })
+    try {
+      const message = await apiRequest<MessageItem>(
+        `/api/conversations/${this.data.conversationId}`,
+        'POST',
+        { content },
+      )
+      const formatted = { ...message, createdAt: formatMessageTime(message.createdAt) }
+      this.setData({
+        draft: '',
+        canSend: false,
+        messages: [...this.data.messages, formatted],
+        scrollTarget: `message-${message.id}`,
+      })
+    } catch (error) {
+      wx.showToast({ title: error instanceof Error ? error.message : '发送失败', icon: 'none' })
+    } finally {
+      this.setData({ sending: false })
+    }
   },
 })
 
