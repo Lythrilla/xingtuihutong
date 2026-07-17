@@ -8,7 +8,7 @@ page {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(180deg, var(--bg-color) 0%, rgba(255, 255, 255, 0.85) 100%);
+  background: var(--bg-color);
 }
 
 /* === 顶部：标题 + 副标题 + 插画 === */
@@ -66,9 +66,9 @@ page {
   flex-direction: column;
   padding: 34rpx 40rpx calc(36rpx + env(safe-area-inset-bottom));
   background: #ffffff;
-  border-top-left-radius: 40rpx;
-  border-top-right-radius: 40rpx;
-  box-shadow: 0 -10rpx 40rpx rgba(120, 130, 180, 0.08);
+  border-top: 1rpx solid var(--border-light);
+  border-top-left-radius: 24rpx;
+  border-top-right-radius: 24rpx;
 }
 
 .panel-title {
@@ -93,36 +93,29 @@ page {
   justify-content: space-between;
   margin-top: 24rpx;
   padding: 36rpx 32rpx;
-  background: rgba(99, 102, 241, 0.05);
-  border: 3rpx solid transparent;
-  transition: all 0.25s cubic-bezier(0.1, 0.7, 0.1, 1);
+  background: #ffffff;
+  border: 1rpx solid var(--border-light);
 }
 
 .role-card.client {
-  border-top-left-radius: 36rpx;
-  border-top-right-radius: 36rpx;
-  border-bottom-left-radius: 12rpx;
-  border-bottom-right-radius: 12rpx;
+  border-top-left-radius: 16rpx;
+  border-top-right-radius: 16rpx;
+  border-bottom-left-radius: 8rpx;
+  border-bottom-right-radius: 8rpx;
 }
 
 .role-card.provider {
   margin-top: 12rpx;
-  border-top-left-radius: 12rpx;
-  border-top-right-radius: 12rpx;
-  border-bottom-left-radius: 36rpx;
-  border-bottom-right-radius: 36rpx;
+  border-top-left-radius: 8rpx;
+  border-top-right-radius: 8rpx;
+  border-bottom-left-radius: 16rpx;
+  border-bottom-right-radius: 16rpx;
 }
 
 .role-card.selected {
+  border-color: var(--brand-primary);
   background: #ffffff;
-  border-color: rgba(99, 102, 241, 0.5);
-  box-shadow: 0 16rpx 40rpx rgba(99, 102, 241, 0.12);
-  transform: scale(1.01);
   z-index: 2;
-}
-
-.role-card:active {
-  transform: scale(0.98);
 }
 
 .role-info {
@@ -221,9 +214,7 @@ page {
   align-items: center;
   justify-content: center;
   gap: 24rpx;
-  background: rgba(31, 37, 51, 0.4);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: rgba(31, 37, 51, 0.5);
 }
 
 .entering-spinner {
@@ -231,9 +222,7 @@ page {
   height: 56rpx;
   border: 4rpx solid rgba(255, 255, 255, 0.3);
   border-top-color: rgba(255, 255, 255, 1);
-  border-radius: 50%;
-  animation: entering-spin 0.8s linear infinite;
-}
+  border-radius: 50%;}
 
 .entering-text {
   color: rgba(255, 255, 255, 1);

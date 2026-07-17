@@ -265,24 +265,22 @@ view, text, input, textarea {
   color: #fff;
   font-size: 42rpx;
   font-weight: 700;
-  background: linear-gradient(135deg, rgba(162, 178, 252, 1), rgba(95, 101, 180, 1));
-  border-radius: 50%;
-  box-shadow: 0 8rpx 20rpx rgba(137, 154, 248, 0.2);
-}
+  background: var(--brand-primary);
+  border-radius: 50%;}
 
 .status-halo {
   position: absolute;
   inset: -20rpx;
-  background: radial-gradient(circle, rgba(137, 154, 248, 0.2), transparent 70%);
+  background: #eef2ff;
   border-radius: 50%;
 }
 
 .status-approved .status-icon {
-  background: linear-gradient(135deg, #2dd8a7, #1ba279);
+  background: #eef2ff;
 }
 
 .status-approved .status-halo {
-  background: radial-gradient(circle, rgba(45, 216, 167, 0.2), transparent 70%);
+  background: #eef2ff;
 }
 
 .status-title {

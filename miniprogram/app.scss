@@ -5,7 +5,7 @@ page {
   --text-sub: #5b6076;
   --text-light: #9ca3af;
   --brand-primary: #6366f1;
-  --brand-secondary: #8b5cf6;
+  --brand-secondary: #6366f1;
   --card-bg: rgba(255, 255, 255, 0.96);
   --border-light: rgba(99, 102, 241, 0.1);
   --danger: #ef4444;
@@ -44,23 +44,18 @@ input {
   color: #fff;
   font-size: 28rpx;
   font-weight: 600;
-  background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
-  border-radius: 44rpx;
-  box-shadow: 0 8rpx 20rpx rgba(99, 102, 241, 0.2);
+  background: var(--brand-primary);
+  border-radius: 12rpx;
   box-sizing: border-box;
-  transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
 .btn-primary:active {
-  transform: scale(0.98);
-  opacity: 0.9;
+  opacity: 0.85;
 }
 
 .btn-primary[disabled] {
   color: rgba(91, 96, 118, 0.7);
   background: rgba(226, 228, 240, 1);
-  box-shadow: none;
-  transform: none;
   opacity: 1;
 }
 
@@ -76,13 +71,11 @@ input {
   font-size: 26rpx;
   font-weight: 600;
   background: rgba(99, 102, 241, 0.08);
-  border-radius: 44rpx;
+  border-radius: 12rpx;
   box-sizing: border-box;
-  transition: all 0.2s ease;
 }
 
 .btn-secondary:active {
-  transform: scale(0.98);
   background: rgba(99, 102, 241, 0.12);
 }
 
@@ -118,7 +111,6 @@ button[disabled] {
 
 .pressable {
   opacity: 0.78;
-  transform: scale(0.985);
 }
 
 /* === 通用页面外壳 === */
@@ -162,8 +154,7 @@ button[disabled] {
 .card {
   background: var(--card-bg);
   border: 1rpx solid var(--border-light);
-  border-radius: 24rpx;
-  box-shadow: 0 4rpx 20rpx rgba(99, 102, 241, 0.05);
+  border-radius: 16rpx;
 }
 
 /* === 胶囊标签（对齐首页 .tag） === */
@@ -174,8 +165,8 @@ button[disabled] {
   color: rgba(255, 255, 255, 1);
   font-size: 20rpx;
   line-height: 1.2;
-  background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
-  border-radius: 14rpx;
+  background: var(--brand-primary);
+  border-radius: 8rpx;
 }
 
 /* === 空状态文字（对齐首页 .inline-empty） === */
@@ -281,70 +272,15 @@ button[disabled] {
 .hero-card {
   position: relative;
   overflow: hidden;
-  min-height: 292rpx;
+  min-height: 260rpx;
   padding: 40rpx;
   box-sizing: border-box;
-  background: transparent;
-  border: none;
-  border-radius: 24rpx;
-  box-shadow: none;
+  background: var(--card-bg);
+  border: 1rpx solid var(--border-light);
+  border-radius: 16rpx;
   display: flex;
   flex-direction: column;
   justify-content: center;
-}
-
-.hero-card::before {
-  content: "";
-  position: absolute;
-  top: -30%;
-  left: -20%;
-  width: 360rpx;
-  height: 360rpx;
-  background: rgba(99, 102, 241, 0.32); /* 调浅：柔和的浅蓝紫 */
-  border-radius: 50%;
-  filter: blur(80rpx);
-  z-index: 0;
-  pointer-events: none;
-}
-
-.hero-card::after {
-  content: "";
-  position: absolute;
-  bottom: -40%;
-  right: -10%;
-  width: 480rpx;
-  height: 480rpx;
-  background: rgba(139, 92, 246, 0.22); /* 调浅：柔和的浅紫 */
-  border-radius: 50%;
-  filter: blur(100rpx);
-  z-index: 0;
-  pointer-events: none;
-}
-
-.hero-card-glass {
-  position: absolute;
-  inset: 0;
-  background: rgba(255, 255, 255, 0.35); /* 增加白色底色提升明度 */
-  border: 1rpx solid rgba(255, 255, 255, 0.8);
-  border-radius: 40rpx;
-  backdrop-filter: blur(36px) saturate(120%);
-  -webkit-backdrop-filter: blur(36px) saturate(120%);
-  z-index: 1;
-}
-
-.hero-grid {
-  position: absolute;
-  inset: 0;
-  opacity: 0.5; /* 降低网格强度，显得更轻盈 */
-  z-index: 2;
-  background-image:
-    linear-gradient(rgba(99, 102, 241, 0.35) 1rpx, transparent 1rpx),
-    linear-gradient(90deg, rgba(99, 102, 241, 0.35) 1rpx, transparent 1rpx);   
-  background-size: 60rpx 60rpx;
-  transform: perspective(600rpx) rotateX(60deg) scale(2);
-  transform-origin: center bottom;
-  mask-image: linear-gradient(to bottom, transparent 5%, black 90%);
-  -webkit-mask-image: linear-gradient(to bottom, transparent 5%, black 90%);
 }
 
 .hero-orb-wrap {
@@ -352,42 +288,19 @@ button[disabled] {
   top: 50%;
   right: 20rpx;
   transform: translateY(-50%);
-  width: 220rpx;
-  height: 220rpx;
+  width: 180rpx;
+  height: 180rpx;
   z-index: 5;
 }
 
-.hero-orb-halo {
-  position: absolute;
-  inset: 10rpx;
-  background: conic-gradient(
-    from 60deg,
-    rgba(129, 140, 248, 0.8),
-    rgba(196, 181, 253, 0.85),
-    rgba(99, 102, 241, 0.75),
-    rgba(129, 140, 248, 0.8)
-  ); /* 调浅：整体光圈变为更通透的浅紫蓝渐变 */
-  border-radius: 50%;
-  filter: blur(28rpx);
-  animation: hero-spin 6s linear infinite;
-  opacity: 0.85;
-}
-
 .hero-orb {
-  position: absolute;
-  inset: 0;
   width: 100%;
   height: 100%;
-  z-index: 6;
-}
-
-@keyframes hero-spin {
-  to { transform: rotate(360deg); }
 }
 
 @keyframes hero-float {
   0%, 100% { transform: translateY(0) scale(0.98); }
-  50% { transform: translateY(-10rpx) scale(1.04); }
+  50% { transform: translateY(-6rpx) scale(1.02); }
 }
 
 .hero-copy {
@@ -401,7 +314,7 @@ button[disabled] {
   align-items: center;
   gap: 12rpx;
   margin-bottom: 20rpx;
-  color: var(--brand-secondary);
+  color: var(--brand-primary);
   font-size: 20rpx;
   font-weight: 700;
   letter-spacing: 2.5rpx;
@@ -412,8 +325,6 @@ button[disabled] {
   height: 12rpx;
   background: var(--success);
   border-radius: 50%;
-  box-shadow: 0 0 12rpx rgba(16, 185, 129, 0.5);
-  animation: state-pulse 2s ease-in-out infinite;
 }
 
 .hero-title {
@@ -445,7 +356,6 @@ button[disabled] {
   color: rgba(255, 255, 255, 1);
   font-size: 24rpx;
   font-weight: 600;
-  background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
-  border-radius: 48rpx;
-  box-shadow: 0 6rpx 16rpx rgba(99, 102, 241, 0.25);
+  background: var(--brand-primary);
+  border-radius: 12rpx;
 }

@@ -12,7 +12,7 @@ view, text, scroll-view, image {
   overflow: hidden;
   margin-top: 34rpx;
   padding: 34rpx 36rpx;
-  background: linear-gradient(120deg, rgba(225, 230, 255, 0.72), rgba(244, 235, 255, 0.56));
+  background: #eef2ff;
   border-bottom: 1rpx solid rgba(137, 154, 248, 0.18);
 }
 
@@ -89,11 +89,7 @@ view, text, scroll-view, image {
   font-weight: 600;
   background: rgba(255, 255, 255, 0.6);
   border: 1px solid rgba(255, 255, 255, 0.9);
-  border-radius: 40rpx;
-  box-shadow: 0 4rpx 16rpx rgba(137, 154, 248, 0.08);
-  backdrop-filter: blur(12px);
-
-  .ui-icon {
+  border-radius: 40rpx;  .ui-icon {
     width: 32rpx;
     height: 32rpx;
     margin-right: 8rpx;
@@ -122,10 +118,8 @@ view, text, scroll-view, image {
   flex: none;
   overflow: hidden;
   padding: 5rpx;
-  background: linear-gradient(135deg, #6fd8ff, #ad72fb);
-  border-radius: 50%;
-  box-shadow: 0 8rpx 20rpx rgba(104, 100, 202, 0.2);
-}
+  background: #eef2ff;
+  border-radius: 50%;}
 
 .message-avatar image {
   width: 100%;
@@ -162,7 +156,7 @@ view, text, scroll-view, image {
 
 .message.user .message-content {
   color: #fff;
-  background: linear-gradient(135deg, #5e66bf, #8067ce);
+  background: var(--brand-primary);
   border: 0;
   border-radius: 28rpx 8rpx 28rpx 28rpx;
 }
@@ -206,9 +200,7 @@ view, text, scroll-view, image {
   width: 7rpx;
   height: 7rpx;
   background: #6c64cd;
-  border-radius: 50%;
-  animation: thinking-dot 1s ease-in-out infinite;
-}
+  border-radius: 50%;}
 
 .thinking-dots > view:nth-child(2) {
   animation-delay: 0.15s;
@@ -266,10 +258,7 @@ view, text, scroll-view, image {
 
 /* 状态：进行中 */
 .trace-node.running .node-dot {
-  background: #899af8;
-  box-shadow: 0 0 0 4rpx rgba(137, 154, 248, 0.2);
-  animation: pulse-dot 1.5s infinite ease-in-out;
-}
+  background: #899af8;}
 
 .trace-node.running text {
   color: #899af8;
@@ -298,8 +287,8 @@ view, text, scroll-view, image {
 }
 
 @keyframes pulse-dot {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(0.6); opacity: 0.6; }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
 }
 
 .artifact-stream {
@@ -416,7 +405,7 @@ view, text, scroll-view, image {
   color: #fff;
   font-size: 26rpx;
   font-weight: 700;
-  background: linear-gradient(135deg, rgba(162, 178, 252, 1), rgba(95, 101, 180, 1));
+  background: var(--brand-primary);
   border-radius: 50%;
 }
 
@@ -580,10 +569,7 @@ view, text, scroll-view, image {
   padding: 9rpx 11rpx 9rpx 24rpx;
   background: rgba(255, 255, 255, 0.45);
   border: 1px solid rgba(255, 255, 255, 0.9);
-  border-radius: 50rpx;
-  box-shadow: 0 18rpx 46rpx rgba(137, 154, 248, 0.12);
-  backdrop-filter: blur(28px) saturate(180%);
-}
+  border-radius: 50rpx;}
 
 .agent-composer input {
   min-width: 0;
@@ -597,10 +583,8 @@ view, text, scroll-view, image {
   width: 62rpx;
   height: 62rpx;
   color: #fff;
-  background: linear-gradient(145deg, #57d1f5, #7468dc 55%, #be64de);
-  border-radius: 50%;
-  box-shadow: 0 8rpx 22rpx rgba(108, 99, 205, 0.3);
-}
+  background: var(--brand-primary);
+  border-radius: 50%;}
 
 .agent-composer button .ui-icon {
   width: 32rpx;
@@ -617,9 +601,7 @@ view, text, scroll-view, image {
   height: 24rpx;
   border: 3rpx solid rgba(255, 255, 255, 0.35);
   border-top-color: #fff;
-  border-radius: 50%;
-  animation: agent-spin 0.9s linear infinite;
-}
+  border-radius: 50%;}
 
 @keyframes agent-spin {
   to {
@@ -639,9 +621,7 @@ view, text, scroll-view, image {
 
 @keyframes state-pulse {
   50% {
-    opacity: 0.5;
-    transform: scale(0.78);
-  }
+    opacity: 0.5;  }
 }
 
 @keyframes thinking-dot {

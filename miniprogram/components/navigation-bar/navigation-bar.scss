@@ -17,9 +17,7 @@
   padding-top: env(safe-area-inset-top);
   width: 100%;
   box-sizing: border-box;
-  background: rgba(255, 255, 255, 1);
-  box-shadow: 0 8rpx 30rpx rgba(46, 49, 62, 0.06);
-  transition: box-shadow 0.25s ease, background-color 0.25s ease;
+  background: rgba(255, 255, 255, 1);  transition: box-shadow 0.25s ease, background-color 0.25s ease;
 }
 
 /* 底部品牌色渐变强调线 */
@@ -30,25 +28,19 @@
   right: 0;
   bottom: 0;
   height: 2rpx;
-  background: linear-gradient(90deg, rgba(95, 101, 180, 0), rgba(95, 101, 180, 0.55) 50%, rgba(137, 154, 248, 0));
+  background: #eef2ff;
 }
 
 /* 毛玻璃模式（默认） */
 .weui-navigation-bar__inner.is-blur {
-  background: rgba(255, 255, 255, 0.72) !important;
-  -webkit-backdrop-filter: saturate(180%) blur(20px);
-  backdrop-filter: saturate(180%) blur(20px);
-  box-shadow: 0 8rpx 30rpx rgba(46, 49, 62, 0.05);
-}
+  background: rgba(255, 255, 255, 0.72) !important;}
 
 /* 品牌渐变模式 */
 .weui-navigation-bar__inner.is-brand {
-  background: linear-gradient(135deg, rgba(137, 154, 248, 1), rgba(95, 101, 180, 1)) !important;
-  color: rgba(255, 255, 255, 1);
-  box-shadow: 0 10rpx 30rpx rgba(95, 101, 180, 0.18);
-}
+  background: #eef2ff;
+  color: rgba(255, 255, 255, 1);}
 .weui-navigation-bar__inner.is-brand::after {
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.5) 50%, rgba(255, 255, 255, 0));
+  background: #eef2ff;
 }
 .weui-navigation-bar__inner.is-brand .nav-btn--active {
   background-color: rgba(255, 255, 255, 0.2);
@@ -139,9 +131,7 @@
   height: 16px;
   display: block;
   background: transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80px' height='80px' viewBox='0 0 80 80'%3E%3Ccircle cx='40' cy='40' r='34' fill='none' stroke='%235f65b4' stroke-width='8' stroke-dasharray='110 110'/%3E%3C/svg%3E") no-repeat;
-  background-size: 100%;
-  animation: loading linear infinite 1s;
-}
+  background-size: 100%;}
 
 .weui-navigation-bar__right {
   display: flex;

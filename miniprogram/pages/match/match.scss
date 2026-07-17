@@ -23,9 +23,7 @@ scroll-view {
   width: 12rpx;
   height: 12rpx;
   background: var(--success);
-  border-radius: 50%;
-  box-shadow: 0 0 0 5rpx rgba(16, 185, 129, 0.12);
-}
+  border-radius: 50%;}
 
 .demand-steps {
   display: flex;
@@ -119,7 +117,7 @@ scroll-view {
 .task-count {
   flex: none;
   padding: 6rpx 12rpx;
-  color: var(--brand-secondary);
+  color: var(--brand-primary);
   font-size: 19rpx;
   background: rgba(99, 102, 241, 0.08);
   border-radius: 12rpx;
@@ -149,16 +147,14 @@ scroll-view {
 
 .song-card.selected {
   background: rgba(255, 255, 255, 0.72);
-  border-color: var(--brand-primary);
-  box-shadow: none;
-}
+  border-color: var(--brand-primary);}
 
 .song-cover {
   position: relative;
   height: 128rpx;
   overflow: hidden;
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.72), rgba(238, 242, 255, 1));
-  border-radius: 19rpx;
+  background: #eef2ff;
+  border-radius: 12rpx;
 }
 
 .disc {
@@ -265,7 +261,7 @@ scroll-view {
   height: 58rpx;
   gap: 8rpx;
   padding: 0 18rpx;
-  color: var(--brand-secondary);
+  color: var(--brand-primary);
   font-size: 22rpx;
   background: rgba(99, 102, 241, 0.08);
   border-radius: 29rpx;
@@ -303,7 +299,7 @@ scroll-view {
 }
 
 .cycle.selected {
-  color: var(--brand-secondary);
+  color: var(--brand-primary);
   font-weight: 650;
   background: rgba(99, 102, 241, 0.08);
   border-color: var(--brand-primary);
@@ -320,14 +316,13 @@ scroll-view {
   min-height: 174rpx;
   padding: 20rpx;
   background: #f4f6fb;
-  border: 2rpx solid transparent;
-  border-radius: 24rpx;
+  border: 1rpx solid transparent;
+  border-radius: 16rpx;
 }
 
 .target-card.selected {
   background: #fff;
   border-color: var(--brand-primary);
-  box-shadow: 0 6rpx 16rpx rgba(99, 102, 241, 0.12);
 }
 
 .target-top {
@@ -342,7 +337,7 @@ scroll-view {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--brand-secondary);
+  color: var(--brand-primary);
   background: #fff;
   border-radius: 18rpx;
 }
@@ -419,7 +414,7 @@ scroll-view {
   align-items: center;
   justify-content: center;
   flex: none;
-  color: var(--brand-secondary);
+  color: var(--brand-primary);
   font-size: 19rpx;
   font-weight: 700;
   background: #fff;
@@ -455,7 +450,7 @@ scroll-view {
 }
 
 .budget.selected {
-  color: var(--brand-secondary);
+  color: var(--brand-primary);
   font-weight: 650;
   background: #fff;
   border-color: var(--brand-primary);
@@ -479,13 +474,13 @@ scroll-view {
   margin-top: 8rpx;
   padding: 28rpx;
   color: var(--text-main);
-  background: linear-gradient(135deg, rgba(238, 242, 255, 0.9), rgba(250, 245, 255, 0.92));
-  border: 1rpx solid rgba(255, 255, 255, 0.9);
-  border-radius: 28rpx;
+  background: #eef2ff;
+  border: 1rpx solid var(--border-light);
+  border-radius: 16rpx;
 }
 
 .review-label {
-  color: var(--brand-secondary);
+  color: var(--brand-primary);
   font-size: 19rpx;
   font-weight: 700;
   letter-spacing: 1.2rpx;
@@ -508,7 +503,7 @@ scroll-view {
 }
 
 .review-rule text {
-  color: var(--brand-secondary);
+  color: var(--brand-primary);
   font-weight: 700;
 }
 
