@@ -100,6 +100,7 @@ Component({
     loading: true,
     error: '',
     thinking: false,
+    streaming: false,
     sessionId: '',
     engine: '',
     role: 'client' as 'provider' | 'client',
@@ -117,6 +118,9 @@ Component({
   lifetimes: {
     async attached() {
       await this.bootstrap()
+    },
+    detached() {
+      this.clearTypewriter()
     },
   },
   methods: {
@@ -167,7 +171,7 @@ Component({
     },
     async send() {
       const message = this.data.input.trim()
-      if (!message || this.data.thinking) return
+      if (!message || this.data.thinking || this.data.streaming) return
       const pending: AgentMessage = {
         id: `pending-${Date.now()}`,
         role: 'user',
@@ -187,18 +191,27 @@ Component({
           sessionId: this.data.sessionId,
           message,
         })
+        const assistant: AgentMessage = {
+          id: response.message.id,
+          role: 'assistant',
+          content: '',
+          createdAt: response.message.createdAt,
+        }
         this.setData({
           sessionId: response.sessionId,
-          messages: [...this.data.messages, response.message],
+          messages: [...this.data.messages, assistant],
           toolCalls: response.toolCalls,
           artifacts: response.artifacts.map(toViewArtifact),
           suggestions: response.suggestions,
           thinking: false,
+          streaming: true,
           scrollTarget: 'conversation-end',
         })
+        this.typewriter(assistant.id, response.message.content)
       } catch (error) {
         this.setData({
           thinking: false,
+          streaming: false,
           input: message,
           messages: this.data.messages.filter((item) => item.id !== pending.id),
         })
@@ -206,6 +219,35 @@ Component({
           title: error instanceof Error ? error.message : 'Agent 执行失败',
           icon: 'none',
         })
+      }
+    },
+    typewriter(messageId: string, text: string) {
+      this.clearTypewriter()
+      let index = 0
+      const step = 2
+      const speed = 28
+      const timer = setInterval(() => {
+        const messages = this.data.messages.map((item) =>
+          item.id === messageId ? { ...item, content: text.slice(0, Math.min(index + step, text.length)) } : item,
+        ) as AgentMessage[]
+        index += step
+        this.setData({
+          messages,
+          scrollTarget: index >= text.length ? 'conversation-end' : '',
+        })
+        if (index >= text.length) {
+          clearInterval(timer)
+          ;(this as any).typewriterTimer = 0
+          this.setData({ streaming: false, scrollTarget: 'conversation-end' })
+        }
+      }, speed)
+      ;(this as any).typewriterTimer = timer
+    },
+    clearTypewriter() {
+      const timer = (this as any).typewriterTimer as number | undefined
+      if (timer) {
+        clearInterval(timer)
+        ;(this as any).typewriterTimer = 0
       }
     },
     toggleTools() {
