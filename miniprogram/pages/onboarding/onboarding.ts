@@ -1,4 +1,4 @@
-import { apiRequest, uploadWorkFile } from '../../utils/api'
+import { apiRequest, uploadAvatarFile, uploadWorkFile } from '../../utils/api'
 
 export {}
 
@@ -67,6 +67,8 @@ Component({
     cooperationBudget: '',
     selectedTags: [] as string[],
     tagOptions: [] as TagOption[],
+    avatarUrl: '' as string,
+    avatarUploading: false,
     verificationItems: [] as string[],
     verificationOptions: verificationOptions.map((item) => ({ ...item, selected: false })),
   },
@@ -105,6 +107,7 @@ Component({
           workFileName: application?.workFileName ?? '',
           audienceSize: application?.audienceSize ?? '',
           cooperationBudget: application?.cooperationBudget ?? '',
+          avatarUrl: '',
           selectedTags,
           tagOptions: options.map((label) => ({ label, selected: selectedTags.includes(label) })),
           verificationItems: application?.verificationItems ?? [],
@@ -150,6 +153,31 @@ Component({
           ...item,
           selected: verificationItems.includes(item.key),
         })),
+      })
+    },
+    chooseAvatar() {
+      if (this.data.avatarUploading) return
+      wx.chooseMedia({
+        count: 1,
+        mediaType: ['image'],
+        sourceType: ['album', 'camera'],
+        success: async (result) => {
+          const file = result.tempFiles[0]
+          if (!file) return
+          this.setData({ avatarUploading: true })
+          try {
+            const uploaded = await uploadAvatarFile(file.tempFilePath)
+            this.setData({ avatarUrl: uploaded.url })
+            wx.showToast({ title: '头像已上传', icon: 'success' })
+          } catch (error) {
+            wx.showToast({
+              title: error instanceof Error ? error.message : '头像上传失败',
+              icon: 'none',
+            })
+          } finally {
+            this.setData({ avatarUploading: false })
+          }
+        },
       })
     },
     chooseWork() {
@@ -232,6 +260,7 @@ Component({
           contactName: this.data.contactName.trim(),
           contactMethod: this.data.contactMethod.trim(),
           description: this.data.description.trim(),
+          avatar: this.data.avatarUrl,
           tags: this.data.selectedTags,
           workTitle: this.data.workTitle.trim(),
           workUrl: this.data.workUrl.trim(),

@@ -613,3 +613,35 @@ view, text, scroll-view, image {
   background: rgba(255, 255, 255, 1);
   border-radius: 28rpx;
 }
+
+.avatar-uploader {
+  display: flex;
+  align-items: center;
+  gap: 22rpx;
+  margin-top: 14rpx;
+}
+
+.avatar-preview {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 18rpx;
+  background: rgba(137, 154, 248, 0.1);
+}
+
+.avatar-placeholder {
+  width: 120rpx;
+  height: 120rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #899af8;
+  font-size: 44rpx;
+  background: rgba(255, 255, 255, 0.5);
+  border: 2rpx dashed rgba(137, 154, 248, 0.42);
+  border-radius: 18rpx;
+}
+
+.avatar-copy {
+  color: #76798f;
+  font-size: 24rpx;
+}

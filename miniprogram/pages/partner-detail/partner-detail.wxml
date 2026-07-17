@@ -58,10 +58,10 @@
         <text class="section-action">付费权益</text>
       </view>
       <view class="card contact-card">
-        <view class="contact-lock">••••••••</view>
+        <view class="contact-lock">{{unlocked ? contactMethod : '••••••••'}}</view>
         <view class="contact-copy">
-          <view>{{contactPreview}}</view>
-          <text>解锁前不会展示完整手机号、微信号或邮箱</text>
+          <view>{{unlocked ? '已解锁完整联系方式' : contactPreview}}</view>
+          <text>{{unlocked ? '请尊重对方隐私，仅用于本次合作沟通' : '解锁前不会展示完整手机号、微信号或邮箱'}}</text>
         </view>
       </view>
     </view>
@@ -71,7 +71,7 @@
 <view wx:if="{{!loading && !error && partner}}" class="detail-footer">
   <button class="btn-secondary" style="width: 200rpx !important; height: 84rpx !important; border-radius: 42rpx !important; background: #fff !important;" bindtap="toggleFavorite">{{favorite ? '已收藏' : '收藏'}}</button>
   <button class="btn-primary" style="flex: 1 !important; width: auto !important; height: 84rpx !important; border-radius: 42rpx !important;" disabled="{{!contactAvailable}}" bindtap="openAccess">
-    {{contactAvailable ? '解锁联系方式' : '暂不可解锁'}}
+    {{unlocked ? '查看联系方式' : contactAvailable ? '解锁联系方式' : '暂不可解锁'}}
   </button>
 </view>
 
@@ -90,7 +90,7 @@
         <view class="access-name">使用会员额度</view>
         <text>每次解锁前明确展示剩余额度</text>
       </view>
-      <view class="access-value">待开通</view>
+      <view class="access-value">去开通</view>
     </view>
 
     <view
@@ -102,7 +102,7 @@
         <view class="access-name">按次购买</view>
         <text>支持新人优惠，支付成功后立即解锁</text>
       </view>
-      <view class="access-value">待定价</view>
+      <view class="access-value">按次解锁</view>
     </view>
 
     <view class="access-rules">
@@ -111,7 +111,7 @@
       <view>· 解锁不代表对方承诺回复或达成合作</view>
     </view>
 
-    <button class="btn-primary" bindtap="attemptUnlock">确认权益并继续</button>
+    <button class="btn-primary" loading="{{unlocking}}" disabled="{{unlocking}}" bindtap="attemptUnlock">{{selectedAccess === 'member' ? '开通会员' : '确认解锁'}}</button>
     <button class="btn-secondary" style="margin-top: 16rpx !important;" loading="{{connecting}}" disabled="{{connecting}}" bindtap="connect">先发起站内沟通</button>
   </view>
 </view>

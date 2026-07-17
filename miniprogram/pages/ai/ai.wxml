@@ -7,7 +7,8 @@
   <data-state loading="{{loading}}" error="{{error}}" bind:action="retry"></data-state>
 
   <block wx:if="{{!loading && !error}}">
-    <view class="agent-intro">
+    <view class="agent-intro hero-card">
+      <view class="hero-card-glass"></view>
       <view class="hero-grid"></view>
       <view class="hero-orb-wrap">
         <view class="hero-orb-halo"></view>
@@ -20,12 +21,6 @@
         </view>
         <view class="hero-desc">{{isCreator ? '作品分析 · 推广方推荐 · 方案规划' : '项目分析 · 创作者推荐 · 合作跟进'}}</view>
       </view>
-    </view>
-
-    <view class="agent-shortcuts">
-      <button wx:if="{{isCreator}}" bindtap="openMatch">发布推广需求</button>
-      <button bindtap="openPlaza">{{isCreator ? '浏览推广方' : '浏览创作者'}}</button>
-      <button bindtap="openAnalytics">查看合作数据</button>
     </view>
 
     <view class="agent-capabilities">

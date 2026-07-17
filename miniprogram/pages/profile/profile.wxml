@@ -13,7 +13,8 @@
       </view>
 
       <view class="profile-head">
-        <view class="profile-avatar">{{user.avatar}}</view>
+        <image wx:if="{{userAvatarIsImage}}" class="profile-avatar" src="{{user.avatar}}" mode="aspectFill" />
+        <view wx:else class="profile-avatar">{{user.avatar}}</view>
         <view class="profile-main">
           <view class="profile-name">{{user.organization}}</view>
           <view class="profile-role">
@@ -148,6 +149,14 @@
     </view>
 
     <block wx:if="{{sheetMode === 'edit'}}">
+      <view class="field">
+        <text>头像</text>
+        <view class="avatar-uploader" bindtap="chooseAvatar">
+          <image wx:if="{{avatarInput}}" class="avatar-preview" src="{{avatarInput}}" mode="aspectFill" />
+          <view wx:else class="avatar-placeholder">{{avatarUploading ? '…' : '+'}}</view>
+          <view class="avatar-copy">{{avatarUploading ? '正在上传' : avatarInput ? '点击替换头像' : '上传头像'}}</view>
+        </view>
+      </view>
       <label class="field">
         <text>{{isProvider ? '团队或品牌名称' : '创作者名 / 艺名'}}</text>
         <input
