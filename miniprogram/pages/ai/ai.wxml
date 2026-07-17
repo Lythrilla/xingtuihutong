@@ -23,22 +23,6 @@
       </view>
     </view>
 
-    <view class="agent-capabilities">
-      <view
-        wx:for="{{quickActions}}"
-        wx:key="title"
-        class="capability-row"
-        data-value="{{item.prompt}}"
-        bindtap="selectSuggestion"
-      >
-        <view>
-          <view>{{item.title}}</view>
-          <text>{{item.description}}</text>
-        </view>
-        <text>立即执行 →</text>
-      </view>
-    </view>
-
     <scroll-view
       class="conversation"
       scroll-y
