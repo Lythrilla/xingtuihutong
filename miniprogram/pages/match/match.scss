@@ -15,16 +15,16 @@ scroll-view {
   align-items: center;
   gap: 10rpx;
   margin-top: 24rpx;
-  color: #76798f;
+  color: var(--text-sub);
   font-size: 21rpx;
 }
 
 .draft-dot {
   width: 12rpx;
   height: 12rpx;
-  background: #71c6aa;
+  background: var(--success);
   border-radius: 50%;
-  box-shadow: 0 0 0 5rpx rgba(113, 198, 170, 0.12);
+  box-shadow: 0 0 0 5rpx rgba(16, 185, 129, 0.12);
 }
 
 .demand-steps {
@@ -37,7 +37,7 @@ scroll-view {
   display: flex;
   flex-direction: column;
   align-items: center;
-  color: #9a9db0;
+  color: var(--text-light);
   font-size: 20rpx;
 }
 
@@ -48,27 +48,27 @@ scroll-view {
   align-items: center;
   justify-content: center;
   margin-bottom: 8rpx;
-  color: #9a9db0;
+  color: var(--text-light);
   font-size: 21rpx;
   font-weight: 700;
   background: rgba(255, 255, 255, 0.72);
-  border: 1rpx solid rgba(137, 154, 248, 0.12);
+  border: 1rpx solid var(--border-light);
   border-radius: 18rpx;
 }
 
 .demand-step.active {
-  color: #343b56;
+  color: var(--text-main);
   font-weight: 600;
 }
 
 .demand-step.active > view {
   color: #fff;
-  background: #2e313e;
+  background: var(--text-main);
 }
 
 .demand-step.done > view {
   color: transparent;
-  background: #899af8;
+  background: var(--brand-primary);
 }
 
 .demand-step.done > view::after {
@@ -80,19 +80,19 @@ scroll-view {
   height: 3rpx;
   flex: 1;
   margin: 23rpx 10rpx 0;
-  background: rgba(95, 101, 180, 0.14);
+  background: rgba(99, 102, 241, 0.12);
   border-radius: 2rpx;
 }
 
 .demand-line.active {
-  background: #899af8;
+  background: var(--brand-primary);
 }
 
 .form-section {
   margin-bottom: 24rpx;
   padding: 30rpx 0;
-  border-top: 1rpx solid rgba(137, 154, 248, 0.16);
-  border-bottom: 1rpx solid rgba(137, 154, 248, 0.1);
+  border-top: 1rpx solid var(--border-light);
+  border-bottom: 1rpx solid var(--border-light);
 }
 
 .form-heading {
@@ -103,14 +103,14 @@ scroll-view {
 }
 
 .form-title {
-  color: #343b56;
+  color: var(--text-main);
   font-size: 30rpx;
   font-weight: 700;
 }
 
 .form-desc {
   margin-top: 8rpx;
-  color: #76798f;
+  color: var(--text-sub);
   font-size: 22rpx;
   line-height: 1.45;
 }
@@ -119,9 +119,9 @@ scroll-view {
 .task-count {
   flex: none;
   padding: 6rpx 12rpx;
-  color: #5f65b4;
+  color: var(--brand-secondary);
   font-size: 19rpx;
-  background: rgba(95, 101, 180, 0.08);
+  background: rgba(99, 102, 241, 0.08);
   border-radius: 12rpx;
 }
 
@@ -142,14 +142,14 @@ scroll-view {
   display: inline-flex;
   flex-direction: column;
   padding: 10rpx 10rpx 18rpx;
-  background: rgba(247, 248, 253, 0.76);
+  background: rgba(248, 249, 252, 0.76);
   border: 2rpx solid transparent;
   border-radius: 16rpx;
 }
 
 .song-card.selected {
   background: rgba(255, 255, 255, 0.72);
-  border-color: #899af8;
+  border-color: var(--brand-primary);
   box-shadow: none;
 }
 
@@ -157,7 +157,7 @@ scroll-view {
   position: relative;
   height: 128rpx;
   overflow: hidden;
-  background: linear-gradient(135deg, rgba(137, 154, 248, 0.72), rgba(225, 230, 249, 1));
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.72), rgba(238, 242, 255, 1));
   border-radius: 19rpx;
 }
 
@@ -201,7 +201,7 @@ scroll-view {
 .song-name {
   margin-top: 14rpx;
   overflow: hidden;
-  color: #343b56;
+  color: var(--text-main);
   font-size: 25rpx;
   font-weight: 600;
   text-overflow: ellipsis;
@@ -210,7 +210,7 @@ scroll-view {
 .song-artist {
   margin-top: 4rpx;
   overflow: hidden;
-  color: #76798f;
+  color: var(--text-sub);
   font-size: 20rpx;
   text-overflow: ellipsis;
 }
@@ -226,7 +226,7 @@ scroll-view {
   justify-content: center;
   color: #fff;
   font-size: 18rpx;
-  background: #5f65b4;
+  background: var(--brand-secondary);
   border: 3rpx solid #fff;
   border-radius: 50%;
 }
@@ -240,16 +240,16 @@ scroll-view {
   min-height: 190rpx;
   margin-top: 24rpx;
   padding: 22rpx;
-  color: #343b56;
+  color: var(--text-main);
   font-size: 26rpx;
   line-height: 1.6;
-  background: #f7f8fd;
-  border: 1rpx solid rgba(137, 154, 248, 0.12);
+  background: #f4f6fb;
+  border: 1rpx solid var(--border-light);
   border-radius: 22rpx;
 }
 
 .goal-placeholder {
-  color: #a3a6b6;
+  color: var(--text-light);
 }
 
 .goal-footer {
@@ -257,7 +257,7 @@ scroll-view {
   align-items: center;
   justify-content: space-between;
   margin-top: 12rpx;
-  color: #9a9db0;
+  color: var(--text-light);
   font-size: 20rpx;
 }
 
@@ -265,9 +265,9 @@ scroll-view {
   height: 58rpx;
   gap: 8rpx;
   padding: 0 18rpx;
-  color: #5f65b4;
+  color: var(--brand-secondary);
   font-size: 22rpx;
-  background: rgba(95, 101, 180, 0.08);
+  background: rgba(99, 102, 241, 0.08);
   border-radius: 29rpx;
 }
 
@@ -278,7 +278,7 @@ scroll-view {
 
 .sub-title {
   margin-top: 26rpx;
-  color: #343b56;
+  color: var(--text-main);
   font-size: 25rpx;
   font-weight: 650;
 }
@@ -295,18 +295,18 @@ scroll-view {
   align-items: center;
   justify-content: center;
   flex: 1;
-  color: #76798f;
+  color: var(--text-sub);
   font-size: 22rpx;
-  background: #f7f8fd;
+  background: #f4f6fb;
   border: 2rpx solid transparent;
   border-radius: 20rpx;
 }
 
 .cycle.selected {
-  color: #5f65b4;
+  color: var(--brand-secondary);
   font-weight: 650;
-  background: rgba(137, 154, 248, 0.08);
-  border-color: #899af8;
+  background: rgba(99, 102, 241, 0.08);
+  border-color: var(--brand-primary);
 }
 
 .target-grid {
@@ -319,15 +319,15 @@ scroll-view {
 .target-card {
   min-height: 174rpx;
   padding: 20rpx;
-  background: #f7f8fd;
+  background: #f4f6fb;
   border: 2rpx solid transparent;
   border-radius: 24rpx;
 }
 
 .target-card.selected {
   background: #fff;
-  border-color: #899af8;
-  box-shadow: 0 6rpx 16rpx rgba(95, 101, 180, 0.12);
+  border-color: var(--brand-primary);
+  box-shadow: 0 6rpx 16rpx rgba(99, 102, 241, 0.12);
 }
 
 .target-top {
@@ -342,7 +342,7 @@ scroll-view {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #5f65b4;
+  color: var(--brand-secondary);
   background: #fff;
   border-radius: 18rpx;
 }
@@ -354,7 +354,7 @@ scroll-view {
 
 .target-card.selected .target-icon {
   color: #fff;
-  background: #899af8;
+  background: var(--brand-primary);
 }
 
 .target-check {
@@ -363,7 +363,7 @@ scroll-view {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #9a9db0;
+  color: var(--text-light);
   font-size: 22rpx;
   background: #fff;
   border-radius: 50%;
@@ -371,19 +371,19 @@ scroll-view {
 
 .target-card.selected .target-check {
   color: #fff;
-  background: #5f65b4;
+  background: var(--brand-secondary);
 }
 
 .target-title {
   margin-top: 14rpx;
-  color: #343b56;
+  color: var(--text-main);
   font-size: 26rpx;
   font-weight: 650;
 }
 
 .target-desc {
   margin-top: 6rpx;
-  color: #76798f;
+  color: var(--text-sub);
   font-size: 20rpx;
   line-height: 1.45;
 }
@@ -391,13 +391,13 @@ scroll-view {
 .task-summary {
   margin-top: 24rpx;
   padding: 22rpx;
-  background: rgba(237, 239, 253, 0.72);
+  background: rgba(244, 246, 251, 0.72);
   border-radius: 22rpx;
 }
 
 .task-summary-title {
   margin-bottom: 16rpx;
-  color: #76798f;
+  color: var(--text-sub);
   font-size: 20rpx;
   font-weight: 650;
   letter-spacing: 1rpx;
@@ -408,7 +408,7 @@ scroll-view {
   align-items: center;
   gap: 14rpx;
   margin-top: 14rpx;
-  color: #343b56;
+  color: var(--text-main);
   font-size: 24rpx;
 }
 
@@ -419,7 +419,7 @@ scroll-view {
   align-items: center;
   justify-content: center;
   flex: none;
-  color: #5f65b4;
+  color: var(--brand-secondary);
   font-size: 19rpx;
   font-weight: 700;
   background: #fff;
@@ -429,7 +429,7 @@ scroll-view {
 .task-line text {
   display: block;
   margin-top: 3rpx;
-  color: #8c8fa3;
+  color: var(--text-sub);
   font-size: 19rpx;
 }
 
@@ -447,18 +447,18 @@ scroll-view {
   align-items: center;
   gap: 14rpx;
   padding: 0 20rpx;
-  color: #76798f;
+  color: var(--text-sub);
   font-size: 23rpx;
-  background: #f7f8fd;
+  background: #f4f6fb;
   border: 2rpx solid transparent;
   border-radius: 22rpx;
 }
 
 .budget.selected {
-  color: #5f65b4;
+  color: var(--brand-secondary);
   font-weight: 650;
   background: #fff;
-  border-color: #899af8;
+  border-color: var(--brand-primary);
 }
 
 .radio {
@@ -466,26 +466,26 @@ scroll-view {
   height: 22rpx;
   flex: none;
   background: #fff;
-  border: 3rpx solid rgba(118, 121, 143, 0.4);
+  border: 3rpx solid rgba(91, 96, 118, 0.4);
   border-radius: 50%;
 }
 
 .budget.selected .radio {
   border-width: 7rpx;
-  border-color: #899af8;
+  border-color: var(--brand-primary);
 }
 
 .review-card {
   margin-top: 8rpx;
   padding: 28rpx;
-  color: #343b56;
-  background: linear-gradient(135deg, rgba(230, 233, 255, 0.9), rgba(255, 244, 251, 0.92));
+  color: var(--text-main);
+  background: linear-gradient(135deg, rgba(238, 242, 255, 0.9), rgba(250, 245, 255, 0.92));
   border: 1rpx solid rgba(255, 255, 255, 0.9);
   border-radius: 28rpx;
 }
 
 .review-label {
-  color: #5f65b4;
+  color: var(--brand-secondary);
   font-size: 19rpx;
   font-weight: 700;
   letter-spacing: 1.2rpx;
@@ -503,18 +503,18 @@ scroll-view {
   align-items: flex-start;
   gap: 10rpx;
   margin-top: 10rpx;
-  color: #6f7286;
+  color: var(--text-sub);
   font-size: 21rpx;
 }
 
 .review-rule text {
-  color: #5f65b4;
+  color: var(--brand-secondary);
   font-weight: 700;
 }
 
 .disabled-reason {
   margin-top: 12rpx;
-  color: #8c8fa3;
+  color: var(--text-sub);
   font-size: 21rpx;
   text-align: center;
 }

@@ -1,6 +1,6 @@
 page {
   min-height: 100%;
-  background: rgba(237, 239, 253, 1);
+  background: var(--bg-color);
 }
 
 .onboarding {
@@ -8,7 +8,7 @@ page {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(180deg, rgba(237, 239, 253, 1) 0%, rgba(251, 251, 254, 1) 100%);
+  background: linear-gradient(180deg, var(--bg-color) 0%, rgba(255, 255, 255, 0.85) 100%);
 }
 
 /* === 顶部：标题 + 副标题 + 插画 === */
@@ -27,7 +27,7 @@ page {
   position: relative;
   z-index: 2;
   margin-top: 16rpx;
-  color: rgba(52, 59, 86, 1);
+  color: var(--text-main);
   font-size: 64rpx;
   font-weight: 700;
   text-align: center;
@@ -39,7 +39,7 @@ page {
   z-index: 2;
   margin-top: 12rpx;
   max-width: 560rpx;
-  color: rgba(118, 121, 143, 1);
+  color: var(--text-sub);
   font-size: 26rpx;
   text-align: center;
   line-height: 1.5;
@@ -65,14 +65,14 @@ page {
   display: flex;
   flex-direction: column;
   padding: 34rpx 40rpx calc(36rpx + env(safe-area-inset-bottom));
-  background: rgba(255, 255, 255, 1);
+  background: #ffffff;
   border-top-left-radius: 40rpx;
   border-top-right-radius: 40rpx;
   box-shadow: 0 -10rpx 40rpx rgba(120, 130, 180, 0.08);
 }
 
 .panel-title {
-  color: rgba(46, 49, 62, 1);
+  color: var(--text-main);
   font-size: 36rpx;
   font-weight: 700;
   text-align: center;
@@ -80,7 +80,7 @@ page {
 
 .panel-subtitle {
   margin-top: 8rpx;
-  color: rgba(118, 121, 143, 1);
+  color: var(--text-sub);
   font-size: 25rpx;
   text-align: center;
 }
@@ -93,7 +93,7 @@ page {
   justify-content: space-between;
   margin-top: 24rpx;
   padding: 36rpx 32rpx;
-  background: rgba(244, 246, 254, 0.6);
+  background: rgba(99, 102, 241, 0.05);
   border: 3rpx solid transparent;
   transition: all 0.25s cubic-bezier(0.1, 0.7, 0.1, 1);
 }
@@ -114,9 +114,9 @@ page {
 }
 
 .role-card.selected {
-  background: rgba(255, 255, 255, 1);
-  border-color: rgba(137, 154, 248, 0.6);
-  box-shadow: 0 16rpx 40rpx rgba(137, 154, 248, 0.12);
+  background: #ffffff;
+  border-color: rgba(99, 102, 241, 0.5);
+  box-shadow: 0 16rpx 40rpx rgba(99, 102, 241, 0.12);
   transform: scale(1.01);
   z-index: 2;
 }
@@ -132,7 +132,7 @@ page {
 }
 
 .role-name {
-  color: rgba(46, 49, 62, 1);
+  color: var(--text-main);
   font-size: 34rpx;
   font-weight: 700;
   letter-spacing: 0.5rpx;
@@ -140,7 +140,7 @@ page {
 
 .role-desc {
   margin-top: 14rpx;
-  color: rgba(118, 121, 143, 0.9);
+  color: var(--text-sub);
   font-size: 24rpx;
   line-height: 1.5;
 }
@@ -180,14 +180,14 @@ page {
   flex: none;
   margin-right: 16rpx;
   border-radius: 50%;
-  border: 2rpx solid rgba(201, 207, 224, 1);
-  background: rgba(255, 255, 255, 1);
+  border: 2rpx solid rgba(99, 102, 241, 0.25);
+  background: #ffffff;
   transition: all 0.2s ease;
 }
 
 .agree-box.on {
-  border-color: rgba(137, 154, 248, 1);
-  background: rgba(137, 154, 248, 1);
+  border-color: var(--brand-primary);
+  background: var(--brand-primary);
 }
 
 .agree-tick {
@@ -202,13 +202,13 @@ page {
 }
 
 .agree-text {
-  color: rgba(118, 121, 143, 1);
+  color: var(--text-sub);
   font-size: 24rpx;
   line-height: 1.4;
 }
 
 .link {
-  color: rgba(137, 154, 248, 1);
+  color: var(--brand-primary);
 }
 
 /* === 进入中遮罩 === */
@@ -221,7 +221,7 @@ page {
   align-items: center;
   justify-content: center;
   gap: 24rpx;
-  background: rgba(46, 49, 62, 0.4);
+  background: rgba(31, 37, 51, 0.4);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
 }

@@ -8,7 +8,7 @@
   justify-content: space-between;
   margin-top: 24rpx;
   padding: 24rpx 0;
-  border-bottom: 1rpx solid rgba(52, 59, 86, 0.1);
+  border-bottom: 1rpx solid rgba(99, 102, 241, 0.08);
 }
 
 .board-summary > view {
@@ -39,7 +39,7 @@
 .action-primary,
 .accept-button {
   color: #fff;
-  background: #343b56;
+  background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
 }
 
 .action-primary.full {
@@ -49,7 +49,7 @@
 
 .action-plain {
   color: var(--text-sub);
-  background: rgba(52, 59, 86, 0.06);
+  background: rgba(99, 102, 241, 0.06);
 }
 
 .empty-board {
@@ -69,12 +69,12 @@
 }
 
 .demand-list {
-  border-top: 1rpx solid rgba(52, 59, 86, 0.04);
+  border-top: 1rpx solid rgba(99, 102, 241, 0.05);
 }
 
 .demand-item {
   padding: 34rpx 0;
-  border-bottom: 1rpx solid rgba(52, 59, 86, 0.12);
+  border-bottom: 1rpx solid rgba(99, 102, 241, 0.1);
 }
 
 .demand-head,
@@ -109,7 +109,7 @@
   justify-content: center;
   color: #fff;
   font-weight: 700;
-  background: #899af8;
+  background: var(--brand-primary);
   border-radius: 50%;
 }
 
@@ -131,23 +131,23 @@
 .proposal-status {
   flex: none;
   padding: 6rpx 14rpx;
-  color: #5f65b4;
+  color: var(--brand-secondary);
   font-size: 21rpx;
-  background: rgba(137, 154, 248, 0.12);
+  background: rgba(99, 102, 241, 0.1);
   border-radius: 20rpx;
 }
 
 .status-following,
 .status-accepted {
-  color: #087f63;
-  background: rgba(45, 216, 167, 0.12);
+  color: #059669;
+  background: rgba(16, 185, 129, 0.12);
 }
 
 .status-closed,
 .status-rejected,
 .status-withdrawn {
   color: var(--text-sub);
-  background: rgba(52, 59, 86, 0.06);
+  background: rgba(91, 96, 118, 0.06);
 }
 
 .demand-goal {
@@ -167,15 +167,15 @@
   padding: 7rpx 14rpx;
   color: var(--text-sub);
   font-size: 21rpx;
-  background: rgba(255, 255, 255, 0.72);
+  background: rgba(255, 255, 255, 0.8);
   border-radius: 18rpx;
 }
 
 .own-proposal {
   margin-top: 24rpx;
   padding: 18rpx 0;
-  border-top: 1rpx dashed rgba(52, 59, 86, 0.12);
-  border-bottom: 1rpx dashed rgba(52, 59, 86, 0.12);
+  border-top: 1rpx dashed rgba(99, 102, 241, 0.1);
+  border-bottom: 1rpx dashed rgba(99, 102, 241, 0.1);
 }
 
 .own-proposal text,
@@ -201,7 +201,7 @@
 .proposal-header {
   margin-top: 26rpx;
   padding-top: 22rpx;
-  border-top: 1rpx dashed rgba(52, 59, 86, 0.12);
+  border-top: 1rpx dashed rgba(99, 102, 241, 0.1);
 }
 
 .proposal-header text {
@@ -221,7 +221,7 @@
   align-items: center;
   gap: 20rpx;
   padding: 22rpx 0;
-  border-bottom: 1rpx solid rgba(52, 59, 86, 0.07);
+  border-bottom: 1rpx solid rgba(99, 102, 241, 0.07);
 }
 
 .proposal-main {
@@ -235,7 +235,7 @@
 
 .proposal-price {
   margin-top: 8rpx;
-  color: #5f65b4;
+  color: var(--brand-secondary);
   font-size: 28rpx;
   font-weight: 700;
 }
@@ -256,7 +256,7 @@
 
 .proposal-message {
   padding-left: 14rpx;
-  border-left: 4rpx solid rgba(137, 154, 248, 0.35);
+  border-left: 4rpx solid rgba(99, 102, 241, 0.3);
 }
 
 .accept-button {
@@ -269,7 +269,7 @@
   inset: 0;
   display: flex;
   align-items: flex-end;
-  background: rgba(25, 28, 42, 0.42);
+  background: rgba(31, 37, 51, 0.42);
 }
 
 .sheet-card {
@@ -277,7 +277,7 @@
   max-height: 90vh;
   overflow-y: auto;
   padding: 34rpx 36rpx calc(34rpx + env(safe-area-inset-bottom));
-  background: #f7f8ff;
+  background: #f4f6fb;
   border-radius: 34rpx 34rpx 0 0;
 }
 
@@ -303,7 +303,7 @@
   height: 56rpx;
   color: var(--text-sub);
   font-size: 38rpx;
-  background: rgba(52, 59, 86, 0.06);
+  background: rgba(91, 96, 118, 0.06);
   border-radius: 50%;
 }
 
@@ -323,8 +323,8 @@
 .field textarea {
   width: 100%;
   padding: 20rpx 22rpx;
-  background: #fff;
-  border: 1rpx solid rgba(52, 59, 86, 0.1);
+  background: #ffffff;
+  border: 1rpx solid var(--border-light);
   border-radius: 18rpx;
 }
 

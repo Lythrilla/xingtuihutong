@@ -12,13 +12,13 @@ view, text, scroll-view, image {
 .plaza-tab {
   position: relative;
   padding: 14rpx 0;
-  color: rgba(118, 121, 143, 1);
+  color: var(--text-sub);
   font-size: 28rpx;
   font-weight: 500;
 }
 
 .plaza-tab.active {
-  color: rgba(52, 59, 86, 1);
+  color: var(--text-main);
   font-size: 30rpx;
   font-weight: 700;
 }
@@ -30,7 +30,7 @@ view, text, scroll-view, image {
   left: 18%;
   height: 5rpx;
   opacity: 0;
-  background: linear-gradient(90deg, rgba(126, 142, 244, 1), rgba(166, 107, 248, 1));
+  background: linear-gradient(90deg, var(--brand-primary), var(--brand-secondary));
   border-radius: 3rpx;
   transform: scaleX(0.3);
   transition: all 0.25s ease;
@@ -48,35 +48,35 @@ view, text, scroll-view, image {
   gap: 18rpx;
   margin-top: 22rpx;
   padding: 0 24rpx;
-  background: rgba(255, 255, 255, 0.56);
-  border: 1rpx solid rgba(255, 255, 255, 0.86);
+  background: rgba(255, 255, 255, 0.65);
+  border: 1rpx solid var(--border-light);
   border-radius: 24rpx;
 }
 
 .search-icon {
   width: 32rpx;
   height: 32rpx;
-  color: rgba(118, 121, 143, 1);
+  color: var(--text-sub);
 }
 
 .search input {
   min-width: 0;
   flex: 1;
-  color: rgba(52, 59, 86, 1);
+  color: var(--text-main);
   font-size: 28rpx;
 }
 
 .search-clear {
   width: 48rpx;
   height: 48rpx;
-  color: rgba(118, 121, 143, 1);
+  color: var(--text-sub);
   font-size: 32rpx;
-  background: rgba(237, 239, 253, 1);
+  background: rgba(99, 102, 241, 0.08);
   border-radius: 24rpx;
 }
 
 .placeholder {
-  color: rgba(118, 121, 143, 1);
+  color: var(--text-sub);
 }
 
 .discovery-line {
@@ -94,14 +94,14 @@ view, text, scroll-view, image {
 }
 
 .discovery-title {
-  color: rgba(52, 59, 86, 1);
+  color: var(--text-main);
   font-size: 28rpx;
   font-weight: 650;
 }
 
 .discovery-desc {
   margin-top: 8rpx;
-  color: rgba(118, 121, 143, 1);
+  color: var(--text-sub);
   font-size: 22rpx;
 }
 
@@ -115,13 +115,13 @@ view, text, scroll-view, image {
 .favorite-filter {
   height: 56rpx;
   padding: 0 12rpx;
-  color: rgba(118, 121, 143, 1);
+  color: var(--text-sub);
   font-size: 22rpx;
   background: transparent;
 }
 
 .favorite-filter.active {
-  color: rgba(95, 101, 180, 1);
+  color: var(--brand-secondary);
   font-weight: 600;
 }
 
@@ -129,13 +129,13 @@ view, text, scroll-view, image {
   height: 56rpx;
   flex: none;
   padding: 0 6rpx 0 16rpx;
-  color: rgba(118, 121, 143, 1);
+  color: var(--text-sub);
   font-size: 22rpx;
   background: transparent;
 }
 
 .sort-button.active {
-  color: rgba(95, 101, 180, 1);
+  color: var(--brand-secondary);
 }
 
 .entry-list {
@@ -148,8 +148,8 @@ view, text, scroll-view, image {
 .entry {
   break-inside: avoid;
   margin-bottom: 20rpx;
-  background: #fff;
-  border: 1rpx solid rgba(137, 154, 248, 0.12);
+  background: #ffffff;
+  border: 1rpx solid var(--border-light);
   border-radius: 16rpx;
   overflow: hidden;
   box-shadow: none;
@@ -164,7 +164,7 @@ view, text, scroll-view, image {
 }
 
 .entry.focused {
-  box-shadow: 0 0 0 3rpx rgba(112, 105, 211, 0.38);
+  box-shadow: 0 0 0 3rpx rgba(99, 102, 241, 0.35);
   animation: focused-entry 1.8s ease-out;
 }
 
@@ -213,7 +213,7 @@ view, text, scroll-view, image {
 }
 
 .entry-service {
-  color: rgba(52, 59, 86, 1);
+  color: var(--text-main);
   font-size: 26rpx;
   font-weight: 600;
   line-height: 1.45;
@@ -232,9 +232,9 @@ view, text, scroll-view, image {
 
 .tag {
   padding: 4rpx 12rpx;
-  color: rgba(95, 101, 180, 1);
+  color: var(--brand-secondary);
   font-size: 20rpx;
-  background: rgba(95, 101, 180, 0.08);
+  background: rgba(99, 102, 241, 0.08);
   border-radius: 10rpx;
 }
 
@@ -253,7 +253,7 @@ view, text, scroll-view, image {
 }
 
 .user-name {
-  color: rgba(118, 121, 143, 1);
+  color: var(--text-sub);
   font-size: 24rpx;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -284,14 +284,14 @@ view, text, scroll-view, image {
   height: auto;
   padding: 0;
   margin: 0;
-  color: rgba(118, 121, 143, 0.5);
+  color: var(--text-light);
   font-size: 32rpx;
   line-height: 1;
   background: transparent;
 }
 
 .favorite-button.active {
-  color: #ff4757;
+  color: var(--danger);
 }
 
 .entry-action {
@@ -308,13 +308,13 @@ view, text, scroll-view, image {
   color: #fff;
   font-size: 24rpx;
   font-weight: 500;
-  background: linear-gradient(135deg, #899af8 0%, #a2b2fc 100%);
+  background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
   border-radius: 28rpx;
-  box-shadow: 0 4rpx 12rpx rgba(137, 154, 248, 0.2);
+  box-shadow: 0 4rpx 12rpx rgba(99, 102, 241, 0.2);
 }
 
 .connect-button[disabled] {
-  background: rgba(118, 121, 143, 0.2);
+  background: rgba(91, 96, 118, 0.2);
   box-shadow: none;
 }
 
@@ -327,7 +327,7 @@ view, text, scroll-view, image {
   overflow: hidden;
   margin: 28rpx 0 14rpx;
   padding: 18rpx 22rpx;
-  background: linear-gradient(105deg, rgba(218, 222, 255, 0.76), rgba(239, 226, 255, 0.74));
+  background: linear-gradient(105deg, rgba(238, 242, 255, 0.76), rgba(245, 243, 255, 0.74));
   border-radius: 28rpx;
 }
 
@@ -337,7 +337,7 @@ view, text, scroll-view, image {
   right: 30rpx;
   width: 240rpx;
   height: 240rpx;
-  background: radial-gradient(circle, rgba(137, 154, 248, 0.36), transparent 68%);
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.32), transparent 68%);
   animation: invite-breathe 3s ease-in-out infinite;
 }
 
@@ -347,7 +347,7 @@ view, text, scroll-view, image {
   width: 76rpx;
   height: 76rpx;
   flex: none;
-  filter: drop-shadow(0 10rpx 18rpx rgba(95, 101, 180, 0.24));
+  filter: drop-shadow(0 10rpx 18rpx rgba(99, 102, 241, 0.2));
 }
 
 .ai-invite-copy {
@@ -355,7 +355,7 @@ view, text, scroll-view, image {
   z-index: 1;
   min-width: 0;
   flex: 1;
-  color: rgba(52, 59, 86, 1);
+  color: var(--text-main);
   font-size: 25rpx;
   font-weight: 650;
 }
@@ -363,7 +363,7 @@ view, text, scroll-view, image {
 .ai-invite-copy text {
   display: block;
   margin-top: 8rpx;
-  color: rgba(118, 121, 143, 1);
+  color: var(--text-sub);
   font-size: 21rpx;
   font-weight: 400;
 }
@@ -371,7 +371,7 @@ view, text, scroll-view, image {
 .ai-invite-arrow {
   position: relative;
   z-index: 1;
-  color: rgba(95, 101, 180, 1);
+  color: var(--brand-secondary);
   font-size: 34rpx;
 }
 
