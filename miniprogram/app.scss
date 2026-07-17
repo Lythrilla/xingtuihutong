@@ -1,15 +1,15 @@
 page {
   /* 基础颜色变量 */
-  --bg-color: #edeffd;
-  --text-main: #343b56;
-  --text-sub: #76798f;
-  --text-light: #a0a4b6;
-  --brand-primary: #899af8;
-  --brand-secondary: #5f65b4;
-  --card-bg: rgba(255, 255, 255, 0.95);
-  --border-light: rgba(137, 154, 248, 0.1);
-  --danger: #ff4757;
-  --success: #2dd8a7;
+  --bg-color: #f4f6fb;
+  --text-main: #1f2533;
+  --text-sub: #5b6076;
+  --text-light: #9ca3af;
+  --brand-primary: #6366f1;
+  --brand-secondary: #8b5cf6;
+  --card-bg: rgba(255, 255, 255, 0.96);
+  --border-light: rgba(99, 102, 241, 0.1);
+  --danger: #ef4444;
+  --success: #10b981;
 
   box-sizing: border-box;
   min-height: 100%;
@@ -44,8 +44,9 @@ input {
   color: #fff;
   font-size: 28rpx;
   font-weight: 600;
-  background: #2e313e;
+  background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
   border-radius: 44rpx;
+  box-shadow: 0 8rpx 20rpx rgba(99, 102, 241, 0.2);
   box-sizing: border-box;
   transition: opacity 0.2s ease, transform 0.2s ease;
 }
@@ -56,8 +57,9 @@ input {
 }
 
 .btn-primary[disabled] {
-  color: rgba(118, 121, 143, 0.7);
-  background: rgba(225, 228, 239, 1);
+  color: rgba(91, 96, 118, 0.7);
+  background: rgba(226, 228, 240, 1);
+  box-shadow: none;
   transform: none;
   opacity: 1;
 }
@@ -70,10 +72,10 @@ input {
   height: 88rpx;
   margin: 0 !important;
   padding: 0 !important;
-  color: #5f65b4;
+  color: var(--brand-primary);
   font-size: 26rpx;
   font-weight: 600;
-  background: rgba(95, 101, 180, 0.08);
+  background: rgba(99, 102, 241, 0.08);
   border-radius: 44rpx;
   box-sizing: border-box;
   transition: all 0.2s ease;
@@ -81,7 +83,7 @@ input {
 
 .btn-secondary:active {
   transform: scale(0.98);
-  background: rgba(95, 101, 180, 0.12);
+  background: rgba(99, 102, 241, 0.12);
 }
 
 button {
@@ -109,8 +111,8 @@ button::after {
 }
 
 button[disabled] {
-  color: rgba(118, 121, 143, 0.6);
-  background: rgba(255, 255, 255, 0.6);
+  color: rgba(91, 96, 118, 0.55);
+  background: rgba(255, 255, 255, 0.65);
   opacity: 1;
 }
 
@@ -126,7 +128,7 @@ button[disabled] {
   width: 100%;
   overflow-x: hidden;
   padding: 0 40rpx calc(136rpx + env(safe-area-inset-bottom));
-  background: rgba(237, 239, 253, 1);
+  background: var(--bg-color);
 }
 
 /* === 通用区块（对齐首页 .section-head 参数） === */
@@ -143,7 +145,7 @@ button[disabled] {
 }
 
 .section-title {
-  color: rgba(52, 59, 86, 1);
+  color: var(--text-main);
   font-size: 32rpx;
   font-weight: 600;
   line-height: 1;
@@ -151,17 +153,17 @@ button[disabled] {
 }
 
 .section-action {
-  color: rgba(118, 121, 143, 1);
+  color: var(--text-sub);
   font-size: 24rpx;
   line-height: 1;
 }
 
 /* === 卡片（对齐首页 .ai-card 圆角） === */
 .card {
-  background: rgba(255, 255, 255, 0.58);
-  border: 1rpx solid rgba(137, 154, 248, 0.13);
-  border-radius: 20rpx;
-  box-shadow: none;
+  background: var(--card-bg);
+  border: 1rpx solid var(--border-light);
+  border-radius: 24rpx;
+  box-shadow: 0 4rpx 20rpx rgba(99, 102, 241, 0.05);
 }
 
 /* === 胶囊标签（对齐首页 .tag） === */
@@ -172,14 +174,14 @@ button[disabled] {
   color: rgba(255, 255, 255, 1);
   font-size: 20rpx;
   line-height: 1.2;
-  background: rgba(95, 101, 180, 1);
+  background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
   border-radius: 14rpx;
 }
 
 /* === 空状态文字（对齐首页 .inline-empty） === */
 .inline-empty {
   padding: 48rpx 32rpx;
-  color: rgba(118, 121, 143, 1);
+  color: var(--text-sub);
   font-size: 26rpx;
   text-align: center;
   line-height: 1.55;
@@ -298,7 +300,7 @@ button[disabled] {
   left: -20%;
   width: 360rpx;
   height: 360rpx;
-  background: rgba(137, 154, 248, 0.35); /* 调浅：柔和的浅蓝紫 */
+  background: rgba(99, 102, 241, 0.32); /* 调浅：柔和的浅蓝紫 */
   border-radius: 50%;
   filter: blur(80rpx);
   z-index: 0;
@@ -312,7 +314,7 @@ button[disabled] {
   right: -10%;
   width: 480rpx;
   height: 480rpx;
-  background: rgba(183, 112, 255, 0.25); /* 调浅：柔和的浅紫 */
+  background: rgba(139, 92, 246, 0.22); /* 调浅：柔和的浅紫 */
   border-radius: 50%;
   filter: blur(100rpx);
   z-index: 0;
@@ -336,8 +338,8 @@ button[disabled] {
   opacity: 0.5; /* 降低网格强度，显得更轻盈 */
   z-index: 2;
   background-image:
-    linear-gradient(rgba(137, 154, 248, 0.4) 1rpx, transparent 1rpx),
-    linear-gradient(90deg, rgba(137, 154, 248, 0.4) 1rpx, transparent 1rpx);   
+    linear-gradient(rgba(99, 102, 241, 0.35) 1rpx, transparent 1rpx),
+    linear-gradient(90deg, rgba(99, 102, 241, 0.35) 1rpx, transparent 1rpx);   
   background-size: 60rpx 60rpx;
   transform: perspective(600rpx) rotateX(60deg) scale(2);
   transform-origin: center bottom;
@@ -360,10 +362,10 @@ button[disabled] {
   inset: 10rpx;
   background: conic-gradient(
     from 60deg,
-    rgba(162, 178, 252, 0.8),
-    rgba(216, 180, 254, 0.85),
-    rgba(137, 154, 248, 0.75),
-    rgba(162, 178, 252, 0.8)
+    rgba(129, 140, 248, 0.8),
+    rgba(196, 181, 253, 0.85),
+    rgba(99, 102, 241, 0.75),
+    rgba(129, 140, 248, 0.8)
   ); /* 调浅：整体光圈变为更通透的浅紫蓝渐变 */
   border-radius: 50%;
   filter: blur(28rpx);
@@ -399,7 +401,7 @@ button[disabled] {
   align-items: center;
   gap: 12rpx;
   margin-bottom: 20rpx;
-  color: rgba(95, 101, 180, 1);
+  color: var(--brand-secondary);
   font-size: 20rpx;
   font-weight: 700;
   letter-spacing: 2.5rpx;
@@ -408,14 +410,14 @@ button[disabled] {
 .hero-state text {
   width: 12rpx;
   height: 12rpx;
-  background: #2dd8a7;
+  background: var(--success);
   border-radius: 50%;
-  box-shadow: 0 0 12rpx rgba(45, 216, 167, 0.5);
+  box-shadow: 0 0 12rpx rgba(16, 185, 129, 0.5);
   animation: state-pulse 2s ease-in-out infinite;
 }
 
 .hero-title {
-  color: rgba(46, 49, 62, 1);
+  color: var(--text-main);
   font-size: 34rpx;
   font-weight: 700;
   line-height: 1.34;
@@ -428,7 +430,7 @@ button[disabled] {
 
 .hero-desc {
   margin-top: 14rpx;
-  color: rgba(118, 121, 143, 1);
+  color: var(--text-sub);
   font-size: 24rpx;
   line-height: 1.4;
 }
@@ -443,7 +445,7 @@ button[disabled] {
   color: rgba(255, 255, 255, 1);
   font-size: 24rpx;
   font-weight: 600;
-  background: rgba(46, 49, 62, 1);
+  background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
   border-radius: 48rpx;
-  box-shadow: 0 6rpx 16rpx rgba(46, 49, 62, 0.15);
+  box-shadow: 0 6rpx 16rpx rgba(99, 102, 241, 0.25);
 }

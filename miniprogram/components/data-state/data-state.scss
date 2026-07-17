@@ -7,8 +7,10 @@
   margin-top: 26rpx;
   padding: 42rpx 28rpx;
   text-align: center;
-  background: rgba(255, 255, 255, 0.34);
+  background: var(--card-bg);
+  border: 1rpx solid var(--border-light);
   border-radius: 24rpx;
+  box-shadow: 0 4rpx 20rpx rgba(99, 102, 241, 0.05);
 }
 
 .state-shell.compact {
@@ -20,8 +22,8 @@
   width: 44rpx;
   height: 44rpx;
   margin-bottom: 22rpx;
-  border: 4rpx solid rgba(137, 154, 248, 0.3);
-  border-top-color: rgba(95, 101, 180, 1);
+  border: 4rpx solid rgba(99, 102, 241, 0.25);
+  border-top-color: var(--brand-primary);
   border-radius: 50%;
   animation: state-spin 0.8s linear infinite;
 }
@@ -33,21 +35,21 @@
   align-items: center;
   justify-content: center;
   margin-bottom: 18rpx;
-  color: rgba(95, 101, 180, 1);
+  color: var(--brand-primary);
   font-size: 26rpx;
   font-weight: 700;
-  background: rgba(237, 239, 253, 1);
+  background: rgba(99, 102, 241, 0.08);
   border-radius: 24rpx;
 }
 
 .empty-symbol {
-  color: rgba(118, 121, 143, 1);
-  background: rgba(255, 255, 255, 1);
-  border: 1rpx solid rgba(118, 121, 143, 0.15);
+  color: var(--text-sub);
+  background: var(--card-bg);
+  border: 1rpx solid var(--border-light);
 }
 
 .state-title {
-  color: rgba(52, 59, 86, 1);
+  color: var(--text-main);
   font-size: 30rpx;
   font-weight: 600;
 }
@@ -55,7 +57,7 @@
 .state-description {
   max-width: 520rpx;
   margin-top: 12rpx;
-  color: rgba(118, 121, 143, 1);
+  color: var(--text-sub);
   font-size: 26rpx;
   line-height: 1.55;
 }
@@ -73,9 +75,9 @@
   color: rgba(255, 255, 255, 1);
   font-size: 26rpx;
   font-weight: 600;
-  background: rgba(46, 49, 62, 1);
+  background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
   border-radius: 48rpx;
-  box-shadow: 0 6rpx 14rpx rgba(46, 49, 62, 0.18);
+  box-shadow: 0 6rpx 14rpx rgba(99, 102, 241, 0.2);
   box-sizing: border-box;
 }
 

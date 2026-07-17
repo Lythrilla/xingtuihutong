@@ -9,10 +9,10 @@
   display: flex;
   align-items: center;
   padding: 10rpx 24rpx env(safe-area-inset-bottom);
-  
+
   /* 移除高斯模糊，改回纯净的实色背景避免黑边瑕疵 */
-  background: rgba(250, 250, 255, 1);
-  border-top: 1rpx solid rgba(237, 239, 253, 1);
+  background: rgba(255, 255, 255, 0.96);
+  border-top: 1rpx solid var(--border-light);
 }
 
 .tab-item {
@@ -22,7 +22,7 @@
   align-items: center;
   justify-content: center;
   gap: 4rpx;
-  color: rgba(158, 163, 185, 1);
+  color: var(--text-light);
   transition: color 0.2s ease;
 }
 
@@ -71,7 +71,7 @@
 }
 
 .tab-item.active {
-  color: rgba(91, 101, 201, 1);
+  color: var(--brand-primary);
 }
 
 .tab-item.active .tab-label {
@@ -172,7 +172,7 @@
 .fab-label {
   position: absolute;
   top: 94rpx;
-  color: rgba(95, 101, 180, 1);
+  color: var(--brand-secondary);
   font-size: 17rpx;
   font-weight: 700;
   letter-spacing: 1rpx;
