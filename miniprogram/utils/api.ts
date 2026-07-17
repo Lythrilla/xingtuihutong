@@ -1,5 +1,12 @@
 import { API_BASE_URL } from '../config'
 
+export function toAssetUrl(path: string): string {
+  if (!path) return path
+  if (/^https?:\/\//i.test(path)) return path
+  if (path.startsWith('/')) return `${API_BASE_URL}${path}`
+  return path
+}
+
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE'
 
 interface ApiErrorBody {
@@ -94,7 +101,7 @@ export async function uploadWorkFile(filePath: string): Promise<WorkUploadRespon
           return
         }
         if (response.statusCode >= 200 && response.statusCode < 300) {
-          resolve(body)
+          resolve({ ...body, url: toAssetUrl(body.url) })
           return
         }
         reject(
@@ -132,7 +139,7 @@ export async function uploadAvatarFile(filePath: string): Promise<WorkUploadResp
           return
         }
         if (response.statusCode >= 200 && response.statusCode < 300) {
-          resolve(body)
+          resolve({ ...body, url: toAssetUrl(body.url) })
           return
         }
         reject(

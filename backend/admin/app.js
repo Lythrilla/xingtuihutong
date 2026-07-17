@@ -756,7 +756,7 @@ function formFields(view, item = {}) {
         ["client", "内容创作者"],
       ]),
       inputField("name", "名称", item.name, true),
-      inputField("avatar", "头像文字", item.avatar, true),
+      inputField("avatar", "头像 URL 或文字", item.avatar, true),
       selectField("avatarClass", "头像配色", item.avatarClass, colorOptions()),
       inputField("identity", "身份说明", item.identity, true),
       numberField("matchScore", "匹配度", item.matchScore ?? 90, 0, 100),
@@ -1029,8 +1029,24 @@ function confirmAction(title, message) {
   });
 }
 
+function isImageAvatar(value) {
+  if (!value) return false;
+  return value.startsWith("http://") || value.startsWith("https://") || value.startsWith("/") || value.startsWith("uploads/");
+}
+
+function resolveAvatarUrl(value) {
+  if (!value) return value;
+  if (value.startsWith("http://") || value.startsWith("https://")) return value;
+  if (value.startsWith("/")) return value;
+  if (value.startsWith("uploads/")) return `/${value}`;
+  return value;
+}
+
 function identity(avatar, title, subtitle = "") {
-  return `<div class="identity-cell"><span class="avatar">${escapeHtml(avatar)}</span><span>${titleCell(title, subtitle)}</span></div>`;
+  if (isImageAvatar(avatar)) {
+    return `<div class="identity-cell"><img class="avatar avatar-img" src="${escapeAttribute(resolveAvatarUrl(avatar))}" alt="" loading="lazy"><span>${titleCell(title, subtitle)}</span></div>`;
+  }
+  return `<div class="identity-cell"><span class="avatar">${escapeHtml(avatar || "—")}</span><span>${titleCell(title, subtitle)}</span></div>`;
 }
 
 function titleCell(title, subtitle = "") {

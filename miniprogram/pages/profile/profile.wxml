@@ -13,7 +13,7 @@
       </view>
 
       <view class="profile-head">
-        <image wx:if="{{userAvatarIsImage}}" class="profile-avatar" src="{{user.avatar}}" mode="aspectFill" />
+        <image wx:if="{{userAvatarIsImage}}" class="profile-avatar" src="{{userAvatarUrl}}" mode="aspectFill" />
         <view wx:else class="profile-avatar">{{user.avatar}}</view>
         <view class="profile-main">
           <view class="profile-name">{{user.organization}}</view>
