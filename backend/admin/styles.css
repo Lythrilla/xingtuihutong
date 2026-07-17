@@ -127,7 +127,16 @@ textarea:focus-visible {
 
 nav {
   display: grid;
-  gap: 5px;
+  gap: 2px;
+}
+
+.nav-section {
+  margin: 14px 14px 4px;
+  color: #9ca3af;
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .nav-item,
@@ -264,7 +273,7 @@ h2 {
 
 .metric-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 1px;
   overflow: hidden;
   margin-bottom: 18px;
@@ -308,38 +317,6 @@ h2 {
   line-height: 1;
 }
 
-.analytics-hero {
-  min-height: 160px;
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 32px;
-  margin-bottom: 18px;
-  padding: 28px;
-  color: var(--ink);
-  background: #eef2ff;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-}
-
-.analytics-hero .eyebrow {
-  color: var(--teal);
-}
-
-.analytics-hero h2 {
-  margin: 0 0 10px;
-  color: var(--ink);
-  font-size: 24px;
-}
-
-.analytics-hero p:last-child {
-  max-width: 660px;
-  margin: 0;
-  color: var(--muted);
-  font-size: 13px;
-  line-height: 1.7;
-}
-
 .live-signal {
   min-width: 160px;
   display: grid;
@@ -372,18 +349,18 @@ h2 {
 }
 
 .analytics-metrics {
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
 }
 
 .analytics-metrics .metric-card {
-  min-height: 122px;
-  padding: 20px;
+  min-height: 96px;
+  padding: 18px;
 }
 
 .analytics-metrics .metric-card strong {
   overflow: hidden;
-  margin-top: 16px;
-  font-size: 28px;
+  margin-top: 14px;
+  font-size: 26px;
   text-overflow: ellipsis;
 }
 
@@ -1488,13 +1465,6 @@ textarea:focus {
   .metric-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px;
-  }
-
-  .analytics-hero {
-    min-height: 230px;
-    align-items: flex-start;
-    flex-direction: column;
-    padding: 24px;
   }
 
   .analytics-metrics {
