@@ -5,11 +5,13 @@ const state = {
   modalMode: "entity",
   query: "",
   reviewFilter: "pending",
+  reportDays: 30,
 };
 
 const titles = {
   overview: "运营总览",
   analytics: "数据驾驶舱",
+  reports: "运营报表",
   partners: "公开主页管理",
   songs: "曲库管理",
   plans: "推广方案",
@@ -201,6 +203,12 @@ content.addEventListener("click", async (event) => {
       setButtonBusy(remove, false);
     }
   }
+  const reportDays = event.target.closest("[data-report-days]");
+  if (reportDays) {
+    state.reportDays = Number(reportDays.dataset.reportDays);
+    await loadView();
+    return;
+  }
 });
 
 content.addEventListener("input", (event) => {
@@ -262,6 +270,12 @@ async function loadView() {
     }
     if (state.view === "analytics") {
       renderAnalytics(await api("/api/admin/analytics"));
+      loginLayer.classList.add("hidden");
+      setServerStatus("online");
+      return;
+    }
+    if (state.view === "reports") {
+      renderReports(await api(`/api/admin/reports?days=${state.reportDays}`));
       loginLayer.classList.add("hidden");
       setServerStatus("online");
       return;
@@ -391,6 +405,112 @@ function renderAnalytics(data) {
       ${panels.join("")}
     </div>
     ${runsTable}`;
+}
+
+function renderReports(data) {
+  const metrics = [
+    metricCard("新增用户", data.userGrowth.reduce((sum, item) => sum + item.value, 0)),
+    metricCard("活跃人次", data.activeUsers.reduce((sum, item) => sum + item.value, 0)),
+    metricCard("完成交易额", money(data.settlementSummary.completedAmountCents)),
+    metricCard("AI 会话", data.aiUsage.sessions),
+  ];
+  const daysOptions = [7, 14, 30, 60];
+  const userGrowthChart = data.userGrowth.length
+    ? singleLineChart(data.userGrowth, "value", "violet")
+    : "";
+  const activeUsersChart = data.activeUsers.length
+    ? singleLineChart(data.activeUsers, "value", "cyan")
+    : "";
+  const sessionsChart = data.aiUsage.dailySessions.length
+    ? singleLineChart(data.aiUsage.dailySessions, "value", "violet")
+    : "";
+  const partnersTable = data.partnerPerformance.length
+    ? table(
+        ["合作方", "类型", "匹配分", "会话", "报价", "收益"],
+        data.partnerPerformance.map((item) => [
+          escapeHtml(item.name),
+          roleLabel(item.partnerType),
+          `${item.matchScore}%`,
+          item.conversations,
+          item.proposals,
+          money(item.revenueCents),
+        ]),
+      )
+    : '<div class="empty">暂无合作方绩效数据</div>';
+  const topTools = data.aiUsage.topTools.length
+    ? distributionBars(data.aiUsage.topTools, "percent", "%")
+    : '<div class="empty">暂无工具调用数据</div>';
+  const pipeline = data.demandPipeline;
+  const pipelineItems = [
+    { label: "报价中", value: pipeline.open },
+    { label: "跟进中", value: pipeline.following },
+    { label: "已完成", value: pipeline.completed },
+    { label: "已关闭", value: pipeline.closed },
+  ];
+  content.innerHTML = `
+    <div class="report-toolbar">
+      <span class="muted">统计周期：${data.period.start} 至 ${data.period.end}</span>
+      <div class="segmented">
+        ${daysOptions
+          .map(
+            (days) =>
+              `<button class="segment ${state.reportDays === days ? "active" : ""}" data-report-days="${days}">${days} 天</button>`,
+          )
+          .join("")}
+      </div>
+    </div>
+    <div class="metric-grid analytics-metrics">
+      ${metrics.join("")}
+    </div>
+    <div class="analytics-grid">
+      <section class="panel">
+        <div class="panel-head"><h2>用户增长趋势</h2><a class="btn-secondary" href="/api/admin/reports/export?type=user-growth&days=${state.reportDays}">导出 CSV</a></div>
+        ${userGrowthChart || '<div class="empty">暂无数据</div>'}
+      </section>
+      <section class="panel">
+        <div class="panel-head"><h2>活跃用户趋势</h2></div>
+        ${activeUsersChart || '<div class="empty">暂无数据</div>'}
+      </section>
+      <section class="panel">
+        <div class="panel-head"><h2>需求漏斗</h2><a class="btn-secondary" href="/api/admin/reports/export?type=demand-pipeline">导出 CSV</a></div>
+        ${distributionBars(pipelineItems, "percent", "%")}
+      </section>
+      <section class="panel">
+        <div class="panel-head"><h2>AI 工具调用分布</h2><a class="btn-secondary" href="/api/admin/reports/export?type=ai-usage&days=${state.reportDays}">导出 CSV</a></div>
+        ${topTools}
+      </section>
+      <section class="panel">
+        <div class="panel-head"><h2>合作方绩效</h2><a class="btn-secondary" href="/api/admin/reports/export?type=partner-performance&days=${state.reportDays}">导出 CSV</a></div>
+        ${partnersTable}
+      </section>
+      <section class="panel">
+        <div class="panel-head"><h2>AI 每日会话</h2></div>
+        ${sessionsChart || '<div class="empty">暂无数据</div>'}
+      </section>
+    </div>`;
+}
+
+function metricCard(label, value) {
+  return `<article class="metric-card"><span>${escapeHtml(label)}</span><strong>${escapeHtml(String(value))}</strong></article>`;
+}
+
+function singleLineChart(points, key, colorClass) {
+  const maximum = Math.max(1, ...points.map((item) => item[key]));
+  const width = 720;
+  const height = 210;
+  const x = (index) => (points.length <= 1 ? 0 : (index / (points.length - 1)) * width);
+  const y = (value) => height - (value / maximum) * (height - 20);
+  const line = points.map((item, index) => `${x(index)},${y(item[key])}`).join(" ");
+  return `
+    <div class="trend-chart">
+      <svg viewBox="0 0 ${width} ${height}" role="img" aria-label="趋势图">
+        <polyline class="chart-line ${colorClass}" points="${line}" />
+      </svg>
+      <div class="chart-labels">${points
+        .filter((_, index) => index % 2 === 0 || index === points.length - 1)
+        .map((item) => `<span>${escapeHtml(item.label)}</span>`)
+        .join("")}</div>
+    </div>`;
 }
 
 function trendChart(points) {

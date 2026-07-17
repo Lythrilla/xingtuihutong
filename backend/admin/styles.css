@@ -618,6 +618,49 @@ h2 {
   text-decoration: none;
 }
 
+.report-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.segmented {
+  display: inline-flex;
+  gap: 0;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.segment {
+  padding: 8px 14px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  border-right: 1px solid var(--line);
+  cursor: pointer;
+}
+
+.segment:last-child {
+  border-right: none;
+}
+
+.segment.active {
+  color: #ffffff;
+  background: var(--teal);
+}
+
+.panel-head .btn-secondary {
+  height: 32px;
+  padding: 0 12px;
+  line-height: 32px;
+  font-size: 12px;
+  text-decoration: none;
+}
+
 .table-wrap {
   overflow-x: auto;
 }

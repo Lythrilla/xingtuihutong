@@ -46,6 +46,7 @@ pub fn routes() -> Router<AppState> {
         .route("/budget-options/{id}", put(update_budget_option).delete(delete_budget_option))
         .route("/export/{type}", get(export_csv))
         .nest("/analytics", crate::analytics::admin_routes())
+        .nest("/reports", crate::reports::routes())
         .nest("/agent", crate::admin_agent::routes())
 }
 
