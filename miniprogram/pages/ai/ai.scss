@@ -560,9 +560,12 @@ view, text, scroll-view, image {
   align-items: center;
   gap: 16rpx;
   padding: 9rpx 11rpx 9rpx 24rpx;
-  background: rgba(255, 255, 255, 0.45);
-  border: 1px solid rgba(255, 255, 255, 0.9);
-  border-radius: 50rpx;}
+  background: rgba(255, 255, 255, 0.55);
+  border: 1rpx solid rgba(255, 255, 255, 0.9);
+  border-radius: 50rpx;
+  backdrop-filter: blur(28rpx);
+  -webkit-backdrop-filter: blur(28rpx);
+  box-shadow: 0 8rpx 30rpx rgba(99, 102, 241, 0.08);}
 
 .agent-composer input {
   min-width: 0;
