@@ -17,10 +17,16 @@ const titles = {
   users: "入驻审核",
   conversations: "合作会话",
   settlements: "结算记录",
+  targetTypes: "目标渠道",
+  budgetOptions: "预算选项",
   agent: "Agent 设置",
 };
 
-const editableViews = new Set(["partners", "songs", "plans"]);
+const editableViews = new Set(["partners", "songs", "plans", "targetTypes", "budgetOptions"]);
+const adminApiPath = (view, id) => {
+  const slug = { targetTypes: "target-types", budgetOptions: "budget-options" }[view] ?? view;
+  return id ? `/api/admin/${slug}/${id}` : `/api/admin/${slug}`;
+};
 state.agent = { settings: null, tools: [], toolEditing: null, tab: "settings", sessions: [], sessionDetail: null, users: [] };
 const content = document.querySelector("#content");
 const loginLayer = document.querySelector("#loginLayer");
@@ -176,7 +182,7 @@ content.addEventListener("click", async (event) => {
     return;
   }
   if (edit) {
-    const record = state.records.find((item) => item.id === edit.dataset.edit);
+    const record = state.records.find((item) => (item.id ?? item.key) === edit.dataset.edit);
     openModal(record);
   }
   if (remove) {
@@ -187,7 +193,7 @@ content.addEventListener("click", async (event) => {
     if (!accepted) return;
     setButtonBusy(remove, true, "处理中");
     try {
-      await api(`/api/admin/${state.view}/${remove.dataset.delete}`, { method: "DELETE" });
+      await api(adminApiPath(state.view, remove.dataset.delete), { method: "DELETE" });
       toast("记录已停用");
       await loadView();
     } catch (error) {
@@ -272,7 +278,7 @@ async function loadView() {
       setServerStatus("online");
       return;
     }
-    const records = await api(`/api/admin/${state.view}`);
+    const records = await api(adminApiPath(state.view));
     state.records = records;
     renderTable(state.view, records);
     loginLayer.classList.add("hidden");
@@ -513,6 +519,28 @@ function renderTable(view, records) {
         settlementActions(item),
       ],
     },
+    targetTypes: {
+      headers: ["标识", "图标", "名称", "说明", "排序", "操作"],
+      row: (item) => [
+        `<code>${escapeHtml(item.key)}</code>`,
+        escapeHtml(item.iconClass),
+        escapeHtml(item.title),
+        escapeHtml(item.description),
+        item.sortOrder,
+        actions(item.key),
+      ],
+    },
+    budgetOptions: {
+      headers: ["ID", "名称", "最低金额", "最高金额", "排序", "操作"],
+      row: (item) => [
+        `<code>${escapeHtml(item.id)}</code>`,
+        escapeHtml(item.label),
+        item.minAmount != null ? money(item.minAmount) : "—",
+        item.maxAmount != null ? money(item.maxAmount) : "—",
+        item.sortOrder,
+        actions(item.id),
+      ],
+    },
   };
   const definition = definitions[view];
   const filtered = filterRecords(records, state.query);
@@ -685,10 +713,10 @@ function filterRecords(records, query) {
 
 function openModal(record = null) {
   state.modalMode = "entity";
-  state.editingId = record?.id ?? null;
+  state.editingId = record?.id ?? record?.key ?? null;
   document.querySelector("#modalTitle").textContent =
     `${record ? "编辑" : "新增"}${titles[state.view].replace("管理", "")}`;
-  document.querySelector("#formFields").innerHTML = formFields(state.view, record);
+  document.querySelector("#formFields").innerHTML = formFields(state.view, record ?? {});
   document.querySelector("#formError").textContent = "";
   modalLayer.classList.remove("hidden");
   document.body.classList.add("modal-open");
@@ -765,6 +793,24 @@ function formFields(view, item = {}) {
       inputField("cooperationBudget", "合作预算", item.cooperationBudget),
     ].join("");
   }
+  if (view === "targetTypes") {
+    return [
+      inputField("key", "标识", item.key, true),
+      inputField("iconClass", "图标类名", item.iconClass, true),
+      inputField("title", "名称", item.title, true),
+      textareaField("description", "说明", item.description, "full"),
+      numberField("sortOrder", "排序", item.sortOrder ?? 0, 0),
+    ].join("");
+  }
+  if (view === "budgetOptions") {
+    return [
+      inputField("id", "ID", item.id, true),
+      inputField("label", "名称", item.label, true),
+      optionalNumberField("minAmount", "最低金额（分，可选）", item.minAmount, 0),
+      optionalNumberField("maxAmount", "最高金额（分，可选）", item.maxAmount, 0),
+      numberField("sortOrder", "排序", item.sortOrder ?? 0, 0),
+    ].join("");
+  }
   return [
     inputField("title", "方案名称", item.title, true),
     inputField("planType", "方案类型", item.planType, true),
@@ -791,9 +837,7 @@ async function saveEntity(event) {
   const body = notification ? values : normalizeForm(state.view, values);
   const path = notification
     ? `/api/admin/users/${state.editingId}/notify`
-    : state.editingId
-      ? `/api/admin/${state.view}/${state.editingId}`
-      : `/api/admin/${state.view}`;
+    : adminApiPath(state.view, state.editingId);
   try {
     document.querySelector("#formError").textContent = "";
     setButtonBusy(button, true, "保存中");
@@ -828,6 +872,20 @@ function normalizeForm(view, values) {
       tags: splitTags(values.tags),
     };
   }
+  if (view === "targetTypes") {
+    return {
+      ...values,
+      sortOrder: Number(values.sortOrder),
+    };
+  }
+  if (view === "budgetOptions") {
+    return {
+      ...values,
+      minAmount: values.minAmount ? Number(values.minAmount) : null,
+      maxAmount: values.maxAmount ? Number(values.maxAmount) : null,
+      sortOrder: Number(values.sortOrder),
+    };
+  }
   return {
     ...values,
     active,
@@ -843,6 +901,10 @@ function inputField(name, label, value = "", required = false, className = "") {
 
 function numberField(name, label, value, min, max = "") {
   return `<label>${label}<input name="${name}" type="number" value="${value}" min="${min}" ${max !== "" ? `max="${max}"` : ""} required></label>`;
+}
+
+function optionalNumberField(name, label, value, min) {
+  return `<label>${label}<input name="${name}" type="number" value="${value ?? ""}" min="${min}"></label>`;
 }
 
 function textareaField(name, label, value = "", className = "") {

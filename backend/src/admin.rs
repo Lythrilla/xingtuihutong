@@ -1,7 +1,8 @@
 use crate::{
     error::{AppError, AppResult},
     models::{
-        AdminLogin, Partner, PartnerInput, Plan, PlanInput, ReviewOnboarding, Song, SongInput,
+        AdminLogin, BudgetOptionInput, Partner, PartnerInput, Plan, PlanInput, ReviewOnboarding,
+        Song, SongInput, TargetTypeInput,
     },
     state::AppState,
 };
@@ -39,6 +40,10 @@ pub fn routes() -> Router<AppState> {
         .route("/conversations", get(conversations))
         .route("/settlements", get(settlements))
         .route("/settlements/{id}", put(update_settlement))
+        .route("/target-types", get(target_types).post(create_target_type))
+        .route("/target-types/{key}", put(update_target_type).delete(delete_target_type))
+        .route("/budget-options", get(budget_options).post(create_budget_option))
+        .route("/budget-options/{id}", put(update_budget_option).delete(delete_budget_option))
         .nest("/analytics", crate::analytics::admin_routes())
         .nest("/agent", crate::admin_agent::routes())
 }
@@ -961,6 +966,240 @@ async fn load_settlement(state: &AppState, id: &str) -> AppResult<AdminSettlemen
     .bind(id)
     .fetch_one(&state.pool)
     .await?)
+}
+
+#[derive(Serialize, FromRow)]
+#[serde(rename_all = "camelCase")]
+struct AdminTargetType {
+    key: String,
+    icon_class: String,
+    title: String,
+    description: String,
+    sort_order: i64,
+}
+
+async fn target_types(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+) -> AppResult<Json<Vec<AdminTargetType>>> {
+    require_admin(&state, &headers).await?;
+    Ok(Json(
+        sqlx::query_as::<_, AdminTargetType>(
+            "SELECT key, icon_class, title, description, sort_order
+             FROM target_types ORDER BY sort_order, key",
+        )
+        .fetch_all(&state.pool)
+        .await?,
+    ))
+}
+
+async fn create_target_type(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    Json(input): Json<TargetTypeInput>,
+) -> AppResult<Json<AdminTargetType>> {
+    require_admin(&state, &headers).await?;
+    validate_target_type(&input)?;
+    sqlx::query(
+        "INSERT INTO target_types (key, icon_class, title, description, sort_order)
+         VALUES (?, ?, ?, ?, ?)",
+    )
+    .bind(&input.key)
+    .bind(&input.icon_class)
+    .bind(&input.title)
+    .bind(&input.description)
+    .bind(input.sort_order)
+    .execute(&state.pool)
+    .await?;
+    Ok(Json(load_target_type(&state, &input.key).await?))
+}
+
+async fn update_target_type(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    Path(key): Path<String>,
+    Json(input): Json<TargetTypeInput>,
+) -> AppResult<Json<AdminTargetType>> {
+    require_admin(&state, &headers).await?;
+    validate_target_type(&input)?;
+    if key != input.key {
+        return Err(AppError::BadRequest("target type key cannot be changed".into()));
+    }
+    let result = sqlx::query(
+        "UPDATE target_types SET icon_class = ?, title = ?, description = ?, sort_order = ?
+         WHERE key = ?",
+    )
+    .bind(&input.icon_class)
+    .bind(&input.title)
+    .bind(&input.description)
+    .bind(input.sort_order)
+    .bind(&key)
+    .execute(&state.pool)
+    .await?;
+    ensure_changed(result.rows_affected(), "target type")?;
+    Ok(Json(load_target_type(&state, &key).await?))
+}
+
+async fn delete_target_type(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    Path(key): Path<String>,
+) -> AppResult<StatusCode> {
+    require_admin(&state, &headers).await?;
+    let in_use: bool = sqlx::query_scalar(
+        "SELECT EXISTS(SELECT 1 FROM match_requests WHERE target_keys LIKE ?)",
+    )
+    .bind(format!("%\"{}\"%", key))
+    .fetch_one(&state.pool)
+    .await?;
+    if in_use {
+        return Err(AppError::BadRequest(
+            "target type is referenced by match requests".into(),
+        ));
+    }
+    let result = sqlx::query("DELETE FROM target_types WHERE key = ?")
+        .bind(&key)
+        .execute(&state.pool)
+        .await?;
+    ensure_changed(result.rows_affected(), "target type")?;
+    Ok(StatusCode::NO_CONTENT)
+}
+
+async fn load_target_type(state: &AppState, key: &str) -> AppResult<AdminTargetType> {
+    sqlx::query_as::<_, AdminTargetType>(
+        "SELECT key, icon_class, title, description, sort_order
+         FROM target_types WHERE key = ?",
+    )
+    .bind(key)
+    .fetch_optional(&state.pool)
+    .await?
+    .ok_or_else(|| AppError::NotFound("target type not found".into()))
+}
+
+fn validate_target_type(input: &TargetTypeInput) -> AppResult<()> {
+    validate_required(&input.key, "key")?;
+    validate_required(&input.icon_class, "icon_class")?;
+    validate_required(&input.title, "title")?;
+    validate_required(&input.description, "description")?;
+    Ok(())
+}
+
+#[derive(Serialize, FromRow)]
+#[serde(rename_all = "camelCase")]
+struct AdminBudgetOption {
+    id: String,
+    label: String,
+    min_amount: Option<i64>,
+    max_amount: Option<i64>,
+    sort_order: i64,
+}
+
+async fn budget_options(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+) -> AppResult<Json<Vec<AdminBudgetOption>>> {
+    require_admin(&state, &headers).await?;
+    Ok(Json(
+        sqlx::query_as::<_, AdminBudgetOption>(
+            "SELECT id, label, min_amount, max_amount, sort_order
+             FROM budget_options ORDER BY sort_order, id",
+        )
+        .fetch_all(&state.pool)
+        .await?,
+    ))
+}
+
+async fn create_budget_option(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    Json(input): Json<BudgetOptionInput>,
+) -> AppResult<Json<AdminBudgetOption>> {
+    require_admin(&state, &headers).await?;
+    validate_budget_option(&input)?;
+    sqlx::query(
+        "INSERT INTO budget_options (id, label, min_amount, max_amount, sort_order)
+         VALUES (?, ?, ?, ?, ?)",
+    )
+    .bind(&input.id)
+    .bind(&input.label)
+    .bind(input.min_amount)
+    .bind(input.max_amount)
+    .bind(input.sort_order)
+    .execute(&state.pool)
+    .await?;
+    Ok(Json(load_budget_option(&state, &input.id).await?))
+}
+
+async fn update_budget_option(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    Path(id): Path<String>,
+    Json(input): Json<BudgetOptionInput>,
+) -> AppResult<Json<AdminBudgetOption>> {
+    require_admin(&state, &headers).await?;
+    validate_budget_option(&input)?;
+    if id != input.id {
+        return Err(AppError::BadRequest("budget option id cannot be changed".into()));
+    }
+    let result = sqlx::query(
+        "UPDATE budget_options SET label = ?, min_amount = ?, max_amount = ?, sort_order = ?
+         WHERE id = ?",
+    )
+    .bind(&input.label)
+    .bind(input.min_amount)
+    .bind(input.max_amount)
+    .bind(input.sort_order)
+    .bind(&id)
+    .execute(&state.pool)
+    .await?;
+    ensure_changed(result.rows_affected(), "budget option")?;
+    Ok(Json(load_budget_option(&state, &id).await?))
+}
+
+async fn delete_budget_option(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    Path(id): Path<String>,
+) -> AppResult<StatusCode> {
+    require_admin(&state, &headers).await?;
+    let in_use: bool =
+        sqlx::query_scalar("SELECT EXISTS(SELECT 1 FROM match_requests WHERE budget_id = ?)")
+            .bind(&id)
+            .fetch_one(&state.pool)
+            .await?;
+    if in_use {
+        return Err(AppError::BadRequest(
+            "budget option is referenced by match requests".into(),
+        ));
+    }
+    let result = sqlx::query("DELETE FROM budget_options WHERE id = ?")
+        .bind(&id)
+        .execute(&state.pool)
+        .await?;
+    ensure_changed(result.rows_affected(), "budget option")?;
+    Ok(StatusCode::NO_CONTENT)
+}
+
+async fn load_budget_option(state: &AppState, id: &str) -> AppResult<AdminBudgetOption> {
+    sqlx::query_as::<_, AdminBudgetOption>(
+        "SELECT id, label, min_amount, max_amount, sort_order
+         FROM budget_options WHERE id = ?",
+    )
+    .bind(id)
+    .fetch_optional(&state.pool)
+    .await?
+    .ok_or_else(|| AppError::NotFound("budget option not found".into()))
+}
+
+fn validate_budget_option(input: &BudgetOptionInput) -> AppResult<()> {
+    validate_required(&input.id, "id")?;
+    validate_required(&input.label, "label")?;
+    if let (Some(min), Some(max)) = (input.min_amount, input.max_amount) {
+        if min > max {
+            return Err(AppError::BadRequest("min amount cannot exceed max amount".into()));
+        }
+    }
+    Ok(())
 }
 
 pub(crate) async fn require_admin(state: &AppState, headers: &HeaderMap) -> AppResult<()> {

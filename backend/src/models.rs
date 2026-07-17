@@ -343,3 +343,23 @@ pub struct AgentToolInput {
     pub required_tools: Vec<String>,
     pub sort_order: i64,
 }
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct TargetTypeInput {
+    pub key: String,
+    pub icon_class: String,
+    pub title: String,
+    pub description: String,
+    pub sort_order: i64,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct BudgetOptionInput {
+    pub id: String,
+    pub label: String,
+    pub min_amount: Option<i64>,
+    pub max_amount: Option<i64>,
+    pub sort_order: i64,
+}
