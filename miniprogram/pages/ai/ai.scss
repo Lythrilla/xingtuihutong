@@ -180,10 +180,16 @@ view, text, scroll-view, image {
   animation-delay: 0.3s;
 }
 
-/* === 极简内联执行流 === */
+/* === 内联执行流（Tool Call 轨迹） === */
 .inline-trace {
-  margin: 12rpx 36rpx 24rpx 104rpx;
+  margin: 16rpx 36rpx 24rpx 104rpx;
+  padding: 16rpx 22rpx;
   overflow: hidden;
+  background: rgba(255, 255, 255, 0.48);
+  border: 1rpx solid rgba(255, 255, 255, 0.65);
+  border-radius: 20rpx;
+  backdrop-filter: blur(14rpx);
+  -webkit-backdrop-filter: blur(14rpx);
 }
 
 .trace-scroll {
@@ -193,42 +199,48 @@ view, text, scroll-view, image {
 .trace-track {
   display: inline-flex;
   align-items: center;
-  padding: 8rpx 4rpx;
 }
 
 .trace-node {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   flex-shrink: 0;
+  padding: 8rpx 16rpx;
+  background: rgba(245, 247, 255, 0.7);
+  border: 1rpx solid rgba(137, 154, 248, 0.18);
+  border-radius: 40rpx;
 }
 
 .node-dot {
-  width: 12rpx;
-  height: 12rpx;
+  width: 14rpx;
+  height: 14rpx;
   border-radius: 50%;
   background: #e1e6f9;
   transition: all 0.3s ease;
 }
 
 .trace-node text {
-  margin-left: 12rpx;
+  margin-left: 10rpx;
   color: #76798f;
-  font-size: 22rpx;
+  font-size: 21rpx;
   font-weight: 500;
   transition: color 0.3s ease;
 }
 
 .node-line {
-  width: 32rpx;
+  width: 40rpx;
   height: 2rpx;
-  margin: 0 16rpx;
-  background: #e1e6f9;
+  margin: 0 14rpx;
+  background: repeating-linear-gradient(to right, #d4daf5 0, #d4daf5 8rpx, transparent 8rpx, transparent 14rpx);
   transition: background 0.3s ease;
 }
 
 /* 状态：进行中 */
 .trace-node.running .node-dot {
-  background: #899af8;}
+  background: #899af8;
+  box-shadow: 0 0 0 4rpx rgba(137, 154, 248, 0.25);
+  animation: pulse-dot 1.2s ease-in-out infinite;
+}
 
 .trace-node.running text {
   color: #899af8;
@@ -237,19 +249,21 @@ view, text, scroll-view, image {
 /* 状态：已完成 */
 .trace-node.completed .node-dot {
   background: #5bf4c7;
+  box-shadow: 0 0 0 3rpx rgba(91, 244, 199, 0.22);
 }
 
 .trace-node.completed text {
-  color: rgba(46, 49, 70, 0.8);
+  color: rgba(46, 49, 70, 0.85);
 }
 
 .trace-node.completed .node-line {
-  background: #5bf4c7;
+  background: repeating-linear-gradient(to right, #5bf4c7 0, #5bf4c7 8rpx, transparent 8rpx, transparent 14rpx);
 }
 
 /* 状态：失败 */
 .trace-node.failed .node-dot {
   background: #ff4757;
+  box-shadow: 0 0 0 3rpx rgba(255, 71, 87, 0.2);
 }
 
 .trace-node.failed text {
@@ -257,8 +271,8 @@ view, text, scroll-view, image {
 }
 
 @keyframes pulse-dot {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.15); }
 }
 
 .artifact-stream {
