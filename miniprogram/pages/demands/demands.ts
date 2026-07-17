@@ -47,6 +47,10 @@ interface DemandBoardResponse {
   demands: Demand[]
 }
 
+interface MatchBootstrap {
+  targetTypes: Array<{ key: string; label: string }>
+}
+
 Component({
   data: {
     loading: true,
@@ -55,6 +59,10 @@ Component({
     role: 'provider' as 'provider' | 'client',
     isCreator: false,
     demands: [] as Demand[],
+    searchQuery: '',
+    statusFilter: 'all' as 'all' | DemandStatus,
+    targetFilter: '',
+    targetOptions: [] as Array<{ key: string; label: string }>,
     sheetOpen: false,
     actionLoading: false,
     activeDemandId: '',
@@ -78,10 +86,37 @@ Component({
     retry() {
       return this.loadDemands()
     },
+    updateSearch(event: WechatMiniprogram.Input) {
+      this.setData({ searchQuery: event.detail.value })
+    },
+    confirmSearch() {
+      void this.loadDemands(false)
+    },
+    updateStatusFilter(event: WechatMiniprogram.TouchEvent) {
+      const status = event.currentTarget.dataset.status as 'all' | DemandStatus
+      this.setData({ statusFilter: status })
+      void this.loadDemands(false)
+    },
+    updateTargetFilter(event: WechatMiniprogram.TouchEvent) {
+      const key = event.currentTarget.dataset.key as string
+      this.setData({ targetFilter: key === this.data.targetFilter ? '' : key })
+      void this.loadDemands(false)
+    },
+    clearSearch() {
+      this.setData({ searchQuery: '', statusFilter: 'all', targetFilter: '' })
+      void this.loadDemands(false)
+    },
     async loadDemands(initial = true) {
       this.setData(initial ? { loading: true, error: '' } : { refreshing: true })
       try {
-        const response = await apiRequest<DemandBoardResponse>('/api/demands')
+        const bootstrap = await apiRequest<MatchBootstrap>('/api/match/bootstrap')
+        const params: string[] = []
+        const q = this.data.searchQuery.trim()
+        if (q) params.push(`q=${encodeURIComponent(q)}`)
+        if (this.data.statusFilter && this.data.statusFilter !== 'all') params.push(`status=${encodeURIComponent(this.data.statusFilter)}`)
+        if (this.data.targetFilter) params.push(`target=${encodeURIComponent(this.data.targetFilter)}`)
+        const query = params.length ? `?${params.join('&')}` : ''
+        const response = await apiRequest<DemandBoardResponse>(`/api/demands${query}`)
         const demands = response.demands.map((demand) => {
           const proposals = demand.proposals.map((proposal) => ({
             ...proposal,
@@ -102,6 +137,7 @@ Component({
           role: response.role,
           isCreator: response.role === 'client',
           demands,
+          targetOptions: bootstrap.targetTypes,
           loading: false,
           refreshing: false,
         })

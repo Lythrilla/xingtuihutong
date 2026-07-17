@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>星推互通 - 音乐人与推广方的合作桥梁</title>
+  <style>
+    :root {
+      --ink: #1f2533;
+      --muted: #5b6076;
+      --brand: #6366f1;
+      --surface: #ffffff;
+      --bg: #f4f6fb;
+      --line: rgba(99, 102, 241, 0.1);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+      line-height: 1.6;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 24px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--line);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      font-size: 18px;
+      color: var(--ink);
+      text-decoration: none;
+    }
+    .brand-mark {
+      width: 36px;
+      height: 36px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 750;
+      background: var(--brand);
+      border-radius: 10px;
+    }
+    .nav a {
+      margin-left: 24px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .nav a:hover { color: var(--brand); }
+    main { max-width: 880px; margin: 0 auto; padding: 64px 24px; }
+    .hero { text-align: center; margin-bottom: 64px; }
+    .hero h1 { font-size: 40px; line-height: 1.2; margin: 0 0 16px; }
+    .hero p { font-size: 18px; color: var(--muted); max-width: 560px; margin: 0 auto 28px; }
+    .cta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 44px;
+      padding: 0 22px;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      background: var(--brand);
+      border-radius: 10px;
+      text-decoration: none;
+    }
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px;
+      margin-bottom: 64px;
+    }
+    .feature {
+      padding: 24px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+    }
+    .feature h3 { margin: 0 0 8px; font-size: 16px; }
+    .feature p { margin: 0; font-size: 14px; color: var(--muted); }
+    .roles {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+    }
+    .role-card {
+      padding: 24px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+    }
+    .role-card h3 { margin: 0 0 8px; }
+    .role-card p { margin: 0; font-size: 14px; color: var(--muted); }
+    footer {
+      text-align: center;
+      padding: 24px;
+      font-size: 13px;
+      color: var(--muted);
+      border-top: 1px solid var(--line);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a class="brand" href="/">
+      <span class="brand-mark">星</span>
+      星推互通
+    </a>
+    <nav class="nav">
+      <a href="/admin/">管理后台</a>
+    </nav>
+  </header>
+  <main>
+    <section class="hero">
+      <h1>让音乐人与推广方高效互通</h1>
+      <p>入驻审核、智能匹配、AI 策划、站内沟通与结算，一站式完成内容推广合作。</p>
+      <a class="cta" href="/admin/">进入管理后台</a>
+    </section>
+    <section class="features">
+      <div class="feature">
+        <h3>真实身份审核</h3>
+        <p>创作者与推广方提交资料，平台审核后公开主页，拒绝虚假身份。</p>
+      </div>
+      <div class="feature">
+        <h3>AI 推广策划</h3>
+        <p>基于作品风格与目标渠道，自动生成可落地的推广方案。</p>
+      </div>
+      <div class="feature">
+        <h3>需求大厅报价</h3>
+        <p>创作者发布推广需求，推广方提交报价，在线比价并进入合作。</p>
+      </div>
+      <div class="feature">
+        <h3>联系权益解锁</h3>
+        <p>会员或按次解锁外部联系方式，保护双方隐私并记录权益消耗。</p>
+      </div>
+    </section>
+    <section class="roles">
+      <div class="role-card">
+        <h3>我是内容创作者</h3>
+        <p>提交代表作品，发布推广需求，比较报价并选择最合适的推广服务方。</p>
+      </div>
+      <div class="role-card">
+        <h3>我是推广服务方</h3>
+        <p>展示渠道能力与服务案例，在需求大厅发现项目并提交报价。</p>
+      </div>
+    </section>
+  </main>
+  <footer>星推互通 · 音乐人推广合作平台</footer>
+</body>
+</html>

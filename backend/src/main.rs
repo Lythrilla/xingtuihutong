@@ -13,7 +13,6 @@ mod state;
 use anyhow::Result;
 use axum::{
     http::{header, HeaderValue, Method},
-    response::Redirect,
     routing::get,
     Json, Router,
 };
@@ -53,7 +52,6 @@ async fn main() -> Result<()> {
     };
     let cors = cors_layer(&config)?;
     let app = Router::new()
-        .route("/", get(|| async { Redirect::permanent("/admin/") }))
         .route("/health", get(|| async { Json(json!({ "status": "ok" })) }))
         .nest("/api", api::routes())
         .nest("/api/admin", admin::routes())
@@ -62,6 +60,7 @@ async fn main() -> Result<()> {
             ServeDir::new("admin").append_index_html_on_directories(true),
         )
         .nest_service("/uploads", ServeDir::new("data/uploads"))
+        .fallback_service(ServeDir::new("public").append_index_html_on_directories(true))
         .layer(cors)
         .layer(TraceLayer::new_for_http())
         .with_state(state);

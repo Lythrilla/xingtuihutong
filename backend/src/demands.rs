@@ -5,7 +5,7 @@ use crate::{
     state::AppState,
 };
 use axum::{
-    extract::{Path, State},
+    extract::{Path, Query, State},
     http::HeaderMap,
     routing::{get, post},
     Json, Router,
@@ -93,34 +93,27 @@ struct ProposalInput {
     message: Option<String>,
 }
 
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct DemandQuery {
+    q: Option<String>,
+    status: Option<String>,
+    target: Option<String>,
+}
+
 async fn list_demands(
     State(state): State<AppState>,
     headers: HeaderMap,
+    Query(query): Query<DemandQuery>,
 ) -> AppResult<Json<DemandBoardResponse>> {
     let user = current_user(&state, &headers).await?;
     require_approved(&user)?;
-    let rows = if user.role == "client" {
-        sqlx::query_as::<_, DemandRow>(&demand_query("WHERE m.user_id = ?", "m.created_at DESC"))
-            .bind(&user.id)
-            .fetch_all(&state.pool)
-            .await?
-    } else {
-        require_provider(&user)?;
-        sqlx::query_as::<_, DemandRow>(&demand_query(
-            "WHERE m.user_id != ? AND (
-               m.status = 'open'
-               OR EXISTS (
-                 SELECT 1 FROM demand_proposals own
-                 WHERE own.match_request_id = m.id AND own.provider_user_id = ?
-               )
-             )",
-            "CASE WHEN m.status = 'open' THEN 0 ELSE 1 END, m.created_at DESC",
-        ))
-        .bind(&user.id)
-        .bind(&user.id)
-        .fetch_all(&state.pool)
-        .await?
-    };
+    let (sql, params) = build_demand_query(&user, &query);
+    let mut db_query = sqlx::query_as::<_, DemandRow>(&sql);
+    for param in params {
+        db_query = db_query.bind(param);
+    }
+    let rows = db_query.fetch_all(&state.pool).await?;
     let target_labels = load_target_labels(&state).await?;
     let mut demands = Vec::with_capacity(rows.len());
     for row in rows {
@@ -173,6 +166,58 @@ fn demand_query(filter: &str, order: &str) -> String {
          {filter}
          ORDER BY {order}"
     )
+}
+
+fn build_demand_query(user: &UserRow, query: &DemandQuery) -> (String, Vec<String>) {
+    let mut filter = String::new();
+    let mut params: Vec<String> = Vec::new();
+    if user.role == "client" {
+        filter.push_str("WHERE m.user_id = ?");
+        params.push(user.id.clone());
+    } else {
+        filter.push_str(
+            "WHERE m.user_id != ? AND (
+               m.status IN ('open', 'following')
+               OR EXISTS (
+                 SELECT 1 FROM demand_proposals own
+                 WHERE own.match_request_id = m.id AND own.provider_user_id = ?
+               )
+             )",
+        );
+        params.push(user.id.clone());
+        params.push(user.id.clone());
+    }
+    if let Some(status) = query.status.as_deref() {
+        if !status.is_empty() && status != "all" {
+            filter.push_str(" AND m.status = ?");
+            params.push(status.into());
+        }
+    }
+    if let Some(target) = query.target.as_deref() {
+        if !target.is_empty() {
+            filter.push_str(" AND m.target_keys LIKE ?");
+            params.push(format!("%\"{}\"%", target));
+        }
+    }
+    if let Some(q) = query.q.as_deref() {
+        let trimmed = q.trim();
+        if !trimmed.is_empty() {
+            let pattern = format!("%{trimmed}%");
+            filter.push_str(
+                " AND (m.goal LIKE ? OR s.name LIKE ? OR b.label LIKE ? OR u.organization LIKE ?)",
+            );
+            params.push(pattern.clone());
+            params.push(pattern.clone());
+            params.push(pattern.clone());
+            params.push(pattern);
+        }
+    }
+    let order = if user.role == "provider" {
+        "CASE WHEN m.status = 'open' THEN 0 ELSE 1 END, m.created_at DESC"
+    } else {
+        "m.created_at DESC"
+    };
+    (demand_query(&filter, order), params)
 }
 
 async fn load_target_labels(state: &AppState) -> AppResult<HashMap<String, String>> {

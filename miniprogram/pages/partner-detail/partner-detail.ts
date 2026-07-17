@@ -1,4 +1,4 @@
-import { apiRequest } from '../../utils/api'
+import { apiRequest, unlockPartnerContact } from '../../utils/api'
 
 export {}
 
@@ -19,7 +19,9 @@ interface PartnerDetailResponse {
   partner: Partner
   verificationItems: string[]
   contactPreview: string
+  contactMethod: string
   contactAvailable: boolean
+  unlocked: boolean
   reviewedAt: string
   role: 'provider' | 'client'
   onboardingStatus: 'draft' | 'pending' | 'approved' | 'rejected'
@@ -34,14 +36,17 @@ Component({
     partner: null as Partner | null,
     verificationItems: [] as string[],
     contactPreview: '',
+    contactMethod: '',
     contactAvailable: false,
+    unlocked: false,
     reviewedAt: '',
     isCreator: true,
     canConnect: false,
     favorite: false,
     showAccessSheet: false,
-    selectedAccess: 'member' as 'member' | 'single',
+    selectedAccess: 'single' as 'member' | 'single',
     connecting: false,
+    unlocking: false,
   },
   methods: {
     onLoad(options: Record<string, string | undefined>) {
@@ -114,16 +119,39 @@ Component({
     chooseAccess(event: WechatMiniprogram.TouchEvent) {
       this.setData({ selectedAccess: event.currentTarget.dataset.mode as 'member' | 'single' })
     },
-    attemptUnlock() {
-      wx.showModal({
-        title: '当前不会扣款',
-        content: '会员额度与微信支付仍在接入，本次不会扣除费用。你可以先创建站内会话，支付能力完成合规配置后再解锁外部联系方式。',
-        confirmText: '站内沟通',
-        cancelText: '暂不联系',
-        success: (result) => {
-          if (result.confirm) void this.connect()
-        },
-      })
+    async attemptUnlock() {
+      if (this.data.unlocking || !this.data.partner) return
+      if (this.data.selectedAccess === 'member') {
+        this.setData({ showAccessSheet: false })
+        wx.navigateTo({ url: '/pages/membership/membership' })
+        return
+      }
+      this.setData({ unlocking: true })
+      try {
+        const result = await unlockPartnerContact(this.data.partner.id)
+        this.setData({
+          unlocked: true,
+          contactMethod: result.contactMethod,
+          showAccessSheet: false,
+        })
+        wx.showToast({ title: '联系方式已解锁', icon: 'success' })
+      } catch (error) {
+        const message = error instanceof Error ? error.message : '解锁失败'
+        if (message.includes('余额不足')) {
+          wx.showModal({
+            title: '余额不足',
+            content: '钱包余额不足以按次解锁，可前往开通会员或补充余额。',
+            confirmText: '去开通会员',
+            success: (res) => {
+              if (res.confirm) wx.navigateTo({ url: '/pages/membership/membership' })
+            },
+          })
+        } else {
+          wx.showToast({ title: message, icon: 'none' })
+        }
+      } finally {
+        this.setData({ unlocking: false })
+      }
     },
     async connect() {
       const partner = this.data.partner

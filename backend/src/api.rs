@@ -14,7 +14,7 @@ use axum::{
     routing::{get, post, put},
     Json, Router,
 };
-use chrono::{NaiveDateTime, Utc};
+use chrono::{Duration, NaiveDateTime, Utc};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use sqlx::Row;
@@ -26,9 +26,11 @@ pub fn routes() -> Router<AppState> {
         .route("/me/role", put(update_role))
         .route("/onboarding", get(onboarding).put(submit_onboarding))
         .route("/uploads/work", post(upload_work))
+        .route("/uploads/avatar", post(upload_avatar))
         .route("/home", get(home))
         .route("/plaza", get(plaza))
         .route("/partners/{id}", get(partner_detail))
+        .route("/partners/{id}/unlock", post(unlock_partner_contact))
         .route("/plaza/connect", post(connect_partner))
         .route("/match/bootstrap", get(match_bootstrap))
         .route("/match", post(create_match))
@@ -45,6 +47,8 @@ pub fn routes() -> Router<AppState> {
         )
         .route("/profile", get(profile).put(update_profile))
         .route("/wallet/withdraw", post(withdraw))
+        .route("/membership/plans", get(membership_plans))
+        .route("/membership/purchase", post(purchase_membership))
 }
 
 #[derive(Serialize)]
@@ -225,6 +229,7 @@ async fn submit_onboarding(
         .unwrap_or_default()
         .trim()
         .to_string();
+    let avatar = input.avatar.unwrap_or_default().trim().to_string();
     if entity_name.is_empty()
         || contact_name.is_empty()
         || contact_method.is_empty()
@@ -323,12 +328,13 @@ async fn submit_onboarding(
     .await?;
     sqlx::query(
         "UPDATE users SET display_name = ?, organization = ?, description = ?,
-         verified = 0, onboarding_status = 'pending', review_note = '',
-         updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+         avatar = COALESCE(NULLIF(?, ''), avatar), verified = 0, onboarding_status = 'pending',
+         review_note = '', updated_at = CURRENT_TIMESTAMP WHERE id = ?",
     )
     .bind(entity_name)
     .bind(entity_name)
     .bind(description)
+    .bind(&avatar)
     .bind(&user.id)
     .execute(&mut *tx)
     .await?;
@@ -404,6 +410,58 @@ async fn upload_work(
         }));
     }
     Err(AppError::BadRequest("work file is required".into()))
+}
+
+async fn upload_avatar(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    mut multipart: Multipart,
+) -> AppResult<Json<WorkUploadResponse>> {
+    let _user = current_user(&state, &headers).await?;
+    while let Some(field) = multipart
+        .next_field()
+        .await
+        .map_err(|_| AppError::BadRequest("invalid upload payload".into()))?
+    {
+        if field.name() != Some("file") {
+            continue;
+        }
+        let file_name = field.file_name().unwrap_or("avatar").to_string();
+        let content_type = field.content_type().unwrap_or("").to_string();
+        let extension = match content_type.as_str() {
+            "image/jpeg" | "image/jpg" => Some("jpg"),
+            "image/png" => Some("png"),
+            "image/webp" => Some("webp"),
+            _ => match std::path::Path::new(&file_name)
+                .extension()
+                .and_then(|value| value.to_str())
+                .map(str::to_ascii_lowercase)
+                .as_deref()
+            {
+                Some("jpg") | Some("jpeg") => Some("jpg"),
+                Some("png") => Some("png"),
+                Some("webp") => Some("webp"),
+                _ => None,
+            },
+        }
+        .ok_or_else(|| AppError::BadRequest("unsupported avatar image type".into()))?;
+        let bytes = field
+            .bytes()
+            .await
+            .map_err(|_| AppError::BadRequest("invalid upload payload".into()))?;
+        if bytes.is_empty() || bytes.len() > 2 * 1024 * 1024 {
+            return Err(AppError::BadRequest("avatar image must be <= 2MB".into()));
+        }
+        let stored_name = format!("{}.{}", Uuid::new_v4(), extension);
+        tokio::fs::write(format!("data/uploads/{stored_name}"), bytes)
+            .await
+            .map_err(|error| AppError::Internal(error.into()))?;
+        return Ok(Json(WorkUploadResponse {
+            url: format!("/uploads/{stored_name}"),
+            file_name,
+        }));
+    }
+    Err(AppError::BadRequest("avatar image is required".into()))
 }
 
 fn upload_extension(file_name: &str, content_type: &str) -> Option<&'static str> {
@@ -618,7 +676,9 @@ struct PartnerDetailResponse {
     partner: Partner,
     verification_items: Vec<String>,
     contact_preview: String,
+    contact_method: String,
     contact_available: bool,
+    unlocked: bool,
     reviewed_at: String,
     role: String,
     onboarding_status: String,
@@ -705,16 +765,40 @@ async fn partner_detail(
     .bind(&id)
     .fetch_optional(&state.pool)
     .await?;
-    let (contact_preview, reviewed_at, contact_available) = application
+    let (contact_preview, contact_method, reviewed_at, contact_available) = application
         .map(|row| {
             let contact_method: String = row.get("contact_method");
             (
                 describe_contact_method(&contact_method),
+                contact_method.clone(),
                 row.get::<String, _>("reviewed_at"),
                 true,
             )
         })
-        .unwrap_or_else(|| ("该主页暂未配置可解锁联系方式".into(), String::new(), false));
+        .unwrap_or_else(|| {
+            (
+                "该主页暂未配置可解锁联系方式".into(),
+                String::new(),
+                String::new(),
+                false,
+            )
+        });
+    let source_user_id: Option<String> =
+        sqlx::query_scalar("SELECT source_user_id FROM partners WHERE id = ?")
+            .bind(&id)
+            .fetch_optional(&state.pool)
+            .await?;
+    let is_owner = source_user_id.as_deref() == Some(&user.id);
+    let membership_active = membership_active(&state.pool, &user.id).await?;
+    let has_unlock = sqlx::query_scalar::<_, i64>(
+        "SELECT COUNT(*) FROM contact_unlocks WHERE user_id = ? AND partner_id = ?",
+    )
+    .bind(&user.id)
+    .bind(&id)
+    .fetch_one(&state.pool)
+    .await?
+        > 0;
+    let unlocked = contact_available && (is_owner || membership_active || has_unlock);
     let verification_items = if partner.partner_type == "provider" && contact_available {
         vec![
             "平台入驻已审核".into(),
@@ -734,8 +818,14 @@ async fn partner_detail(
     Ok(Json(PartnerDetailResponse {
         partner: with_partner_tags(partner),
         verification_items,
-        contact_preview,
+        contact_preview: if unlocked {
+            contact_method.clone()
+        } else {
+            contact_preview
+        },
+        contact_method: if unlocked { contact_method } else { String::new() },
         contact_available,
+        unlocked,
         reviewed_at,
         role: user.role.clone(),
         onboarding_status: user.onboarding_status.clone(),
@@ -1488,6 +1578,15 @@ async fn update_profile(
             .await?;
         }
     }
+    if let Some(avatar) = input.avatar.as_deref().map(str::trim) {
+        sqlx::query(
+            "UPDATE users SET avatar = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+        )
+        .bind(avatar)
+        .bind(&user.id)
+        .execute(&mut *tx)
+        .await?;
+    }
     if let Some(tags) = input.tags {
         sqlx::query("DELETE FROM user_tags WHERE user_id = ?")
             .bind(&user.id)
@@ -1554,6 +1653,270 @@ async fn withdraw(
     Ok(Json(json!({
         "success": true,
         "balance": balance - input.amount
+    })))
+}
+
+async fn unlock_partner_contact(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    Path(id): Path<String>,
+) -> AppResult<Json<ContactUnlockResponse>> {
+    let user = current_user(&state, &headers).await?;
+    require_approved(&user)?;
+    let partner = sqlx::query_as::<_, Partner>(
+        "SELECT id, partner_type, avatar, avatar_class, name, identity, description,
+         tags AS tags_json, match_score, result_text, active
+         FROM partners WHERE id = ? AND active = 1",
+    )
+    .bind(&id)
+    .fetch_optional(&state.pool)
+    .await?
+    .ok_or_else(|| AppError::NotFound("partner not found".into()))?;
+    if partner.partner_type == user.role {
+        return Err(AppError::BadRequest(
+            "cannot unlock same role contact".into(),
+        ));
+    }
+    let source_user_id: Option<String> =
+        sqlx::query_scalar("SELECT source_user_id FROM partners WHERE id = ?")
+            .bind(&id)
+            .fetch_optional(&state.pool)
+            .await?;
+    if source_user_id.as_deref() == Some(&user.id) {
+        return Err(AppError::BadRequest("cannot unlock own contact".into()));
+    }
+    let balance = wallet_balance(&state.pool, &user.id).await?;
+    if membership_active(&state.pool, &user.id).await? {
+        let contact_method = partner_contact_method(&state.pool, &id).await?;
+        return Ok(Json(ContactUnlockResponse {
+            contact_method,
+            unlocked: true,
+            balance,
+        }));
+    }
+    let already_unlocked: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*) FROM contact_unlocks WHERE user_id = ? AND partner_id = ?",
+    )
+    .bind(&user.id)
+    .bind(&id)
+    .fetch_one(&state.pool)
+    .await?;
+    if already_unlocked > 0 {
+        let contact_method = partner_contact_method(&state.pool, &id).await?;
+        return Ok(Json(ContactUnlockResponse {
+            contact_method,
+            unlocked: true,
+            balance,
+        }));
+    }
+    let price = app_setting_i64(&state.pool, "contact_unlock_price").await?;
+    let mut tx = state.pool.begin().await?;
+    if balance < price {
+        return Err(AppError::BadRequest("insufficient wallet balance".into()));
+    }
+    sqlx::query(
+        "UPDATE wallets SET balance = balance - ?, updated_at = CURRENT_TIMESTAMP WHERE user_id = ?",
+    )
+    .bind(price)
+    .bind(&user.id)
+    .execute(&mut *tx)
+    .await?;
+    let contact_method = partner_contact_method(&state.pool, &id).await?;
+    sqlx::query("INSERT INTO contact_unlocks (user_id, partner_id) VALUES (?, ?)")
+        .bind(&user.id)
+        .bind(&id)
+        .execute(&mut *tx)
+        .await?;
+    sqlx::query(
+        "INSERT INTO settlements (id, user_id, title, amount, status)
+         VALUES (?, ?, '联系权益解锁', ?, 'completed')",
+    )
+    .bind(Uuid::new_v4().to_string())
+    .bind(&user.id)
+    .bind(-price)
+    .execute(&mut *tx)
+    .await?;
+    tx.commit().await?;
+    Ok(Json(ContactUnlockResponse {
+        contact_method,
+        unlocked: true,
+        balance: balance - price,
+    }))
+}
+
+async fn partner_contact_method(pool: &sqlx::SqlitePool, partner_id: &str) -> AppResult<String> {
+    let row = sqlx::query(
+        "SELECT oa.contact_method
+         FROM partners p
+         JOIN onboarding_applications oa ON oa.user_id = p.source_user_id
+         WHERE p.id = ? AND oa.status = 'approved'",
+    )
+    .bind(partner_id)
+    .fetch_optional(pool)
+    .await?;
+    match row {
+        Some(r) => Ok(r.get("contact_method")),
+        None => Err(AppError::BadRequest("contact not available".into())),
+    }
+}
+
+async fn wallet_balance(pool: &sqlx::SqlitePool, user_id: &str) -> AppResult<i64> {
+    Ok(sqlx::query_scalar("SELECT balance FROM wallets WHERE user_id = ?")
+        .bind(user_id)
+        .fetch_one(pool)
+        .await?)
+}
+
+async fn app_setting_i64(pool: &sqlx::SqlitePool, key: &str) -> AppResult<i64> {
+    let value: String = sqlx::query_scalar("SELECT value FROM app_settings WHERE key = ?")
+        .bind(key)
+        .fetch_one(pool)
+        .await
+        .map_err(|_| AppError::Internal(anyhow::anyhow!("missing app setting: {key}")))?;
+    value
+        .parse()
+        .map_err(|_| AppError::Internal(anyhow::anyhow!("invalid app setting: {key}")))
+}
+
+async fn membership_active(pool: &sqlx::SqlitePool, user_id: &str) -> AppResult<bool> {
+    let active_until: Option<String> =
+        sqlx::query_scalar("SELECT active_until FROM memberships WHERE user_id = ?")
+            .bind(user_id)
+            .fetch_optional(pool)
+            .await?;
+    match active_until {
+        Some(value) => {
+            let time = NaiveDateTime::parse_from_str(&value, "%Y-%m-%d %H:%M:%S")
+                .unwrap_or_else(|_| Utc::now().naive_utc());
+            Ok(time >= Utc::now().naive_utc())
+        }
+        None => Ok(false),
+    }
+}
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+struct MembershipPlan {
+    key: String,
+    name: String,
+    price: i64,
+    description: String,
+}
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+struct MembershipPlansResponse {
+    plans: Vec<MembershipPlan>,
+    active_until: Option<String>,
+    balance: i64,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct MembershipPurchaseInput {
+    plan: String,
+}
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+struct ContactUnlockResponse {
+    contact_method: String,
+    unlocked: bool,
+    balance: i64,
+}
+
+async fn membership_plans(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+) -> AppResult<Json<MembershipPlansResponse>> {
+    let user = current_user(&state, &headers).await?;
+    let monthly = app_setting_i64(&state.pool, "membership_monthly_price").await?;
+    let quarterly = app_setting_i64(&state.pool, "membership_quarterly_price").await?;
+    let active_until: Option<String> =
+        sqlx::query_scalar("SELECT active_until FROM memberships WHERE user_id = ?")
+            .bind(&user.id)
+            .fetch_optional(&state.pool)
+            .await?;
+    let balance = wallet_balance(&state.pool, &user.id).await?;
+    Ok(Json(MembershipPlansResponse {
+        plans: vec![
+            MembershipPlan {
+                key: "monthly".into(),
+                name: "月度会员".into(),
+                price: monthly,
+                description: "30 天无限解锁".into(),
+            },
+            MembershipPlan {
+                key: "quarterly".into(),
+                name: "季度会员".into(),
+                price: quarterly,
+                description: "90 天无限解锁".into(),
+            },
+        ],
+        active_until,
+        balance,
+    }))
+}
+
+async fn purchase_membership(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    Json(input): Json<MembershipPurchaseInput>,
+) -> AppResult<Json<serde_json::Value>> {
+    let user = current_user(&state, &headers).await?;
+    require_approved(&user)?;
+    let (plan_key, days, price_key) = match input.plan.as_str() {
+        "monthly" => ("monthly", 30, "membership_monthly_price"),
+        "quarterly" => ("quarterly", 90, "membership_quarterly_price"),
+        _ => return Err(AppError::BadRequest("invalid membership plan".into())),
+    };
+    let price = app_setting_i64(&state.pool, price_key).await?;
+    let mut tx = state.pool.begin().await?;
+    let balance: i64 = sqlx::query_scalar("SELECT balance FROM wallets WHERE user_id = ?")
+        .bind(&user.id)
+        .fetch_one(&mut *tx)
+        .await?;
+    if balance < price {
+        return Err(AppError::BadRequest("insufficient wallet balance".into()));
+    }
+    sqlx::query(
+        "UPDATE wallets SET balance = balance - ?, updated_at = CURRENT_TIMESTAMP WHERE user_id = ?",
+    )
+    .bind(price)
+    .bind(&user.id)
+    .execute(&mut *tx)
+    .await?;
+    let active_until = (Utc::now() + Duration::days(days))
+        .format("%Y-%m-%d %H:%M:%S")
+        .to_string();
+    sqlx::query(
+        "INSERT INTO memberships (user_id, plan, active_until)
+         VALUES (?, ?, ?)
+         ON CONFLICT(user_id) DO UPDATE SET
+          plan = excluded.plan,
+          active_until = MAX(COALESCE(memberships.active_until, '1970-01-01 00:00:00'), excluded.active_until),
+          updated_at = CURRENT_TIMESTAMP",
+    )
+    .bind(&user.id)
+    .bind(plan_key)
+    .bind(&active_until)
+    .execute(&mut *tx)
+    .await?;
+    sqlx::query(
+        "INSERT INTO settlements (id, user_id, title, amount, status)
+         VALUES (?, ?, ?, ?, 'completed')",
+    )
+    .bind(Uuid::new_v4().to_string())
+    .bind(&user.id)
+    .bind(format!("{} 会员购买", plan_key))
+    .bind(-price)
+    .execute(&mut *tx)
+    .await?;
+    tx.commit().await?;
+    Ok(Json(json!({
+        "success": true,
+        "activeUntil": active_until,
+        "balance": balance - price
     })))
 }
 

@@ -45,6 +45,14 @@
           <text>{{isCreator ? '创作者名 / 艺名' : '品牌 / 团队名称'}} *</text>
           <input value="{{entityName}}" data-field="entityName" maxlength="40" placeholder="{{isCreator ? '请输入公开展示的创作者名称' : '请输入营业主体或团队名称'}}" bindinput="updateField" />
         </label>
+        <view class="field">
+          <text>头像（选填）</text>
+          <view class="avatar-uploader" bindtap="chooseAvatar">
+            <image wx:if="{{avatarUrl}}" class="avatar-preview" src="{{avatarUrl}}" mode="aspectFill" />
+            <view wx:else class="avatar-placeholder">{{avatarUploading ? '…' : '+'}}</view>
+            <view class="avatar-copy">{{avatarUploading ? '正在上传' : avatarUrl ? '点击替换头像' : '上传头像'}}</view>
+          </view>
+        </view>
         <view class="field-row">
           <label class="field">
             <text>联系人 *</text>
