@@ -365,3 +365,30 @@ pub struct BudgetOptionInput {
     pub max_amount: Option<i64>,
     pub sort_order: i64,
 }
+
+#[derive(Debug, Serialize, FromRow)]
+#[serde(rename_all = "camelCase")]
+pub struct Banner {
+    pub id: String,
+    pub image_url: String,
+    pub link_url: String,
+    pub title: String,
+    pub subtitle: String,
+    pub sort_order: i64,
+    pub active: bool,
+    pub start_at: Option<String>,
+    pub end_at: Option<String>,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct BannerInput {
+    pub image_url: String,
+    pub link_url: String,
+    pub title: String,
+    pub subtitle: String,
+    pub sort_order: i64,
+    pub active: bool,
+    pub start_at: Option<String>,
+    pub end_at: Option<String>,
+}

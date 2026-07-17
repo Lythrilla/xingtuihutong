@@ -198,6 +198,22 @@ export async function unlockPartnerContact(partnerId: string): Promise<{ contact
   return apiRequest<{ contactMethod: string; unlocked: boolean; balance: number }>(`/api/partners/${encodeURIComponent(partnerId)}/unlock`, 'POST')
 }
 
+export interface Banner {
+  id: string
+  imageUrl: string
+  linkUrl: string
+  title: string
+  subtitle: string
+  sortOrder: number
+  active: boolean
+  startAt?: string
+  endAt?: string
+}
+
+export async function getBanners(): Promise<Banner[]> {
+  return apiRequest<Banner[]>('/api/banners')
+}
+
 class ApiRequestError extends Error {
   constructor(
     message: string,

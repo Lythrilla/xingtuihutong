@@ -32,6 +32,7 @@ pub fn routes() -> Router<AppState> {
         .route("/onboarding", get(onboarding).put(submit_onboarding))
         .nest("/uploads", upload_routes)
         .route("/home", get(home))
+        .nest("/banners", crate::banners::public_routes())
         .route("/plaza", get(plaza))
         .route("/partners/{id}", get(partner_detail))
         .route("/partners/{id}/unlock", post(unlock_partner_contact))

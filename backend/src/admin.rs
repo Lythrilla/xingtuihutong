@@ -47,6 +47,7 @@ pub fn routes() -> Router<AppState> {
         .route("/export/{type}", get(export_csv))
         .nest("/analytics", crate::analytics::admin_routes())
         .nest("/reports", crate::reports::routes())
+        .nest("/banners", crate::banners::admin_routes())
         .nest("/agent", crate::admin_agent::routes())
 }
 

@@ -6,6 +6,8 @@
 
   <data-state loading="{{loading}}" error="{{error}}" bind:action="retry"></data-state>
 
+  <banner-swiper wx:if="{{!loading && !error}}"></banner-swiper>
+
   <block wx:if="{{!loading && !error}}">
 
     <view wx:if="{{isApproved}}" class="hero-card role-hero {{isCreator ? 'creator' : 'provider'}}" bindtap="openPrimary" hover-class="pressable">

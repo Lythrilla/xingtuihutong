@@ -3,6 +3,7 @@ mod admin_agent;
 mod agent;
 mod analytics;
 mod api;
+mod banners;
 mod config;
 mod db;
 mod demands;
