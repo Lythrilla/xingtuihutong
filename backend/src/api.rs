@@ -9,7 +9,7 @@ use crate::{
     state::AppState,
 };
 use axum::{
-    extract::{Multipart, Path, Query, State},
+    extract::{DefaultBodyLimit, Multipart, Path, Query, State},
     http::HeaderMap,
     routing::{get, post, put},
     Json, Router,
@@ -21,12 +21,16 @@ use sqlx::Row;
 use uuid::Uuid;
 
 pub fn routes() -> Router<AppState> {
+    let upload_routes = Router::new()
+        .route("/work", post(upload_work))
+        .route("/avatar", post(upload_avatar))
+        .layer(DefaultBodyLimit::max(50 * 1024 * 1024));
+
     Router::new()
         .route("/auth/session", post(create_session))
         .route("/me/role", put(update_role))
         .route("/onboarding", get(onboarding).put(submit_onboarding))
-        .route("/uploads/work", post(upload_work))
-        .route("/uploads/avatar", post(upload_avatar))
+        .nest("/uploads", upload_routes)
         .route("/home", get(home))
         .route("/plaza", get(plaza))
         .route("/partners/{id}", get(partner_detail))
