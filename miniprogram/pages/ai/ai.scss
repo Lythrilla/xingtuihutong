@@ -106,17 +106,22 @@ view, text, scroll-view, image {
 }
 
 .message-avatar {
-  width: 54rpx;
-  height: 54rpx;
+  width: 58rpx;
+  height: 58rpx;
   flex: none;
   overflow: hidden;
-  padding: 5rpx;
-  background: #eef2ff;
-  border-radius: 50%;}
+  padding: 6rpx;
+  background: rgba(255, 255, 255, 0.55);
+  border: 1rpx solid rgba(255, 255, 255, 0.7);
+  border-radius: 50%;
+  box-shadow: 0 4rpx 16rpx rgba(99, 102, 241, 0.08);
+  backdrop-filter: blur(10rpx);
+  -webkit-backdrop-filter: blur(10rpx);}
 
 .message-avatar image {
   width: 100%;
   height: 100%;
+  border-radius: 50%;
 }
 
 .message-body {
@@ -160,13 +165,31 @@ view, text, scroll-view, image {
   gap: 18rpx;
   margin: 10rpx 0 30rpx 72rpx;
   padding: 20rpx 24rpx;
-  background: rgba(225, 228, 251, 0.65);
-  border-left: 4rpx solid rgba(118, 108, 219, 0.8);
+  background: rgba(255, 255, 255, 0.5);
+  border: 1rpx solid rgba(255, 255, 255, 0.65);
+  border-radius: 24rpx;
+  box-shadow: 0 6rpx 22rpx rgba(99, 102, 241, 0.08);
+  backdrop-filter: blur(16rpx);
+  -webkit-backdrop-filter: blur(16rpx);
 }
 
-.thinking image {
-  width: 48rpx;
-  height: 48rpx;
+.thinking-avatar {
+  width: 54rpx;
+  height: 54rpx;
+  flex: none;
+  padding: 6rpx;
+  background: rgba(255, 255, 255, 0.55);
+  border: 1rpx solid rgba(255, 255, 255, 0.7);
+  border-radius: 50%;
+  box-shadow: 0 4rpx 14rpx rgba(99, 102, 241, 0.08);
+  backdrop-filter: blur(10rpx);
+  -webkit-backdrop-filter: blur(10rpx);
+}
+
+.thinking-avatar image {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
 }
 
 .thinking > view:nth-child(2) {
@@ -289,7 +312,14 @@ view, text, scroll-view, image {
 }
 
 .artifact {
-  margin-bottom: 40rpx;
+  margin-bottom: 32rpx;
+  padding: 26rpx;
+  background: rgba(255, 255, 255, 0.45);
+  border: 1rpx solid rgba(255, 255, 255, 0.65);
+  border-radius: 24rpx;
+  box-shadow: 0 8rpx 28rpx rgba(99, 102, 241, 0.06);
+  backdrop-filter: blur(18rpx);
+  -webkit-backdrop-filter: blur(18rpx);
 }
 
 .artifact-kicker {
@@ -381,7 +411,7 @@ view, text, scroll-view, image {
   display: flex;
   align-items: center;
   gap: 16rpx;
-  border-bottom: 1px solid rgba(137, 154, 248, 0.08);
+  border-bottom: 1rpx solid rgba(137, 154, 248, 0.12);
 }
 
 .partner-line:last-child {
@@ -389,8 +419,8 @@ view, text, scroll-view, image {
 }
 
 .partner-avatar {
-  width: 52rpx;
-  height: 52rpx;
+  width: 54rpx;
+  height: 54rpx;
   flex: none;
   display: flex;
   align-items: center;
@@ -398,8 +428,9 @@ view, text, scroll-view, image {
   color: #fff;
   font-size: 26rpx;
   font-weight: 700;
-  background: var(--brand-primary);
+  background: linear-gradient(135deg, rgba(137, 154, 248, 1) 0%, rgba(108, 100, 205, 1) 100%);
   border-radius: 50%;
+  box-shadow: 0 4rpx 14rpx rgba(99, 102, 241, 0.18);
 }
 
 .partner-copy {
