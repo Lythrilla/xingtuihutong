@@ -1,0 +1,51 @@
+@import '../../app.scss';
+
+.banner-swiper {
+  margin: 24rpx 32rpx 0;
+  border-radius: 24rpx;
+  overflow: hidden;
+  box-shadow: 0 8rpx 24rpx rgba(99, 102, 241, 0.08);
+
+  .swiper {
+    height: 240rpx;
+  }
+
+  swiper-item {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
+  .banner-image {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .banner-mask {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 24rpx 28rpx;
+    background: linear-gradient(180deg, transparent 0%, rgba(17, 24, 39, 0.55) 100%);
+  }
+
+  .banner-title {
+    display: block;
+    color: #ffffff;
+    font-size: 30rpx;
+    font-weight: 600;
+    line-height: 1.3;
+    text-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.2);
+  }
+
+  .banner-subtitle {
+    display: block;
+    margin-top: 6rpx;
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 24rpx;
+    line-height: 1.4;
+    text-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.2);
+  }
+}

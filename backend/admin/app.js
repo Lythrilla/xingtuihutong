@@ -21,10 +21,11 @@ const titles = {
   settlements: "结算记录",
   targetTypes: "目标渠道",
   budgetOptions: "预算选项",
+  banners: "Banner 运营位",
   agent: "Agent 设置",
 };
 
-const editableViews = new Set(["partners", "songs", "plans", "targetTypes", "budgetOptions"]);
+const editableViews = new Set(["partners", "songs", "plans", "targetTypes", "budgetOptions", "banners"]);
 const adminApiPath = (view, id) => {
   const slug = { targetTypes: "target-types", budgetOptions: "budget-options" }[view] ?? view;
   return id ? `/api/admin/${slug}/${id}` : `/api/admin/${slug}`;
@@ -654,6 +655,17 @@ function renderTable(view, records) {
         actions(item.id),
       ],
     },
+    banners: {
+      headers: ["图片/标题", "跳转", "排序", "有效期", "状态", "操作"],
+      row: (item) => [
+        identity(item.imageUrl, item.title || "未命名", item.subtitle),
+        escapeHtml(item.linkUrl || "—"),
+        item.sortOrder,
+        `${item.startAt ? formatDate(item.startAt).slice(0, 10) : "—"} / ${item.endAt ? formatDate(item.endAt).slice(0, 10) : "—"}`,
+        badge(item.active ? "启用" : "停用", item.active),
+        actions(item.id),
+      ],
+    },
   };
   const definition = definitions[view];
   const filtered = filterRecords(records, state.query);
@@ -928,6 +940,18 @@ function formFields(view, item = {}) {
       numberField("sortOrder", "排序", item.sortOrder ?? 0, 0),
     ].join("");
   }
+  if (view === "banners") {
+    return [
+      inputField("imageUrl", "图片 URL", item.imageUrl, true, "full"),
+      inputField("linkUrl", "跳转路径", item.linkUrl, false, "full"),
+      inputField("title", "标题", item.title ?? "", false),
+      inputField("subtitle", "副标题", item.subtitle ?? "", false),
+      numberField("sortOrder", "排序", item.sortOrder ?? 0, 0),
+      inputField("startAt", "生效时间（可选）", item.startAt ?? "", false),
+      inputField("endAt", "失效时间（可选）", item.endAt ?? "", false),
+      checkboxField("active", "启用", item.active ?? true),
+    ].join("");
+  }
   return [
     inputField("title", "方案名称", item.title, true),
     inputField("planType", "方案类型", item.planType, true),
@@ -1001,6 +1025,15 @@ function normalizeForm(view, values) {
       minAmount: values.minAmount ? Number(values.minAmount) : null,
       maxAmount: values.maxAmount ? Number(values.maxAmount) : null,
       sortOrder: Number(values.sortOrder),
+    };
+  }
+  if (view === "banners") {
+    return {
+      ...values,
+      active: values.active === "on",
+      sortOrder: Number(values.sortOrder),
+      startAt: values.startAt?.trim() || null,
+      endAt: values.endAt?.trim() || null,
     };
   }
   return {
