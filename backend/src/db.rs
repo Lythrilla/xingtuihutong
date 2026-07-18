@@ -51,6 +51,9 @@ pub async fn create_user_session(pool: &SqlitePool, role: &str) -> AppResult<(St
         .to_string();
 
     let mut tx = pool.begin().await?;
+    sqlx::query("DELETE FROM user_sessions WHERE expires_at <= CURRENT_TIMESTAMP")
+        .execute(&mut *tx)
+        .await?;
     sqlx::query(
         "INSERT INTO users
          (id, display_name, organization, role, avatar, description, verified, onboarding_status)
