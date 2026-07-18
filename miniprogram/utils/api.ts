@@ -97,15 +97,20 @@ export interface WorkUploadResponse {
   fileName: string
 }
 
-export async function uploadWorkFile(filePath: string): Promise<WorkUploadResponse> {
+async function uploadFile(
+  path: string,
+  filePath: string,
+  timeout: number,
+  failMessage: string,
+): Promise<WorkUploadResponse> {
   const role = (wx.getStorageSync('starconnect-role') || 'provider') as 'provider' | 'client'
   const session = await ensureSession(role)
   return new Promise((resolve, reject) => {
     wx.uploadFile({
-      url: `${API_BASE_URL}/api/uploads/work`,
+      url: `${API_BASE_URL}${path}`,
       filePath,
       name: 'file',
-      timeout: 60000,
+      timeout,
       header: {
         Authorization: `Bearer ${session.token}`,
       },
@@ -129,48 +134,18 @@ export async function uploadWorkFile(filePath: string): Promise<WorkUploadRespon
         )
       },
       fail() {
-        reject(new ApiRequestError('作品上传失败，请检查网络后重试', 0))
+        reject(new ApiRequestError(failMessage, 0))
       },
     })
   })
 }
 
+export async function uploadWorkFile(filePath: string): Promise<WorkUploadResponse> {
+  return uploadFile('/api/uploads/work', filePath, 60000, '作品上传失败，请检查网络后重试')
+}
+
 export async function uploadAvatarFile(filePath: string): Promise<WorkUploadResponse> {
-  const role = (wx.getStorageSync('starconnect-role') || 'provider') as 'provider' | 'client'
-  const session = await ensureSession(role)
-  return new Promise((resolve, reject) => {
-    wx.uploadFile({
-      url: `${API_BASE_URL}/api/uploads/avatar`,
-      filePath,
-      name: 'file',
-      timeout: 30000,
-      header: {
-        Authorization: `Bearer ${session.token}`,
-      },
-      success(response) {
-        let body: WorkUploadResponse & ApiErrorBody
-        try {
-          body = JSON.parse(response.data) as WorkUploadResponse & ApiErrorBody
-        } catch {
-          reject(new ApiRequestError('上传响应异常，请重试', response.statusCode))
-          return
-        }
-        if (response.statusCode >= 200 && response.statusCode < 300) {
-          resolve({ ...body, url: toAssetUrl(body.url) })
-          return
-        }
-        reject(
-          new ApiRequestError(
-            friendlyError(body.error) || `上传失败（${response.statusCode}）`,
-            response.statusCode,
-          ),
-        )
-      },
-      fail() {
-        reject(new ApiRequestError('头像上传失败，请检查网络后重试', 0))
-      },
-    })
-  })
+  return uploadFile('/api/uploads/avatar', filePath, 30000, '头像上传失败，请检查网络后重试')
 }
 
 export interface MembershipPlan {

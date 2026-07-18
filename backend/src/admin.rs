@@ -64,6 +64,9 @@ async fn login(
     let expires_at = (Utc::now() + Duration::hours(12))
         .format("%Y-%m-%d %H:%M:%S")
         .to_string();
+    sqlx::query("DELETE FROM admin_sessions WHERE expires_at <= CURRENT_TIMESTAMP")
+        .execute(&state.pool)
+        .await?;
     sqlx::query("INSERT INTO admin_sessions (token, expires_at) VALUES (?, ?)")
         .bind(&token)
         .bind(expires_at)

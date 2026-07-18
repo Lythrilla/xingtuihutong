@@ -1621,21 +1621,22 @@ async fn withdraw(
         return Err(AppError::BadRequest("amount must be positive".into()));
     }
     let mut tx = state.pool.begin().await?;
+    let debited = sqlx::query(
+        "UPDATE wallets SET balance = balance - ?, updated_at = CURRENT_TIMESTAMP
+         WHERE user_id = ? AND balance >= ?",
+    )
+    .bind(input.amount)
+    .bind(&user.id)
+    .bind(input.amount)
+    .execute(&mut *tx)
+    .await?;
+    if debited.rows_affected() == 0 {
+        return Err(AppError::BadRequest("insufficient wallet balance".into()));
+    }
     let balance: i64 = sqlx::query_scalar("SELECT balance FROM wallets WHERE user_id = ?")
         .bind(&user.id)
         .fetch_one(&mut *tx)
         .await?;
-    if balance < input.amount {
-        return Err(AppError::BadRequest("insufficient wallet balance".into()));
-    }
-    sqlx::query(
-        "UPDATE wallets SET balance = balance - ?, updated_at = CURRENT_TIMESTAMP
-         WHERE user_id = ?",
-    )
-    .bind(input.amount)
-    .bind(&user.id)
-    .execute(&mut *tx)
-    .await?;
     sqlx::query(
         "INSERT INTO settlements (id, user_id, title, amount, status)
          VALUES (?, ?, '钱包提现', ?, 'pending')",
@@ -1657,7 +1658,7 @@ async fn withdraw(
     .await;
     Ok(Json(json!({
         "success": true,
-        "balance": balance - input.amount
+        "balance": balance
     })))
 }
 
@@ -1715,18 +1716,20 @@ async fn unlock_partner_contact(
         }));
     }
     let price = app_setting_i64(&state.pool, "contact_unlock_price").await?;
+    let contact_method = partner_contact_method(&state.pool, &id).await?;
     let mut tx = state.pool.begin().await?;
-    if balance < price {
-        return Err(AppError::BadRequest("insufficient wallet balance".into()));
-    }
-    sqlx::query(
-        "UPDATE wallets SET balance = balance - ?, updated_at = CURRENT_TIMESTAMP WHERE user_id = ?",
+    let debited = sqlx::query(
+        "UPDATE wallets SET balance = balance - ?, updated_at = CURRENT_TIMESTAMP
+         WHERE user_id = ? AND balance >= ?",
     )
     .bind(price)
     .bind(&user.id)
+    .bind(price)
     .execute(&mut *tx)
     .await?;
-    let contact_method = partner_contact_method(&state.pool, &id).await?;
+    if debited.rows_affected() == 0 {
+        return Err(AppError::BadRequest("insufficient wallet balance".into()));
+    }
     sqlx::query("INSERT INTO contact_unlocks (user_id, partner_id) VALUES (?, ?)")
         .bind(&user.id)
         .bind(&id)
@@ -1741,11 +1744,15 @@ async fn unlock_partner_contact(
     .bind(-price)
     .execute(&mut *tx)
     .await?;
+    let balance: i64 = sqlx::query_scalar("SELECT balance FROM wallets WHERE user_id = ?")
+        .bind(&user.id)
+        .fetch_one(&mut *tx)
+        .await?;
     tx.commit().await?;
     Ok(Json(ContactUnlockResponse {
         contact_method,
         unlocked: true,
-        balance: balance - price,
+        balance,
     }))
 }
 
@@ -1790,11 +1797,9 @@ async fn membership_active(pool: &sqlx::SqlitePool, user_id: &str) -> AppResult<
             .fetch_optional(pool)
             .await?;
     match active_until {
-        Some(value) => {
-            let time = NaiveDateTime::parse_from_str(&value, "%Y-%m-%d %H:%M:%S")
-                .unwrap_or_else(|_| Utc::now().naive_utc());
-            Ok(time >= Utc::now().naive_utc())
-        }
+        Some(value) => Ok(NaiveDateTime::parse_from_str(&value, "%Y-%m-%d %H:%M:%S")
+            .map(|time| time >= Utc::now().naive_utc())
+            .unwrap_or(false)),
         None => Ok(false),
     }
 }
@@ -1877,21 +1882,29 @@ async fn purchase_membership(
     };
     let price = app_setting_i64(&state.pool, price_key).await?;
     let mut tx = state.pool.begin().await?;
-    let balance: i64 = sqlx::query_scalar("SELECT balance FROM wallets WHERE user_id = ?")
-        .bind(&user.id)
-        .fetch_one(&mut *tx)
-        .await?;
-    if balance < price {
-        return Err(AppError::BadRequest("insufficient wallet balance".into()));
-    }
-    sqlx::query(
-        "UPDATE wallets SET balance = balance - ?, updated_at = CURRENT_TIMESTAMP WHERE user_id = ?",
+    let debited = sqlx::query(
+        "UPDATE wallets SET balance = balance - ?, updated_at = CURRENT_TIMESTAMP
+         WHERE user_id = ? AND balance >= ?",
     )
     .bind(price)
     .bind(&user.id)
+    .bind(price)
     .execute(&mut *tx)
     .await?;
-    let active_until = (Utc::now() + Duration::days(days))
+    if debited.rows_affected() == 0 {
+        return Err(AppError::BadRequest("insufficient wallet balance".into()));
+    }
+    let current_until: Option<String> =
+        sqlx::query_scalar("SELECT active_until FROM memberships WHERE user_id = ?")
+            .bind(&user.id)
+            .fetch_optional(&mut *tx)
+            .await?;
+    let now = Utc::now().naive_utc();
+    let base = current_until
+        .and_then(|value| NaiveDateTime::parse_from_str(&value, "%Y-%m-%d %H:%M:%S").ok())
+        .filter(|time| *time > now)
+        .unwrap_or(now);
+    let active_until = (base + Duration::days(days))
         .format("%Y-%m-%d %H:%M:%S")
         .to_string();
     sqlx::query(
@@ -1899,7 +1912,7 @@ async fn purchase_membership(
          VALUES (?, ?, ?)
          ON CONFLICT(user_id) DO UPDATE SET
           plan = excluded.plan,
-          active_until = MAX(COALESCE(memberships.active_until, '1970-01-01 00:00:00'), excluded.active_until),
+          active_until = excluded.active_until,
           updated_at = CURRENT_TIMESTAMP",
     )
     .bind(&user.id)
@@ -1913,15 +1926,23 @@ async fn purchase_membership(
     )
     .bind(Uuid::new_v4().to_string())
     .bind(&user.id)
-    .bind(format!("{} 会员购买", plan_key))
+    .bind(if plan_key == "monthly" {
+        "月度会员购买"
+    } else {
+        "季度会员购买"
+    })
     .bind(-price)
     .execute(&mut *tx)
     .await?;
+    let balance: i64 = sqlx::query_scalar("SELECT balance FROM wallets WHERE user_id = ?")
+        .bind(&user.id)
+        .fetch_one(&mut *tx)
+        .await?;
     tx.commit().await?;
     Ok(Json(json!({
         "success": true,
         "activeUntil": active_until,
-        "balance": balance - price
+        "balance": balance
     })))
 }
 
