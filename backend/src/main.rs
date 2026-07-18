@@ -8,6 +8,7 @@ mod db;
 mod demands;
 mod error;
 mod models;
+mod reports;
 mod state;
 
 use anyhow::Result;
