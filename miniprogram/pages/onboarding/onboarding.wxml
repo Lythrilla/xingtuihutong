@@ -48,7 +48,7 @@
         <view class="field">
           <text>头像（选填）</text>
           <view class="avatar-uploader" bindtap="chooseAvatar">
-            <image wx:if="{{avatarUrl}}" class="avatar-preview" src="{{avatarUrl}}" mode="aspectFill" />
+            <image wx:if="{{avatarUrl}}" class="avatar-preview" src="{{avatarUrl}}" mode="aspectFill" lazy-load />
             <view wx:else class="avatar-placeholder">{{avatarUploading ? '…' : '+'}}</view>
             <view class="avatar-copy">{{avatarUploading ? '正在上传' : avatarUrl ? '点击替换头像' : '上传头像'}}</view>
           </view>

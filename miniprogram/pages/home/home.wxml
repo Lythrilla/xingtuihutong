@@ -48,6 +48,7 @@
             class="recommend-avatar"
             src="{{item.avatar}}"
             mode="aspectFill"
+            lazy-load
           ></image>
           <view wx:else class="recommend-avatar {{item.avatarClass}}">{{item.avatar}}</view>
           <view class="recommend-main">

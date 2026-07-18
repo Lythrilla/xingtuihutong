@@ -3,7 +3,7 @@
   z-index: 100;
   overflow: hidden;
   flex: none;
-  color: rgba(52, 59, 86, 1);
+  color: var(--text-main);
 }
 
 .weui-navigation-bar__inner {
@@ -17,7 +17,8 @@
   padding-top: env(safe-area-inset-top);
   width: 100%;
   box-sizing: border-box;
-  background: rgba(255, 255, 255, 1);  transition: box-shadow 0.25s ease, background-color 0.25s ease;
+  background: rgba(255, 255, 255, 1);
+  transition: box-shadow 0.25s ease, background-color 0.25s ease;
 }
 
 /* 底部品牌色渐变强调线 */
@@ -33,12 +34,14 @@
 
 /* 毛玻璃模式（默认） */
 .weui-navigation-bar__inner.is-blur {
-  background: rgba(255, 255, 255, 0.72) !important;}
+  background: rgba(255, 255, 255, 0.72) !important;
+}
 
 /* 品牌渐变模式 */
 .weui-navigation-bar__inner.is-brand {
   background: #eef2ff;
-  color: rgba(255, 255, 255, 1);}
+  color: rgba(255, 255, 255, 1);
+}
 .weui-navigation-bar__inner.is-brand::after {
   background: #eef2ff;
 }
@@ -73,7 +76,7 @@
 }
 
 .nav-btn--active {
-  background-color: rgba(95, 101, 180, 0.1);
+  background-color: rgba(79, 70, 229, 0.1);
 }
 
 .nav-btn__icon {
@@ -131,7 +134,8 @@
   height: 16px;
   display: block;
   background: transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80px' height='80px' viewBox='0 0 80 80'%3E%3Ccircle cx='40' cy='40' r='34' fill='none' stroke='%235f65b4' stroke-width='8' stroke-dasharray='110 110'/%3E%3C/svg%3E") no-repeat;
-  background-size: 100%;}
+  background-size: 100%;
+}
 
 .weui-navigation-bar__right {
   display: flex;
@@ -155,7 +159,7 @@
 }
 
 .weui-navigation-bar__right .nav-action--active {
-  background-color: rgba(95, 101, 180, 0.1);
+  background-color: rgba(79, 70, 229, 0.1);
 }
 
 @keyframes loading {

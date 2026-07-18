@@ -9,12 +9,12 @@ view, text, input, textarea {
 .form-section {
   margin-top: 38rpx;
   padding: 30rpx 0 34rpx;
-  border-top: 1rpx solid rgba(137, 154, 248, 0.2);
-  border-bottom: 1rpx solid rgba(137, 154, 248, 0.12);
+  border-top: 1rpx solid rgba(99, 102, 241, 0.2);
+  border-bottom: 1rpx solid rgba(99, 102, 241, 0.12);
 }
 
 .section-heading view {
-  color: rgba(46, 49, 62, 1);
+  color: var(--text-main);
   font-size: 32rpx;
   font-weight: 700;
 }
@@ -22,7 +22,7 @@ view, text, input, textarea {
 .section-heading text {
   display: block;
   margin-top: 6rpx;
-  color: rgba(118, 121, 143, 1);
+  color: rgba(91, 96, 118, 1);
   font-size: 22rpx;
 }
 
@@ -38,7 +38,7 @@ view, text, input, textarea {
 .field > text {
   display: block;
   margin-bottom: 14rpx;
-  color: #343b56;
+  color: var(--text-main);
   font-size: 25rpx;
   font-weight: 600;
 }
@@ -47,10 +47,10 @@ view, text, input, textarea {
 .field textarea {
   width: 100%;
   padding: 0 24rpx;
-  color: #343b56;
+  color: var(--text-main);
   font-size: 27rpx;
   background: rgba(255, 255, 255, 0.5);
-  border: 1rpx solid rgba(137, 154, 248, 0.18);
+  border: 1rpx solid rgba(99, 102, 241, 0.18);
   border-radius: 14rpx;
 }
 
@@ -88,23 +88,23 @@ view, text, input, textarea {
 
 .tag-option {
   padding: 12rpx 24rpx;
-  color: #76798f;
+  color: var(--text-sub);
   font-size: 23rpx;
   background: rgba(255, 255, 255, 0.45);
-  border: 1rpx solid rgba(137, 154, 248, 0.16);
+  border: 1rpx solid rgba(99, 102, 241, 0.16);
   border-radius: 12rpx;
 }
 
 .tag-option.selected {
-  color: #899af8;
+  color: var(--brand-primary);
   font-weight: 600;
-  background: rgba(137, 154, 248, 0.1);
-  border-color: rgba(137, 154, 248, 0.3);
+  background: rgba(99, 102, 241, 0.1);
+  border-color: rgba(99, 102, 241, 0.3);
 }
 
 .submit-note {
   margin: 40rpx 24rpx 0;
-  color: rgba(118, 121, 143, 0.8);
+  color: rgba(91, 96, 118, 0.8);
   font-size: 22rpx;
   line-height: 1.6;
   text-align: center;
@@ -116,7 +116,7 @@ view, text, input, textarea {
   gap: 22rpx;
   margin-top: 28rpx;
   padding: 28rpx;
-  border: 2rpx dashed rgba(137, 154, 248, 0.42);
+  border: 2rpx dashed rgba(99, 102, 241, 0.42);
   border-radius: 18rpx;
 }
 
@@ -135,7 +135,7 @@ view, text, input, textarea {
   flex: none;
   color: #fff;
   font-size: 32rpx;
-  background: #899af8;
+  background: var(--brand-primary);
   border-radius: 50%;
 }
 
@@ -150,7 +150,7 @@ view, text, input, textarea {
 
 .upload-copy view {
   overflow: hidden;
-  color: #343b56;
+  color: var(--text-main);
   font-size: 26rpx;
   font-weight: 600;
   text-overflow: ellipsis;
@@ -160,7 +160,7 @@ view, text, input, textarea {
 .upload-copy text {
   display: block;
   margin-top: 6rpx;
-  color: #76798f;
+  color: var(--text-sub);
   font-size: 21rpx;
 }
 
@@ -175,7 +175,7 @@ view, text, input, textarea {
   width: 120rpx;
   height: 120rpx;
   border-radius: 18rpx;
-  background: rgba(137, 154, 248, 0.1);
+  background: rgba(99, 102, 241, 0.1);
 }
 
 .avatar-placeholder {
@@ -184,15 +184,15 @@ view, text, input, textarea {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #899af8;
+  color: var(--brand-primary);
   font-size: 44rpx;
   background: rgba(255, 255, 255, 0.5);
-  border: 2rpx dashed rgba(137, 154, 248, 0.42);
+  border: 2rpx dashed rgba(99, 102, 241, 0.42);
   border-radius: 18rpx;
 }
 
 .avatar-copy {
-  color: #76798f;
+  color: var(--text-sub);
   font-size: 24rpx;
 }
 
@@ -205,9 +205,9 @@ view, text, input, textarea {
   align-items: center;
   gap: 18rpx;
   padding: 22rpx 0;
-  color: #4b5068;
+  color: var(--text-main);
   font-size: 24rpx;
-  border-bottom: 1rpx solid rgba(137, 154, 248, 0.1);
+  border-bottom: 1rpx solid rgba(99, 102, 241, 0.1);
 }
 
 .check-item:last-child {
@@ -227,8 +227,8 @@ view, text, input, textarea {
 }
 
 .check-box.selected {
-  background: #899af8;
-  border-color: #899af8;
+  background: var(--brand-primary);
+  border-color: var(--brand-primary);
 }
 
 .submit-button {
@@ -272,8 +272,8 @@ view, text, input, textarea {
   padding: 52rpx 34rpx 38rpx;
   text-align: center;
   background: rgba(255, 255, 255, 0.42);
-  border-top: 1rpx solid rgba(137, 154, 248, 0.16);
-  border-bottom: 1rpx solid rgba(137, 154, 248, 0.16);
+  border-top: 1rpx solid rgba(99, 102, 241, 0.16);
+  border-bottom: 1rpx solid rgba(99, 102, 241, 0.16);
 }
 
 .status-orb {
@@ -298,7 +298,8 @@ view, text, input, textarea {
   font-size: 42rpx;
   font-weight: 700;
   background: var(--brand-primary);
-  border-radius: 50%;}
+  border-radius: 50%;
+}
 
 .status-halo {
   position: absolute;
@@ -324,7 +325,7 @@ view, text, input, textarea {
 
 .status-description {
   margin-top: 14rpx;
-  color: #76798f;
+  color: var(--text-sub);
   font-size: 24rpx;
   line-height: 1.65;
 }
@@ -355,13 +356,13 @@ view, text, input, textarea {
 
 .status-step.active,
 .status-step.done {
-  color: #5f65b4;
+  color: var(--brand-primary-deep);
 }
 
 .status-step.active text,
 .status-step.done text {
   color: #fff;
-  background: #899af8;
+  background: var(--brand-primary);
 }
 
 .status-line {
@@ -372,5 +373,5 @@ view, text, input, textarea {
 }
 
 .status-line.active {
-  background: #899af8;
+  background: var(--brand-primary);
 }

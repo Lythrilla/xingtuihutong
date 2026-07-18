@@ -1,7 +1,14 @@
-<view class="state-shell" wx:if="{{loading}}">
+<view class="state-shell" wx:if="{{loading && !skeleton}}">
   <view class="state-spinner"></view>
   <view class="state-title">正在加载</view>
   <view class="state-description">马上就好，请稍候</view>
+</view>
+
+<view class="state-skeleton" wx:elif="{{loading && skeleton}}">
+  <view class="skeleton skeleton-hero"></view>
+  <view class="skeleton skeleton-line w-60"></view>
+  <view class="skeleton skeleton-line"></view>
+  <view class="skeleton skeleton-line w-80"></view>
 </view>
 
 <view class="state-shell" wx:elif="{{error}}">

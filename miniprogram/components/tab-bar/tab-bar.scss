@@ -108,6 +108,7 @@
   inset: -16rpx;
   background: radial-gradient(circle, rgba(143, 122, 248, 0.38), rgba(161, 120, 247, 0.08) 52%, transparent 72%);
   border-radius: 50%;
+  will-change: transform, opacity;
   animation: ai-halo 2.8s ease-in-out infinite;
 }
 
@@ -123,6 +124,7 @@
   );
   border-radius: 50%;
   box-shadow: 0 6rpx 18rpx rgba(112, 104, 224, 0.26);
+  will-change: transform;
   animation: ai-spin 4s linear infinite;
 }
 
@@ -146,7 +148,7 @@
     linear-gradient(145deg, rgba(233, 240, 255, 1), rgba(200, 185, 255, 1));    
   box-shadow:
     inset 0 2rpx 8rpx rgba(255, 255, 255, 0.8),
-    0 10rpx 24rpx rgba(95, 101, 180, 0.28);
+    0 10rpx 24rpx rgba(79, 70, 229, 0.28);
   display: flex;
   align-items: center;
   justify-content: center;

@@ -1,7 +1,3 @@
-view, text, scroll-view, image {
-  box-sizing: border-box;
-}
-
 /* 页面基础 */
 .profile-page {
   padding-bottom: 180rpx;
@@ -29,12 +25,12 @@ view, text, scroll-view, image {
   align-items: center;
   justify-content: center;
   margin-right: 24rpx;
-  color: #899af8;
+  color: var(--brand-primary);
   font-size: 40rpx;
   font-weight: 700;
   background: #fff;
   border-radius: 50%;
-  border: 1rpx solid rgba(137, 154, 248, 0.16);
+  border: 1rpx solid rgba(99, 102, 241, 0.16);
 }
 
 .profile-main {
@@ -44,7 +40,7 @@ view, text, scroll-view, image {
 
 .profile-name {
   overflow: hidden;
-  color: #343b56;
+  color: var(--text-main);
   font-size: 36rpx;
   font-weight: 700;
   text-overflow: ellipsis;
@@ -56,7 +52,7 @@ view, text, scroll-view, image {
   align-items: center;
   gap: 10rpx;
   margin-top: 8rpx;
-  color: rgba(52, 59, 86, 0.85);
+  color: rgba(31, 37, 51, 0.85);
   font-size: 24rpx;
 }
 
@@ -69,15 +65,15 @@ view, text, scroll-view, image {
   color: #fff;
   font-size: 14rpx;
   line-height: 1;
-  background: #899af8;
+  background: var(--brand-primary);
   border-radius: 6rpx;
 }
 
 .edit-btn {
   padding: 8rpx 24rpx;
-  color: #343b56;
+  color: var(--text-main);
   font-size: 24rpx;
-  background: rgba(52, 59, 86, 0.08);
+  background: rgba(31, 37, 51, 0.08);
   border-radius: 24rpx;
 }
 
@@ -85,7 +81,7 @@ view, text, scroll-view, image {
   position: relative;
   z-index: 3;
   margin-top: 24rpx;
-  color: rgba(52, 59, 86, 0.9);
+  color: rgba(31, 37, 51, 0.9);
   font-size: 26rpx;
   line-height: 1.5;
 }
@@ -96,13 +92,13 @@ view, text, scroll-view, image {
   display: flex;
   margin-top: 32rpx;
   padding-top: 24rpx;
-  border-top: 1rpx solid rgba(52, 59, 86, 0.1);
+  border-top: 1rpx solid rgba(31, 37, 51, 0.1);
 }
 
 .profile-stat {
   width: 33.333%;
   text-align: center;
-  color: #343b56;
+  color: var(--text-main);
 }
 
 .profile-stat text {
@@ -112,7 +108,7 @@ view, text, scroll-view, image {
 
 .profile-stat view {
   margin-top: 6rpx;
-  color: rgba(52, 59, 86, 0.8);
+  color: rgba(31, 37, 51, 0.8);
   font-size: 22rpx;
 }
 
@@ -128,11 +124,12 @@ view, text, scroll-view, image {
   display: flex;
   flex-direction: column;
   align-items: center;
-  color: #343b56;
+  color: var(--text-main);
   font-size: 24rpx;
   font-weight: 500;
   /* 入场动画 */
   opacity: 0;
+  animation: slide-up-fade 0.5s var(--ease-out) both;
 }
 
 /* 为四个图标添加错峰延迟 */
@@ -149,15 +146,15 @@ view, text, scroll-view, image {
   align-items: center;
   justify-content: center;
   margin-bottom: 14rpx;
-  color: #899af8;
-  background: rgba(137, 154, 248, 0.06);
+  color: var(--brand-primary);
+  background: rgba(99, 102, 241, 0.06);
   border-radius: 20rpx;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .workspace-item:active .workspace-icon {
   transform: scale(0.9) translateY(4rpx);
-  background: rgba(137, 154, 248, 0.12);
+  background: rgba(99, 102, 241, 0.12);
 }
 
 .workspace-icon .ui-icon {
@@ -180,15 +177,18 @@ view, text, scroll-view, image {
   border-radius: 50%;
 }
 
-/* === 极简钱包 === */
+/* === 深色高级钱包卡 === */
 .wallet-card {
   position: relative;
+  overflow: hidden;
   margin: 28rpx 0;
-  padding: 32rpx;
-  border-radius: 24rpx;
-  border: 1rpx solid rgba(137, 154, 248, 0.12);
-  background: rgba(255,255,255,0.7);
-  opacity: 0;  animation-delay: 0.3s;
+  padding: 36rpx 32rpx;
+  border-radius: var(--radius-lg);
+  border: none;
+  background: linear-gradient(135deg, #191735 0%, #2b2565 58%, #3c2f8f 100%);
+  box-shadow: 0 16rpx 40rpx rgba(43, 37, 101, 0.35);
+  opacity: 0;
+  animation: slide-up-fade 0.5s var(--ease-out) 0.3s both;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -196,7 +196,20 @@ view, text, scroll-view, image {
   transform: scale(0.98);
 }
 
+/* 金色氛围光晕 */
+.wallet-bg {
+  position: absolute;
+  top: -90rpx;
+  right: -70rpx;
+  width: 300rpx;
+  height: 300rpx;
+  background: radial-gradient(circle, rgba(212, 175, 55, 0.28) 0%, transparent 68%);
+  border-radius: 50%;
+}
+
 .wallet-content {
+  position: relative;
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -206,37 +219,51 @@ view, text, scroll-view, image {
   display: flex;
   align-items: center;
   gap: 10rpx;
-  color: rgba(118, 121, 143, 0.8);
+  color: rgba(255, 255, 255, 0.62);
   font-size: 24rpx;
 }
 
 .wallet-title .ui-icon {
   width: 26rpx;
   height: 26rpx;
-  opacity: 0.8;
+  color: var(--gold);
+  opacity: 1;
 }
 
 .wallet-amount {
-  margin-top: 10rpx;
-  color: #2e3146;
-  font-size: 44rpx;
+  margin-top: 12rpx;
+  color: #f3e5b0;
+  font-size: 48rpx;
   font-weight: 700;
+  letter-spacing: 1rpx;
 }
 
 .wallet-amount .currency {
-  font-size: 28rpx;
   margin-right: 6rpx;
+  color: var(--gold);
+  font-size: 28rpx;
+}
+
+.wallet-card .btn-primary {
+  color: #2b2565;
+  font-weight: 700;
+  background: linear-gradient(135deg, #f3e5b0 0%, var(--gold) 100%);
+  box-shadow: 0 6rpx 16rpx rgba(212, 175, 55, 0.35);
+}
+
+.wallet-card .btn-primary[disabled] {
+  color: rgba(255, 255, 255, 0.45);
+  background: rgba(255, 255, 255, 0.14);
+  box-shadow: none;
 }
 
 /* === 通用 Section 与 轻量卡片 === */
 .section {
   margin-top: 32rpx;
   opacity: 0;
+  animation: slide-up-fade 0.5s var(--ease-out) both;
+  animation-delay: var(--animate-delay, 0.35s);
 }
-
-.section:nth-of-type(1) { animation-delay: 0.4s; }
-.section:nth-of-type(2) { animation-delay: 0.5s; }
-.section:nth-of-type(3) { animation-delay: 0.6s; }
 
 .section-head {
   display: flex;
@@ -246,13 +273,13 @@ view, text, scroll-view, image {
 }
 
 .section-title {
-  color: #2e3146;
+  color: var(--text-main);
   font-size: 30rpx;
   font-weight: 700;
 }
 
 .section-action {
-  color: #76798f;
+  color: var(--text-sub);
   font-size: 24rpx;
 }
 
@@ -260,15 +287,15 @@ view, text, scroll-view, image {
   background: rgba(255, 255, 255, 0.48);
   border-radius: 14rpx;
   padding: 0 32rpx;
-  border-top: 1rpx solid rgba(137, 154, 248, 0.12);
-  border-bottom: 1rpx solid rgba(137, 154, 248, 0.12);
+  border-top: 1rpx solid rgba(99, 102, 241, 0.12);
+  border-bottom: 1rpx solid rgba(99, 102, 241, 0.12);
 }
 
 /* === 我的能力 === */
 .certs {
   display: flex;
   padding: 32rpx 0;
-  border-bottom: 1rpx solid rgba(137, 154, 248, 0.1);
+  border-bottom: 1rpx solid rgba(99, 102, 241, 0.1);
 }
 
 .cert {
@@ -276,7 +303,7 @@ view, text, scroll-view, image {
   display: flex;
   flex-direction: column;
   align-items: center;
-  color: #343b56;
+  color: var(--text-main);
 }
 
 .cert-icon {
@@ -286,8 +313,8 @@ view, text, scroll-view, image {
   align-items: center;
   justify-content: center;
   margin-bottom: 16rpx;
-  color: #899af8;
-  background: rgba(137, 154, 248, 0.1);
+  color: var(--brand-primary);
+  background: rgba(99, 102, 241, 0.1);
   border-radius: 20rpx;
 }
 
@@ -297,20 +324,20 @@ view, text, scroll-view, image {
 }
 
 .cert-title {
-  color: #2e3146;
+  color: var(--text-main);
   font-size: 26rpx;
   font-weight: 600;
 }
 
 .cert-status {
   margin-top: 6rpx;
-  color: #899af8;
+  color: var(--brand-primary);
   font-size: 22rpx;
 }
 
 .inline-empty {
   padding: 40rpx 0;
-  color: #76798f;
+  color: var(--text-sub);
   font-size: 26rpx;
   text-align: center;
 }
@@ -324,79 +351,105 @@ view, text, scroll-view, image {
 
 .skill-line text {
   padding: 10rpx 24rpx;
-  color: #899af8;
+  color: var(--brand-primary);
   font-size: 24rpx;
-  background: rgba(137, 154, 248, 0.08);
+  background: rgba(99, 102, 241, 0.08);
   border-radius: 16rpx;
 }
 
 .skill-empty {
   padding: 32rpx 0;
-  color: #899af8;
+  color: var(--brand-primary);
   font-size: 26rpx;
   text-align: center;
 }
 
-/* === 精选案例 === */
-.case-scroll {
-  white-space: nowrap;
-  margin: 0 -32rpx;
-  padding: 0 32rpx;
-}
-
+/* === 精选案例（全幅大卡片） === */
 .cases {
-  display: inline-flex;
-  gap: 20rpx;
-  padding-bottom: 12rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
 }
 
 .case-card {
   position: relative;
-  width: 260rpx;
-  height: 180rpx;
-  display: inline-flex;
+  min-height: 300rpx;
+  display: flex;
   flex-direction: column;
   justify-content: flex-end;
   overflow: hidden;
-  padding: 28rpx;
-  color: #2e3146;
-  background: #eef2ff;
-  border-radius: 28rpx;
+  padding: 36rpx;
+  color: #fff;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+.case-card::before {
+  position: absolute;
+  top: -110rpx;
+  right: -90rpx;
+  width: 360rpx;
+  height: 360rpx;
+  content: "";
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.22) 0%, transparent 68%);
+  border-radius: 50%;
 }
 
 .case-card::after {
   position: absolute;
-  right: -30rpx;
-  bottom: -40rpx;
-  width: 140rpx;
-  height: 140rpx;
+  right: -40rpx;
+  bottom: -70rpx;
+  width: 220rpx;
+  height: 220rpx;
   content: "";
-  border: 2rpx solid rgba(255, 255, 255, 0.4);
+  border: 2rpx solid rgba(255, 255, 255, 0.28);
   border-radius: 50%;
+}
+
+.case-card.violet {
+  background: linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%);
+}
+
+.case-card.blue {
+  background: linear-gradient(135deg, #4f46e5 0%, #60a5fa 100%);
+}
+
+.case-card.aqua {
+  background: linear-gradient(135deg, #0d9488 0%, #34d399 100%);
+}
+
+.case-card.gold {
+  background: linear-gradient(135deg, #b45309 0%, #f59e0b 100%);
+}
+
+.case-card.pink {
+  background: linear-gradient(135deg, #db2777 0%, #f472b6 100%);
 }
 
 .case-type {
   position: relative;
   z-index: 2;
-  color: rgba(46, 49, 70, 0.7);
+  color: rgba(255, 255, 255, 0.75);
   font-size: 22rpx;
+  letter-spacing: 1rpx;
 }
 
 .case-name {
   position: relative;
   z-index: 2;
-  margin-top: 8rpx;
-  color: #2e3146;
-  font-size: 28rpx;
+  margin-top: 10rpx;
+  color: #fff;
+  font-size: 34rpx;
   font-weight: 700;
 }
 
 .case-result {
   position: relative;
   z-index: 2;
-  margin-top: 8rpx;
-  color: rgba(46, 49, 70, 0.7);
-  font-size: 22rpx;
+  margin-top: 10rpx;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 24rpx;
 }
 
 /* === 更多服务 === */
@@ -409,7 +462,7 @@ view, text, scroll-view, image {
   display: flex;
   align-items: center;
   gap: 24rpx;
-  border-bottom: 1rpx solid rgba(137, 154, 248, 0.06);
+  border-bottom: 1rpx solid rgba(99, 102, 241, 0.06);
 }
 
 .service-row:last-child {
@@ -422,8 +475,8 @@ view, text, scroll-view, image {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #899af8;
-  background: rgba(137, 154, 248, 0.1);
+  color: var(--brand-primary);
+  background: rgba(99, 102, 241, 0.1);
   border-radius: 20rpx;
 }
 
@@ -435,7 +488,7 @@ view, text, scroll-view, image {
 .service-copy {
   min-width: 0;
   flex: 1;
-  color: #2e3146;
+  color: var(--text-main);
   font-size: 28rpx;
   font-weight: 600;
 }
@@ -443,18 +496,18 @@ view, text, scroll-view, image {
 .service-copy text {
   display: block;
   margin-top: 6rpx;
-  color: #76798f;
+  color: var(--text-sub);
   font-size: 22rpx;
   font-weight: 400;
 }
 
 .service-value {
-  color: #76798f;
+  color: var(--text-sub);
   font-size: 26rpx;
 }
 
 .service-arrow {
-  color: rgba(118, 121, 143, 0.5);
+  color: rgba(91, 96, 118, 0.5);
   font-size: 36rpx;
   margin-left: 8rpx;
 }
@@ -488,7 +541,7 @@ view, text, scroll-view, image {
   inset: 0;
   display: flex;
   align-items: flex-end;
-  background: rgba(46, 49, 62, 0.4);
+  background: rgba(31, 37, 51, 0.4);
 }
 
 .sheet-card {
@@ -508,23 +561,23 @@ view, text, scroll-view, image {
 }
 
 .sheet-title {
-  color: rgba(52, 59, 86, 1);
+  color: rgba(31, 37, 51, 1);
   font-size: 34rpx;
   font-weight: 700;
 }
 
 .sheet-description {
   margin-top: 8rpx;
-  color: rgba(118, 121, 143, 1);
+  color: rgba(91, 96, 118, 1);
   font-size: 24rpx;
 }
 
 .sheet-close {
   width: 56rpx;
   height: 56rpx;
-  color: rgba(118, 121, 143, 1);
+  color: rgba(91, 96, 118, 1);
   font-size: 38rpx;
-  background: rgba(237, 239, 253, 1);
+  background: rgba(99, 102, 241, 0.08);
   border-radius: 28rpx;
 }
 
@@ -534,7 +587,7 @@ view, text, scroll-view, image {
 }
 
 .field > text {
-  color: rgba(52, 59, 86, 1);
+  color: rgba(31, 37, 51, 1);
   font-size: 26rpx;
   font-weight: 600;
 }
@@ -544,9 +597,9 @@ view, text, scroll-view, image {
 .amount-input {
   width: 100%;
   margin-top: 14rpx;
-  color: rgba(52, 59, 86, 1);
+  color: rgba(31, 37, 51, 1);
   font-size: 28rpx;
-  background: rgba(237, 239, 253, 1);
+  background: rgba(99, 102, 241, 0.08);
   border-radius: 24rpx;
 }
 
@@ -563,7 +616,7 @@ view, text, scroll-view, image {
 
 .field-hint {
   margin-top: 8rpx;
-  color: rgba(118, 121, 143, 1);
+  color: rgba(91, 96, 118, 1);
   font-size: 22rpx;
   text-align: right;
 }
@@ -571,19 +624,19 @@ view, text, scroll-view, image {
 .balance-summary {
   margin-top: 28rpx;
   padding: 28rpx;
-  background: rgba(237, 239, 253, 1);
+  background: rgba(99, 102, 241, 0.08);
   border-radius: 24rpx;
 }
 
 .balance-summary view {
-  color: rgba(118, 121, 143, 1);
+  color: rgba(91, 96, 118, 1);
   font-size: 24rpx;
 }
 
 .balance-summary text {
   display: block;
   margin-top: 8rpx;
-  color: rgba(95, 101, 180, 1);
+  color: var(--brand-primary-deep);
   font-size: 40rpx;
   font-weight: 700;
 }
@@ -596,7 +649,7 @@ view, text, scroll-view, image {
 }
 
 .amount-input > text {
-  color: rgba(52, 59, 86, 1);
+  color: rgba(31, 37, 51, 1);
   font-size: 36rpx;
   font-weight: 700;
 }
@@ -616,7 +669,7 @@ view, text, scroll-view, image {
   height: 56rpx;
   margin-right: 14rpx;
   padding: 0 22rpx;
-  color: rgba(95, 101, 180, 1);
+  color: var(--brand-primary-deep);
   font-size: 24rpx;
   font-weight: 600;
   background: rgba(255, 255, 255, 1);
@@ -634,7 +687,7 @@ view, text, scroll-view, image {
   width: 120rpx;
   height: 120rpx;
   border-radius: 18rpx;
-  background: rgba(137, 154, 248, 0.1);
+  background: rgba(99, 102, 241, 0.1);
 }
 
 .avatar-placeholder {
@@ -643,14 +696,14 @@ view, text, scroll-view, image {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #899af8;
+  color: var(--brand-primary);
   font-size: 44rpx;
   background: rgba(255, 255, 255, 0.5);
-  border: 2rpx dashed rgba(137, 154, 248, 0.42);
+  border: 2rpx dashed rgba(99, 102, 241, 0.42);
   border-radius: 18rpx;
 }
 
 .avatar-copy {
-  color: #76798f;
+  color: var(--text-sub);
   font-size: 24rpx;
 }

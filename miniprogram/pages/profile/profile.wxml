@@ -13,7 +13,7 @@
       </view>
 
       <view class="profile-head">
-        <image wx:if="{{userAvatarIsImage}}" class="profile-avatar" src="{{userAvatarUrl}}" mode="aspectFill" />
+        <image wx:if="{{userAvatarIsImage}}" class="profile-avatar" src="{{userAvatarUrl}}" mode="aspectFill" lazy-load />
         <view wx:else class="profile-avatar">{{user.avatar}}</view>
         <view class="profile-main">
           <view class="profile-name">{{user.organization}}</view>
@@ -64,7 +64,7 @@
     </view>
 
     <!-- 能力与认证 -->
-    <view class="section">
+    <view class="section" style="--animate-delay: 0.35s;">
       <view class="section-head">
         <text class="section-title">{{isProvider ? '服务能力' : '作品与风格'}}</text>
         <text class="section-action" bindtap="editProfile">入驻资料 ></text>
@@ -89,25 +89,23 @@
     </view>
 
     <!-- 精选案例 -->
-    <view class="section">
+    <view class="section" style="--animate-delay: 0.45s;">
       <view class="section-head">
         <text class="section-title">{{isProvider ? '精选案例' : '代表作品'}}</text>
         <text class="section-action">全部案例 ></text>
       </view>
-      <scroll-view wx:if="{{cases.length}}" class="case-scroll" scroll-x enhanced show-scrollbar="{{false}}">
-        <view class="cases">
-          <view class="case-card {{item.colorClass}}" wx:for="{{cases}}" wx:key="id">
-            <view class="case-type">{{item.caseType}}</view>
-            <view class="case-name">{{item.name}}</view>
-            <view class="case-result">{{item.resultText}}</view>
-          </view>
+      <view wx:if="{{cases.length}}" class="cases">
+        <view class="case-card {{item.colorClass}}" wx:for="{{cases}}" wx:key="id">
+          <view class="case-type">{{item.caseType}}</view>
+          <view class="case-name">{{item.name}}</view>
+          <view class="case-result">{{item.resultText}}</view>
         </view>
-      </scroll-view>
+      </view>
       <view wx:else class="profile-card inline-empty">暂无{{isProvider ? '精选案例' : '代表作品资料'}}</view>
     </view>
 
     <!-- 更多服务 -->
-    <view class="section">
+    <view class="section" style="--animate-delay: 0.55s;">
       <view class="section-head">
         <text class="section-title">更多服务</text>
       </view>
@@ -152,7 +150,7 @@
       <view class="field">
         <text>头像</text>
         <view class="avatar-uploader" bindtap="chooseAvatar">
-          <image wx:if="{{avatarInput}}" class="avatar-preview" src="{{avatarInput}}" mode="aspectFill" />
+          <image wx:if="{{avatarInput}}" class="avatar-preview" src="{{avatarInput}}" mode="aspectFill" lazy-load />
           <view wx:else class="avatar-placeholder">{{avatarUploading ? '…' : '+'}}</view>
           <view class="avatar-copy">{{avatarUploading ? '正在上传' : avatarInput ? '点击替换头像' : '上传头像'}}</view>
         </view>

@@ -1,7 +1,3 @@
-view, text, scroll-view, image {
-  box-sizing: border-box;
-}
-
 /* === 平台通知 === */
 .notice-list {
   display: flex;
@@ -15,10 +11,13 @@ view, text, scroll-view, image {
   gap: 24rpx;
   padding: 28rpx;
   background: #fff;
-  border-radius: 32rpx;  transition: transform 0.2s ease, opacity 0.2s ease;
+  border-radius: 32rpx;
+  transition: transform 0.2s ease, opacity 0.2s ease;
 }
 
-.notice-card:active {}
+.notice-card:active {
+  transform: scale(0.98);
+}
 
 .notice-icon-wrap {
   position: relative;
@@ -31,8 +30,8 @@ view, text, scroll-view, image {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: rgba(95, 101, 180, 1);
-  background: rgba(237, 239, 253, 1);
+  color: var(--brand-primary-deep);
+  background: rgba(99, 102, 241, 0.08);
   border-radius: 28rpx;
 }
 
@@ -70,19 +69,19 @@ view, text, scroll-view, image {
 }
 
 .notice-title {
-  color: rgba(52, 59, 86, 1);
+  color: var(--text-main);
   font-size: 30rpx;
   font-weight: 600;
 }
 
 .notice-time {
   flex: none;
-  color: rgba(158, 163, 185, 1);
+  color: var(--text-light);
   font-size: 22rpx;
 }
 
 .notice-desc {
-  color: rgba(118, 121, 143, 1);
+  color: rgba(91, 96, 118, 1);
   font-size: 26rpx;
   line-height: 1.5;
   display: -webkit-box;
@@ -97,7 +96,7 @@ view, text, scroll-view, image {
   flex-direction: column;
   align-items: center;
   gap: 16rpx;
-  color: rgba(158, 163, 185, 1);
+  color: var(--text-light);
   font-size: 26rpx;
 }
 
@@ -120,10 +119,13 @@ view, text, scroll-view, image {
   gap: 24rpx;
   padding: 28rpx;
   background: #fff;
-  border-radius: 32rpx;  transition: transform 0.2s ease;
+  border-radius: 32rpx;
+  transition: transform 0.2s ease;
 }
 
-.chat-card:active {}
+.chat-card:active {
+  transform: scale(0.98);
+}
 
 .chat-avatar-wrap {
   position: relative;
@@ -136,10 +138,10 @@ view, text, scroll-view, image {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: rgba(95, 101, 180, 1);
+  color: var(--brand-primary-deep);
   font-size: 36rpx;
   font-weight: 700;
-  background: rgba(237, 239, 253, 1);
+  background: rgba(99, 102, 241, 0.08);
   border-radius: 50%;
 }
 
@@ -176,7 +178,7 @@ view, text, scroll-view, image {
 
 .chat-name {
   overflow: hidden;
-  color: rgba(52, 59, 86, 1);
+  color: var(--text-main);
   font-size: 32rpx;
   font-weight: 600;
   text-overflow: ellipsis;
@@ -185,7 +187,7 @@ view, text, scroll-view, image {
 
 .chat-time {
   flex: none;
-  color: rgba(158, 163, 185, 1);
+  color: var(--text-light);
   font-size: 22rpx;
 }
 
@@ -199,7 +201,7 @@ view, text, scroll-view, image {
 .chat-message {
   min-width: 0;
   overflow: hidden;
-  color: rgba(118, 121, 143, 1);
+  color: rgba(91, 96, 118, 1);
   font-size: 26rpx;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -207,7 +209,7 @@ view, text, scroll-view, image {
 
 .chat-arrow {
   flex: none;
-  color: rgba(158, 163, 185, 0.6);
+  color: rgba(156, 163, 175, 0.6);
 }
 
 .chat-arrow .ui-icon {
@@ -217,12 +219,12 @@ view, text, scroll-view, image {
 
 .read-action {
   padding: 6rpx 0 6rpx 20rpx;
-  color: rgba(95, 101, 180, 1);
+  color: var(--brand-primary-deep);
   font-size: 24rpx;
   background: transparent;
 }
 
 .read-action[disabled] {
-  color: rgba(118, 121, 143, 1);
+  color: rgba(91, 96, 118, 1);
   background: transparent;
 }

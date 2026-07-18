@@ -6,6 +6,10 @@ Component({
       type: Boolean,
       value: false,
     },
+    skeleton: {
+      type: Boolean,
+      value: false,
+    },
     error: {
       type: String,
       value: '',

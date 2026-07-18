@@ -8,10 +8,11 @@
   min-height: 310rpx;
   margin: 22rpx 0 0;
   padding: 34rpx 32rpx;
-  color: rgba(52, 59, 86, 1);
+  color: var(--text-main);
   background: rgba(255, 255, 255, 0.6);
   border: 1px solid rgba(255, 255, 255, 0.9);
-  border-radius: 36rpx;}
+  border-radius: 36rpx;
+}
 
 .insight-grid {
   position: absolute;
@@ -31,7 +32,8 @@
   align-items: center;
   justify-content: center;
   background: #eef2ff;
-  border-radius: 50%;}
+  border-radius: 50%;
+}
 
 .score-inner {
   width: 114rpx;
@@ -41,7 +43,8 @@
   align-items: center;
   justify-content: center;
   background: rgba(255, 255, 255, 0.95);
-  border-radius: 50%;}
+  border-radius: 50%;
+}
 
 .score-inner text,
 .score-inner label {
@@ -49,13 +52,13 @@
 }
 
 .score-inner text {
-  color: rgba(52, 59, 86, 1);
+  color: var(--text-main);
   font-size: 40rpx;
   font-weight: 700;
 }
 
 .score-inner label {
-  color: rgba(118, 121, 143, 1);
+  color: rgba(91, 96, 118, 1);
   font-size: 18rpx;
 }
 
@@ -66,7 +69,7 @@
 }
 
 .insight-kicker {
-  color: rgba(95, 101, 180, 1);
+  color: rgba(79, 70, 229, 1);
   font-size: 18rpx;
   font-weight: 700;
   letter-spacing: 2.4rpx;
@@ -74,7 +77,7 @@
 
 .insight-title {
   margin-top: 18rpx;
-  color: rgba(46, 49, 62, 1);
+  color: var(--text-main);
   font-size: 32rpx;
   font-weight: 700;
   line-height: 1.35;
@@ -82,7 +85,7 @@
 
 .insight-desc {
   margin-top: 10rpx;
-  color: rgba(118, 121, 143, 1);
+  color: rgba(91, 96, 118, 1);
   font-size: 21rpx;
   line-height: 1.55;
 }
@@ -94,8 +97,9 @@
   color: rgba(255, 255, 255, 1);
   font-size: 22rpx;
   font-weight: 600;
-  background: rgba(46, 49, 62, 1);
-  border-radius: 32rpx;}
+  background: var(--text-main);
+  border-radius: 32rpx;
+}
 
 .insight-copy button text {
   margin-left: 12rpx;
@@ -128,7 +132,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  color: rgba(118, 121, 143, 1);
+  color: rgba(91, 96, 118, 1);
   font-size: 21rpx;
 }
 
@@ -155,8 +159,8 @@
 .data-section {
   margin-top: 34rpx;
   padding: 26rpx 0 30rpx;
-  border-top: 1rpx solid rgba(95, 101, 180, 0.13);
-  border-bottom: 1rpx solid rgba(95, 101, 180, 0.13);
+  border-top: 1rpx solid rgba(79, 70, 229, 0.13);
+  border-bottom: 1rpx solid rgba(79, 70, 229, 0.13);
 }
 
 .data-head {
@@ -188,7 +192,7 @@
   display: flex;
   align-items: center;
   gap: 8rpx;
-  color: rgba(118, 121, 143, 0.8);
+  color: rgba(91, 96, 118, 0.8);
   font-size: 18rpx;
 }
 
@@ -214,7 +218,7 @@
   justify-content: space-between;
   margin-top: 32rpx;
   padding: 0 8rpx;
-  border-bottom: 1rpx solid rgba(95, 101, 180, 0.14);
+  border-bottom: 1rpx solid rgba(79, 70, 229, 0.14);
 }
 
 .trend-day {
@@ -248,7 +252,7 @@
 
 .trend-day > text {
   margin-top: 12rpx;
-  color: rgba(118, 121, 143, 0.75);
+  color: rgba(91, 96, 118, 0.75);
   font-size: 18rpx;
 }
 
@@ -276,7 +280,7 @@
 
 .funnel-copy label,
 .channel-head label {
-  color: rgba(118, 121, 143, 0.9);
+  color: rgba(91, 96, 118, 0.9);
   font-size: 20rpx;
 }
 
@@ -327,10 +331,11 @@
   gap: 20rpx;
   margin-top: 34rpx;
   padding: 20rpx 22rpx;
-  color: rgba(52, 59, 86, 1);
+  color: var(--text-main);
   background: rgba(255, 255, 255, 0.6);
   border: 1px solid rgba(255, 255, 255, 0.9);
-  border-radius: 24rpx;}
+  border-radius: 24rpx;
+}
 
 .agent-explain image {
   width: 58rpx;
@@ -348,19 +353,19 @@
 }
 
 .agent-explain > view text {
-  color: rgba(52, 59, 86, 1);
+  color: var(--text-main);
   font-size: 25rpx;
   font-weight: 600;
 }
 
 .agent-explain > view label {
   margin-top: 6rpx;
-  color: rgba(118, 121, 143, 1);
+  color: rgba(91, 96, 118, 1);
   font-size: 20rpx;
 }
 
 .agent-explain > text {
-  color: rgba(118, 121, 143, 0.4);
+  color: rgba(91, 96, 118, 0.4);
   font-size: 29rpx;
 }
 

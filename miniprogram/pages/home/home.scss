@@ -1,9 +1,11 @@
-view, text, scroll-view, image {
-  box-sizing: border-box;
-}
-
 .role-hero {
   margin-top: 32rpx;
+  animation: app-slide-up 0.5s var(--ease-out) both;
+  transition: transform var(--duration-fast) var(--ease-out);
+}
+
+.role-hero:active {
+  transform: scale(0.98);
 }
 
 .onboarding-guide {
@@ -57,19 +59,29 @@ view, text, scroll-view, image {
 .recommend-list {
   display: flex;
   flex-direction: column;
-  gap: 28rpx;
+  gap: 20rpx;
 }
 
 .recommend-item {
   display: flex;
   align-items: center;
+  padding: 24rpx;
+  background: var(--card-bg);
+  border: 1rpx solid var(--border-light);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  transition: transform var(--duration-fast) var(--ease-out);
+}
+
+.recommend-item:active {
+  transform: scale(0.98);
 }
 
 .recommend-avatar {
   flex: none;
   width: 112rpx;
   height: 112rpx;
-  border-radius: 24rpx;
+  border-radius: 20rpx;
   overflow: hidden;
   font-size: 38rpx;
   font-weight: 700;
@@ -130,11 +142,12 @@ view, text, scroll-view, image {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--brand-primary);
+  background: linear-gradient(135deg, var(--brand-primary) 0%, #8b5cf6 100%);
   color: #fff;
   font-size: 24rpx;
   font-weight: 500;
-  border-radius: 8rpx;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-button);
 }
 
 .demand-entry {
@@ -143,8 +156,16 @@ view, text, scroll-view, image {
   justify-content: space-between;
   gap: 24rpx;
   margin-top: 24rpx;
-  padding: 24rpx 0;
-  border-bottom: 1rpx solid rgba(99, 102, 241, 0.1);
+  padding: 28rpx 24rpx;
+  background: var(--card-bg);
+  border: 1rpx solid var(--border-light);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  transition: transform var(--duration-fast) var(--ease-out);
+}
+
+.demand-entry:active {
+  transform: scale(0.98);
 }
 
 .demand-entry-title {

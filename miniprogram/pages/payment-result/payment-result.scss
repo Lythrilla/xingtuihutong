@@ -21,10 +21,10 @@ button {
   align-items: center;
   justify-content: center;
   margin: 0 auto;
-  color: #5f65b4;
+  color: var(--brand-primary-deep);
   font-size: 36rpx;
   font-weight: 700;
-  background: rgba(95, 101, 180, 0.1);
+  background: rgba(79, 70, 229, 0.1);
   border-radius: 30rpx;
 }
 
@@ -48,7 +48,7 @@ button {
 .result-description {
   max-width: 560rpx;
   margin: 14rpx auto 0;
-  color: #76798f;
+  color: var(--text-sub);
   font-size: 23rpx;
   line-height: 1.6;
 }
@@ -67,7 +67,7 @@ button {
   gap: 20rpx;
   padding: 18rpx 0;
   font-size: 22rpx;
-  border-bottom: 1rpx solid rgba(95, 101, 180, 0.08);
+  border-bottom: 1rpx solid rgba(79, 70, 229, 0.08);
 }
 
 .result-detail > view:last-child {
@@ -75,25 +75,25 @@ button {
 }
 
 .result-detail text {
-  color: #76798f;
+  color: var(--text-sub);
 }
 
 .result-detail label {
-  color: #343b56;
+  color: var(--text-main);
   text-align: right;
 }
 
 .safety-card {
   margin-top: 24rpx;
   padding: 28rpx;
-  color: #76798f;
+  color: var(--text-sub);
   font-size: 21rpx;
   line-height: 1.8;
 }
 
 .safety-title {
   margin-bottom: 8rpx;
-  color: #343b56;
+  color: var(--text-main);
   font-size: 26rpx;
   font-weight: 650;
 }
