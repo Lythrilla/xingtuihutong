@@ -1,4 +1,4 @@
-import { apiRequest, unlockPartnerContact } from '../../utils/api'
+import { apiRequest, unlockPartnerContact, toAssetUrl } from '../../utils/api'
 
 export {}
 
@@ -7,6 +7,7 @@ interface Partner {
   partnerType: 'provider' | 'client'
   avatar: string
   avatarClass: string
+  avatarIsImage?: boolean
   name: string
   identity: string
   description: string
@@ -87,10 +88,18 @@ Page<PartnerDetailPageData, WechatMiniprogram.IAnyObject>({
         onboardingStatus: 'draft' | 'pending' | 'approved' | 'rejected'
         canConnect: boolean
       }>(`/api/partners/${encodeURIComponent(this.data.partnerId)}`)
+      const resolved = toAssetUrl((response.partner.avatar || '').trim())
+      const hasImageAvatar = /^https?:\/\//i.test(resolved)
+      const partner = {
+        ...response.partner,
+        avatar: hasImageAvatar ? resolved : response.partner.avatar,
+        avatarIsImage: hasImageAvatar,
+      }
       this.setData({
         ...response,
+        partner,
         isCreator: response.role === 'client',
-        favorite: getFavoriteIds().includes(response.partner.id),
+        favorite: getFavoriteIds().includes(partner.id),
         reviewedAt: formatReviewedAt(response.reviewedAt),
         loading: false,
       })

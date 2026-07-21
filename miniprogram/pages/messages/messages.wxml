@@ -51,7 +51,8 @@
       <view class="chat-list" wx:if="{{chats.length}}">
         <view class="chat-card" wx:for="{{chats}}" wx:key="id" data-id="{{item.id}}" data-name="{{item.name}}" bindtap="openChat">
           <view class="chat-avatar-wrap">
-            <view class="chat-avatar {{item.avatarClass}}">{{item.avatar}}</view>
+            <image wx:if="{{item.avatarIsImage}}" class="chat-avatar" src="{{item.avatar}}" mode="aspectFill" lazy-load />
+            <view wx:else class="chat-avatar {{item.avatarClass}}">{{item.avatar}}</view>
             <view class="chat-unread-badge" wx:if="{{item.unread > 0}}">{{item.unread}}</view>
           </view>
           
