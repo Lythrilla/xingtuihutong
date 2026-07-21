@@ -1,24 +1,25 @@
 /* === 平台通知 === */
 .notice-list {
-  display: flex;
-  flex-direction: column;
-  gap: 24rpx;
+  background: var(--card-bg);
+  border: 1rpx solid var(--border-light);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
 }
 
 .notice-card {
   display: flex;
   align-items: flex-start;
   gap: 24rpx;
-  padding: 28rpx;
-  background: var(--card-bg);
-  border: 1rpx solid var(--border-light);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-card);
-  transition: transform 0.2s ease, opacity 0.2s ease;
+  padding: 28rpx 24rpx;
+  border-bottom: 1rpx solid var(--border-light);
+}
+
+.notice-card:last-child {
+  border-bottom: 0;
 }
 
 .notice-card:active {
-  transform: scale(0.98);
+  background: rgba(31, 37, 51, 0.02);
 }
 
 .notice-icon-wrap {
@@ -26,20 +27,20 @@
 }
 
 .notice-icon {
-  width: 88rpx;
-  height: 88rpx;
+  width: 76rpx;
+  height: 76rpx;
   flex: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--brand-primary-deep);
-  background: rgba(59, 91, 219, 0.12);
-  border-radius: 28rpx;
+  color: var(--text-main);
+  background: rgba(31, 37, 51, 0.05);
+  border-radius: 20rpx;
 }
 
 .notice-icon .ui-icon {
-  width: 44rpx;
-  height: 44rpx;
+  width: 38rpx;
+  height: 38rpx;
 }
 
 .notice-unread-badge {
@@ -110,25 +111,26 @@
 
 /* === 合作会话 === */
 .chat-list {
-  display: flex;
-  flex-direction: column;
-  gap: 24rpx;
+  background: var(--card-bg);
+  border: 1rpx solid var(--border-light);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
 }
 
 .chat-card {
   display: flex;
   align-items: center;
   gap: 24rpx;
-  padding: 28rpx;
-  background: var(--card-bg);
-  border: 1rpx solid var(--border-light);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-card);
-  transition: transform 0.2s ease;
+  padding: 28rpx 24rpx;
+  border-bottom: 1rpx solid var(--border-light);
+}
+
+.chat-card:last-child {
+  border-bottom: 0;
 }
 
 .chat-card:active {
-  transform: scale(0.98);
+  background: rgba(31, 37, 51, 0.02);
 }
 
 .chat-avatar-wrap {
@@ -142,10 +144,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--brand-primary-deep);
-  font-size: 36rpx;
+  color: var(--text-main);
+  font-size: 34rpx;
   font-weight: 700;
-  background: rgba(59, 91, 219, 0.12);
+  background: rgba(31, 37, 51, 0.05);
   border-radius: 50%;
 }
 

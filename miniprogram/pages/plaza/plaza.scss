@@ -294,17 +294,19 @@
 
 .connect-button {
   width: 100%;
+  min-width: 0;
+  max-width: 100%;
   height: 56rpx;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-sizing: border-box;
   padding: 0;
   color: #fff;
   font-size: 24rpx;
   font-weight: 500;
-  background: var(--brand-gradient);
+  background: var(--ink-900, #171b26);
   border-radius: var(--radius-sm);
-  box-shadow: var(--shadow-button);
 }
 
 .connect-button[disabled] {
