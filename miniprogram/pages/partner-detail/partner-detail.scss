@@ -140,7 +140,7 @@ button {
   flex: none;
   color: #fff;
   font-size: 20rpx;
-  background: var(--brand-primary);
+  background: var(--brand-gradient);
   border-radius: 14rpx;
 }
 
@@ -191,8 +191,11 @@ button {
   display: flex;
   gap: 18rpx;
   padding: 22rpx 40rpx calc(22rpx + env(safe-area-inset-bottom));
-  background: rgba(247, 248, 253, 0.94);
+  background: rgba(247, 248, 253, 0.92);
   border-top: 1rpx solid rgba(99, 102, 241, 0.12);
+  backdrop-filter: blur(24rpx);
+  -webkit-backdrop-filter: blur(24rpx);
+  box-shadow: 0 -8rpx 32rpx rgba(31, 37, 51, 0.06);
 }
 
 .sheet-layer {
@@ -245,6 +248,7 @@ button {
 
 .access-option.selected {
   border-color: var(--brand-primary);
+  box-shadow: 0 8rpx 24rpx rgba(99, 102, 241, 0.14);
 }
 
 .access-name {

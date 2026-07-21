@@ -98,16 +98,18 @@
   color: var(--text-main);
   font-size: 26rpx;
   line-height: 1.55;
-  background: rgba(255, 255, 255, 0.66);
-  border: 1rpx solid rgba(255, 255, 255, 0.84);
+  background: rgba(255, 255, 255, 0.72);
+  border: 1rpx solid rgba(255, 255, 255, 0.85);
   border-radius: 8rpx 28rpx 28rpx;
+  box-shadow: 0 6rpx 20rpx rgba(99, 102, 241, 0.06);
 }
 
 .message.user .message-content {
   color: #fff;
-  background: var(--brand-primary);
+  background: var(--brand-gradient);
   border: 0;
   border-radius: 28rpx 8rpx 28rpx 28rpx;
+  box-shadow: 0 8rpx 22rpx rgba(99, 102, 241, 0.22);
 }
 
 .thinking {
@@ -395,7 +397,7 @@
   color: #fff;
   font-size: 26rpx;
   font-weight: 700;
-  background: linear-gradient(135deg, rgba(99, 102, 241, 1) 0%, rgba(108, 100, 205, 1) 100%);
+  background: var(--brand-gradient);
   border-radius: 50%;
   box-shadow: 0 4rpx 14rpx rgba(99, 102, 241, 0.18);
 }
@@ -558,12 +560,12 @@
   align-items: center;
   gap: 16rpx;
   padding: 9rpx 11rpx 9rpx 24rpx;
-  background: rgba(255, 255, 255, 0.55);
-  border: 1rpx solid rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.68);
+  border: 1rpx solid rgba(255, 255, 255, 0.92);
   border-radius: 50rpx;
-  backdrop-filter: blur(28rpx);
-  -webkit-backdrop-filter: blur(28rpx);
-  box-shadow: 0 8rpx 30rpx rgba(99, 102, 241, 0.08);
+  backdrop-filter: blur(32rpx);
+  -webkit-backdrop-filter: blur(32rpx);
+  box-shadow: 0 2rpx 6rpx rgba(31, 37, 51, 0.04), 0 14rpx 40rpx rgba(99, 102, 241, 0.12);
 }
 
 .agent-composer input {
@@ -578,8 +580,9 @@
   width: 62rpx;
   height: 62rpx;
   color: #fff;
-  background: var(--brand-primary);
+  background: var(--brand-gradient);
   border-radius: 50%;
+  box-shadow: 0 6rpx 16rpx rgba(99, 102, 241, 0.28);
 }
 
 .agent-composer button .ui-icon {

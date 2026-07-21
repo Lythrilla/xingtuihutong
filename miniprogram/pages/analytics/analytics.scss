@@ -9,9 +9,10 @@
   margin: 22rpx 0 0;
   padding: 34rpx 32rpx;
   color: var(--text-main);
-  background: rgba(255, 255, 255, 0.6);
+  background: linear-gradient(135deg, rgba(238, 242, 255, 0.95) 0%, rgba(255, 255, 255, 0.82) 100%);
   border: 1px solid rgba(255, 255, 255, 0.9);
   border-radius: 36rpx;
+  box-shadow: 0 2rpx 6rpx rgba(31, 37, 51, 0.03), 0 16rpx 48rpx rgba(99, 102, 241, 0.12);
 }
 
 .insight-grid {
@@ -31,8 +32,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #eef2ff;
+  background: conic-gradient(from 0deg, #6366f1, #8b5cf6, #a78bfa, #6366f1);
   border-radius: 50%;
+  box-shadow: 0 8rpx 24rpx rgba(99, 102, 241, 0.2);
 }
 
 .score-inner {
@@ -97,8 +99,9 @@
   color: rgba(255, 255, 255, 1);
   font-size: 22rpx;
   font-weight: 600;
-  background: var(--text-main);
+  background: var(--brand-gradient);
   border-radius: 32rpx;
+  box-shadow: var(--shadow-button);
 }
 
 .insight-copy button text {
@@ -123,9 +126,10 @@
   flex: none;
   overflow: hidden;
   padding: 24rpx;
-  background: rgba(255, 255, 255, 0.54);
-  border: 1rpx solid rgba(255, 255, 255, 0.82);
+  background: rgba(255, 255, 255, 0.72);
+  border: 1rpx solid rgba(255, 255, 255, 0.85);
   border-radius: 22rpx;
+  box-shadow: var(--shadow-card);
 }
 
 .metric-top {
@@ -153,7 +157,8 @@
   bottom: 0;
   left: 0;
   height: 5rpx;
-  background: #eef2ff;
+  background: linear-gradient(90deg, #6366f1, #8b5cf6);
+  opacity: 0.5;
 }
 
 .data-section {
@@ -204,11 +209,11 @@
 }
 
 .legend .purple {
-  background: rgba(111, 103, 210, 1);
+  background: #6366f1;
 }
 
 .legend .cyan {
-  background: rgba(81, 203, 219, 1);
+  background: #38bdf8;
 }
 
 .trend-chart {
@@ -243,11 +248,11 @@
 }
 
 .bar.match {
-  background: #eef2ff;
+  background: linear-gradient(180deg, #8b5cf6, #6366f1);
 }
 
 .bar.connection {
-  background: #eef2ff;
+  background: linear-gradient(180deg, #7dd3fc, #38bdf8);
 }
 
 .trend-day > text {
@@ -300,7 +305,7 @@
 .funnel-bar view,
 .channel-track view {
   height: 100%;
-  background: #eef2ff;
+  background: linear-gradient(90deg, #6366f1, #8b5cf6);
   border-radius: inherit;
 }
 
@@ -313,7 +318,7 @@
 }
 
 .channel-track view {
-  background: #eef2ff;
+  background: linear-gradient(90deg, #38bdf8, #6366f1);
 }
 
 .channel-empty {
@@ -332,9 +337,10 @@
   margin-top: 34rpx;
   padding: 20rpx 22rpx;
   color: var(--text-main);
-  background: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.72);
   border: 1px solid rgba(255, 255, 255, 0.9);
   border-radius: 24rpx;
+  box-shadow: var(--shadow-card);
 }
 
 .agent-explain image {

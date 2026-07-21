@@ -135,12 +135,14 @@ view, text, input, textarea {
   flex: none;
   color: #fff;
   font-size: 32rpx;
-  background: var(--brand-primary);
+  background: var(--brand-gradient);
   border-radius: 50%;
+  box-shadow: 0 6rpx 14rpx rgba(99, 102, 241, 0.22);
 }
 
 .uploaded .upload-mark {
-  background: #2db087;
+  background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+  box-shadow: 0 6rpx 14rpx rgba(16, 185, 129, 0.24);
 }
 
 .upload-copy {
@@ -227,7 +229,7 @@ view, text, input, textarea {
 }
 
 .check-box.selected {
-  background: var(--brand-primary);
+  background: var(--brand-gradient);
   border-color: var(--brand-primary);
 }
 
@@ -297,23 +299,25 @@ view, text, input, textarea {
   color: #fff;
   font-size: 42rpx;
   font-weight: 700;
-  background: var(--brand-primary);
+  background: var(--brand-gradient);
   border-radius: 50%;
+  box-shadow: 0 10rpx 26rpx rgba(99, 102, 241, 0.26);
 }
 
 .status-halo {
   position: absolute;
   inset: -20rpx;
-  background: #eef2ff;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.16) 0%, rgba(139, 92, 246, 0.06) 60%, transparent 75%);
   border-radius: 50%;
 }
 
 .status-approved .status-icon {
-  background: #eef2ff;
+  background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+  box-shadow: 0 10rpx 26rpx rgba(16, 185, 129, 0.26);
 }
 
 .status-approved .status-halo {
-  background: #eef2ff;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.16) 0%, rgba(52, 211, 153, 0.06) 60%, transparent 75%);
 }
 
 .status-title {
@@ -362,7 +366,7 @@ view, text, input, textarea {
 .status-step.active text,
 .status-step.done text {
   color: #fff;
-  background: var(--brand-primary);
+  background: var(--brand-gradient);
 }
 
 .status-line {
@@ -373,5 +377,5 @@ view, text, input, textarea {
 }
 
 .status-line.active {
-  background: var(--brand-primary);
+  background: linear-gradient(90deg, #6366f1, #8b5cf6);
 }

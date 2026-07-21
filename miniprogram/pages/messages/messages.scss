@@ -10,8 +10,10 @@
   align-items: flex-start;
   gap: 24rpx;
   padding: 28rpx;
-  background: #fff;
-  border-radius: 32rpx;
+  background: var(--card-bg);
+  border: 1rpx solid var(--border-light);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
   transition: transform 0.2s ease, opacity 0.2s ease;
 }
 
@@ -31,7 +33,7 @@
   align-items: center;
   justify-content: center;
   color: var(--brand-primary-deep);
-  background: rgba(99, 102, 241, 0.08);
+  background: linear-gradient(150deg, rgba(99, 102, 241, 0.12), rgba(139, 92, 246, 0.07));
   border-radius: 28rpx;
 }
 
@@ -118,8 +120,10 @@
   align-items: center;
   gap: 24rpx;
   padding: 28rpx;
-  background: #fff;
-  border-radius: 32rpx;
+  background: var(--card-bg);
+  border: 1rpx solid var(--border-light);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
   transition: transform 0.2s ease;
 }
 
@@ -141,7 +145,7 @@
   color: var(--brand-primary-deep);
   font-size: 36rpx;
   font-weight: 700;
-  background: rgba(99, 102, 241, 0.08);
+  background: linear-gradient(150deg, rgba(99, 102, 241, 0.12), rgba(139, 92, 246, 0.07));
   border-radius: 50%;
 }
 

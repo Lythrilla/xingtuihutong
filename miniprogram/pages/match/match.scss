@@ -54,12 +54,13 @@
 
 .demand-step.active > view {
   color: #fff;
-  background: var(--text-main);
+  background: var(--brand-gradient);
+  box-shadow: 0 6rpx 16rpx rgba(99, 102, 241, 0.24);
 }
 
 .demand-step.done > view {
   color: transparent;
-  background: var(--brand-primary);
+  background: var(--brand-gradient);
 }
 
 .demand-step.done > view::after {
@@ -76,7 +77,7 @@
 }
 
 .demand-line.active {
-  background: var(--brand-primary);
+  background: linear-gradient(90deg, #6366f1, #8b5cf6);
 }
 
 .form-section {
@@ -296,8 +297,9 @@
 .cycle.selected {
   color: var(--brand-primary);
   font-weight: 650;
-  background: rgba(99, 102, 241, 0.08);
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.06));
   border-color: var(--brand-primary);
+  box-shadow: 0 6rpx 16rpx rgba(99, 102, 241, 0.1);
 }
 
 .target-grid {
@@ -345,7 +347,8 @@
 
 .target-card.selected .target-icon {
   color: #fff;
-  background: var(--brand-primary);
+  background: var(--brand-gradient);
+  box-shadow: 0 6rpx 14rpx rgba(99, 102, 241, 0.24);
 }
 
 .target-check {

@@ -30,12 +30,14 @@ button {
 
 .result-card.success .result-symbol {
   color: #fff;
-  background: #71c6aa;
+  background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+  box-shadow: 0 8rpx 22rpx rgba(16, 185, 129, 0.26);
 }
 
 .result-card.failed .result-symbol {
   color: #fff;
-  background: #e97878;
+  background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
+  box-shadow: 0 8rpx 22rpx rgba(239, 68, 68, 0.24);
 }
 
 .result-title {
