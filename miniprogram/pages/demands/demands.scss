@@ -52,7 +52,7 @@
   padding: 0 28rpx;
   color: #fff;
   font-size: 26rpx;
-  background: linear-gradient(135deg, var(--brand-primary) 0%, #8b5cf6 100%);
+  background: var(--brand-gradient);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-button);
 }
@@ -77,8 +77,8 @@
 .chip.active {
   color: var(--brand-primary);
   font-weight: 600;
-  background: rgba(99, 102, 241, 0.08);
-  border-color: rgba(99, 102, 241, 0.28);
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.06));
+  border-color: rgba(99, 102, 241, 0.3);
 }
 
 .clear-filters {
@@ -102,7 +102,7 @@
 .action-primary,
 .accept-button {
   color: #fff;
-  background: linear-gradient(135deg, var(--brand-primary) 0%, #8b5cf6 100%);
+  background: var(--brand-gradient);
   box-shadow: var(--shadow-button);
 }
 
@@ -179,8 +179,9 @@
   justify-content: center;
   color: #fff;
   font-weight: 700;
-  background: var(--brand-primary);
+  background: var(--brand-gradient);
   border-radius: 50%;
+  box-shadow: 0 6rpx 14rpx rgba(99, 102, 241, 0.22);
 }
 
 .song-name {
@@ -348,7 +349,8 @@
   overflow-y: auto;
   padding: 34rpx 36rpx calc(34rpx + env(safe-area-inset-bottom));
   background: #f4f6fb;
-  border-radius: 34rpx 34rpx 0 0;
+  border-radius: 36rpx 36rpx 0 0;
+  box-shadow: 0 -12rpx 48rpx rgba(31, 37, 51, 0.14);
 }
 
 .sheet-head {
