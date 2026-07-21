@@ -11,6 +11,7 @@ interface MessageItem {
 
 interface ConversationPageData {
   loading: boolean
+  hasLoaded: boolean
   error: string
   sending: boolean
   conversationId: string
@@ -24,6 +25,7 @@ interface ConversationPageData {
 Page<ConversationPageData, WechatMiniprogram.IAnyObject>({
   data: {
     loading: true,
+    hasLoaded: false,
     error: '',
     sending: false,
     conversationId: '',
@@ -40,19 +42,19 @@ Page<ConversationPageData, WechatMiniprogram.IAnyObject>({
     this.loadMessages()
   },
   onShow() {
-    if (this.data.conversationId) {
-      this.loadMessages()
+    if (this.data.conversationId && this.data.hasLoaded) {
+      this.loadMessages(true)
     }
   },
   retry() {
     return this.loadMessages()
   },
-  async loadMessages() {
+  async loadMessages(silent = false) {
     if (!this.data.conversationId) {
       this.setData({ loading: false, error: '会话信息不完整，请返回后重试' })
       return
     }
-    this.setData({ loading: true, error: '' })
+    if (!silent) this.setData({ loading: true, error: '' })
     try {
       const messages = await apiRequest<MessageItem[]>(
         `/api/conversations/${this.data.conversationId}`,
@@ -63,14 +65,18 @@ Page<ConversationPageData, WechatMiniprogram.IAnyObject>({
       }))
       this.setData({
         loading: false,
+        hasLoaded: true,
+        error: '',
         messages: formatted,
         scrollTarget: formatted.length ? `message-${formatted[formatted.length - 1].id}` : '',
       })
     } catch (error) {
-      this.setData({
-        loading: false,
-        error: error instanceof Error ? error.message : '会话加载失败',
-      })
+      const message = error instanceof Error ? error.message : '会话加载失败'
+      if (silent) {
+        wx.showToast({ title: message, icon: 'none' })
+      } else {
+        this.setData({ loading: false, error: message })
+      }
     }
   },
   updateDraft(event: WechatMiniprogram.Input) {

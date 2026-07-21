@@ -132,7 +132,6 @@
     </view>
   </block>
 </view>
-<tab-bar active="profile"></tab-bar>
 
 <view wx:if="{{sheetMode}}" class="sheet-layer" bindtap="closeSheet">
   <view class="sheet-card" catchtap="preventClose">

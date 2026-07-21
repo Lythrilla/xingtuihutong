@@ -1,4 +1,4 @@
-import { apiRequest, goTo } from '../../utils/api'
+import { apiRequest, goTo, syncTabBar } from '../../utils/api'
 
 export {}
 
@@ -52,9 +52,25 @@ Component({
       await this.loadEntries('all')
     },
   },
+  pageLifetimes: {
+    show() {
+      syncTabBar(this, 'plaza')
+      const focusedPartnerId = wx.getStorageSync('starconnect-agent-partner') as string
+      if (focusedPartnerId && this.data.entries.length) {
+        void this.loadEntries(this.data.activeType || 'all')
+      }
+    },
+  },
   methods: {
     retry() {
       return this.loadEntries(this.data.activeType || 'all')
+    },
+    async onPullDownRefresh() {
+      try {
+        await this.loadEntries(this.data.activeType || 'all')
+      } finally {
+        wx.stopPullDownRefresh()
+      }
     },
     handleEmptyAction() {
       if (this.data.query) {
@@ -81,9 +97,7 @@ Component({
           ...entry,
           favorite: favoriteIds.includes(entry.id),
         }))
-        const focusedPartnerId = initial
-          ? (wx.getStorageSync('starconnect-agent-partner') as string)
-          : ''
+        const focusedPartnerId = wx.getStorageSync('starconnect-agent-partner') as string
         const focusedPartner = entries.find((entry) => entry.id === focusedPartnerId)
         if (focusedPartnerId) wx.removeStorageSync('starconnect-agent-partner')
         const query = focusedPartner?.name ?? this.data.query

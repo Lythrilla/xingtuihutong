@@ -1,4 +1,4 @@
-import { apiRequest, goTo } from '../../utils/api'
+import { apiRequest, goTo, syncTabBar } from '../../utils/api'
 
 export {}
 
@@ -31,6 +31,7 @@ interface HomeResponse {
 Component({
   data: {
     loading: true,
+    hasLoaded: false,
     error: '',
     greeting: '早上好',
     role: 'client' as 'provider' | 'client',
@@ -56,12 +57,26 @@ Component({
       this.loadHome()
     },
   },
+  pageLifetimes: {
+    show() {
+      syncTabBar(this, 'home')
+      this.setData({ greeting: greetingForHour(new Date().getHours()) })
+      if (this.data.hasLoaded) void this.loadHome(true)
+    },
+  },
   methods: {
     retry() {
       return this.loadHome()
     },
-    async loadHome() {
-      this.setData({ loading: true, error: '' })
+    async onPullDownRefresh() {
+      try {
+        await this.loadHome(true)
+      } finally {
+        wx.stopPullDownRefresh()
+      }
+    },
+    async loadHome(silent = false) {
+      if (!silent) this.setData({ loading: true, error: '' })
       try {
         const response = await apiRequest<HomeResponse>('/api/home')
         app.globalData.role = response.role
@@ -95,12 +110,17 @@ Component({
                   { key: 'membership', title: '联系权益', description: '会员与按次解锁', icon: 'wallet' },
                 ],
           loading: false,
+          hasLoaded: true,
+          error: '',
         })
+        syncTabBar(this, 'home')
       } catch (error) {
-        this.setData({
-          loading: false,
-          error: error instanceof Error ? error.message : '首页加载失败',
-        })
+        const message = error instanceof Error ? error.message : '首页加载失败'
+        if (silent) {
+          wx.showToast({ title: message, icon: 'none' })
+        } else {
+          this.setData({ loading: false, error: message })
+        }
       }
     },
     openPrimary() {
