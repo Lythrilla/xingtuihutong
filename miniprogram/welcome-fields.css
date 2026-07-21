@@ -1,0 +1,112 @@
+/* welcome 对话框表单字段样式：主窗口（工作区菜单的"新建项目"）与欢迎窗口共用。 */
+
+.welcome-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1-5);
+}
+
+.welcome-field + .welcome-field {
+  margin-top: var(--space-2);
+}
+
+.welcome-field label {
+  font-size: var(--text-xs);
+  color: var(--color-fg-subtle);
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.welcome-field input,
+.welcome-field textarea {
+  padding: var(--space-2) var(--space-2-5);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-base);
+  font-size: var(--text-sm);
+  color: var(--color-fg-default);
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+  transition:
+    border-color var(--duration-fast) var(--ease),
+    box-shadow var(--duration-fast) var(--ease);
+}
+
+.welcome-field input::placeholder,
+.welcome-field textarea::placeholder {
+  color: var(--color-fg-disabled);
+}
+
+.welcome-field input:focus,
+.welcome-field textarea:focus {
+  border-color: var(--color-accent-default);
+  box-shadow: 0 0 0 2px var(--color-accent-subtle);
+}
+
+.welcome-field input:disabled,
+.welcome-field textarea:disabled {
+  opacity: 50%;
+}
+
+.welcome-field-row {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.welcome-field-row input {
+  flex: 1;
+}
+
+.welcome-field-row button {
+  padding: 0 var(--space-3);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-muted);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--color-fg-muted);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: var(--transition-colors);
+}
+
+.welcome-field-row button:hover:not(:disabled) {
+  background: var(--color-bg-emphasis);
+  color: var(--color-fg-default);
+}
+
+.welcome-field-row button:disabled {
+  opacity: 50%;
+  cursor: not-allowed;
+}
+
+.welcome-field-inline {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  cursor: pointer;
+}
+
+.welcome-field-inline span {
+  font-size: var(--text-sm);
+  color: var(--color-fg-default);
+  font-weight: 450;
+}
+
+.welcome-field-hint {
+  font-size: var(--text-xs);
+  color: var(--color-fg-subtle);
+  word-break: break-all;
+  padding: var(--space-2) var(--space-2-5);
+  background: var(--color-bg-muted);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+}
+
+.welcome-field-error {
+  font-size: var(--text-sm);
+  color: var(--color-danger-fg);
+  word-break: break-all;
+}
