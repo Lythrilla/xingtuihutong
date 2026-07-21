@@ -18,7 +18,7 @@ impl Config {
         let database_url =
             env::var("DATABASE_URL").unwrap_or_else(|_| "sqlite://data/xingtuihutong.db".into());
         let bind_address = SocketAddr::from_str(
-            &env::var("BIND_ADDRESS").unwrap_or_else(|_| "127.0.0.1:3000".into()),
+            &env::var("BIND_ADDRESS").unwrap_or_else(|_| "192.168.110.113:3000".into()),
         )
         .context("invalid BIND_ADDRESS")?;
         let admin_username = env::var("ADMIN_USERNAME").unwrap_or_else(|_| "admin".into());
