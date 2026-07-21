@@ -1,4 +1,4 @@
-import { apiRequest, goTo, syncTabBar } from '../../utils/api'
+import { apiRequest, goTo, syncTabBar, toAssetUrl } from '../../utils/api'
 
 export {}
 
@@ -12,6 +12,7 @@ interface PlazaEntry {
   partnerType: string
   avatar: string
   avatarClass: string
+  avatarIsImage?: boolean
   name: string
   identity: string
   description: string
@@ -93,10 +94,16 @@ Component({
       try {
         const response = await apiRequest<PlazaResponse>(`/api/plaza?type=${type}`)
         const favoriteIds = getFavoriteIds()
-        const entries = response.entries.map((entry) => ({
-          ...entry,
-          favorite: favoriteIds.includes(entry.id),
-        }))
+        const entries = response.entries.map((entry) => {
+          const resolved = toAssetUrl((entry.avatar || '').trim())
+          const hasImageAvatar = /^https?:\/\//i.test(resolved)
+          return {
+            ...entry,
+            avatar: hasImageAvatar ? resolved : entry.avatar,
+            avatarIsImage: hasImageAvatar,
+            favorite: favoriteIds.includes(entry.id),
+          }
+        })
         const focusedPartnerId = wx.getStorageSync('starconnect-agent-partner') as string
         const focusedPartner = entries.find((entry) => entry.id === focusedPartnerId)
         if (focusedPartnerId) wx.removeStorageSync('starconnect-agent-partner')

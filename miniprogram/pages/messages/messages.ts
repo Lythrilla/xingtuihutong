@@ -1,4 +1,4 @@
-import { apiRequest, goTo, syncTabBar } from '../../utils/api'
+import { apiRequest, goTo, syncTabBar, toAssetUrl } from '../../utils/api'
 
 export {}
 
@@ -16,6 +16,7 @@ interface Chat {
   id: string
   avatar: string
   avatarClass: string
+  avatarIsImage?: boolean
   name: string
   message: string
   time: string
@@ -63,8 +64,18 @@ Component({
       this.setData(initial ? { loading: true, error: '' } : { refreshing: true })
       try {
         const response = await apiRequest<MessagesResponse>('/api/messages')
+        const chats = response.chats.map((chat) => {
+          const resolved = toAssetUrl((chat.avatar || '').trim())
+          const hasImageAvatar = /^https?:\/\//i.test(resolved)
+          return {
+            ...chat,
+            avatar: hasImageAvatar ? resolved : chat.avatar,
+            avatarIsImage: hasImageAvatar,
+          }
+        })
         this.setData({
           ...response,
+          chats,
           loading: false,
           refreshing: false,
           hasLoaded: true,

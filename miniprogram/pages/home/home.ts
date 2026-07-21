@@ -1,4 +1,4 @@
-import { apiRequest, goTo, syncTabBar } from '../../utils/api'
+import { apiRequest, goTo, syncTabBar, toAssetUrl } from '../../utils/api'
 
 export {}
 
@@ -83,10 +83,11 @@ Component({
         app.globalData.onboardingStatus = response.onboardingStatus
         wx.setStorageSync('starconnect-onboarding-status', response.onboardingStatus)
         const recommendations = (response.recommendations || []).map((item) => {
-          const hasImageAvatar = !!item.avatar && (item.avatar.indexOf('http') === 0 || item.avatar.indexOf('/') === 0)
+          const resolved = toAssetUrl((item.avatar || '').trim())
+          const hasImageAvatar = /^https?:\/\//i.test(resolved)
           return {
             ...item,
-            avatar: hasImageAvatar ? item.avatar : (item.title ? item.title.charAt(0) : ''),
+            avatar: hasImageAvatar ? resolved : (item.title ? item.title.charAt(0) : ''),
             avatarIsImage: hasImageAvatar,
             verified: item.verified ?? true,
             preferred: item.preferred ?? true,

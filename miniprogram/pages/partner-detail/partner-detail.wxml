@@ -11,7 +11,8 @@
     <view class="hero-card detail-hero">
       <view class="hero-grid"></view>
       <view class="detail-hero-head">
-        <view class="detail-avatar {{partner.avatarClass}}">{{partner.avatar}}</view>
+        <image wx:if="{{partner.avatarIsImage}}" class="detail-avatar" src="{{partner.avatar}}" mode="aspectFill" lazy-load />
+        <view wx:else class="detail-avatar {{partner.avatarClass}}">{{partner.avatar}}</view>
         <view class="detail-identity">
           <view class="detail-name">{{partner.name}}</view>
           <view class="detail-role">{{partner.identity}}</view>

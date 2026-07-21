@@ -3,6 +3,7 @@ import { API_BASE_URL } from '../config'
 export function toAssetUrl(path: string): string {
   if (!path) return path
   if (/^https?:\/\//i.test(path)) return path
+  if (path.startsWith('uploads/')) path = `/${path}`
   if (path.startsWith('/')) return `${API_BASE_URL}${path}`
   return path
 }

@@ -54,7 +54,8 @@
         hover-class="entry-press"
       >
         <view class="entry-cover">
-          <view class="avatar {{item.avatarClass}}">{{item.avatar}}</view>
+          <image wx:if="{{item.avatarIsImage}}" class="avatar" src="{{item.avatar}}" mode="aspectFill" lazy-load />
+          <view wx:else class="avatar {{item.avatarClass}}">{{item.avatar}}</view>
           <view class="match-badge" wx:if="{{item.matchScore}}">匹配 {{item.matchScore}}%</view>
         </view>
         <view class="entry-main">
