@@ -9,10 +9,10 @@
   margin: 22rpx 0 0;
   padding: 34rpx 32rpx;
   color: var(--text-main);
-  background: linear-gradient(135deg, rgba(238, 242, 255, 0.95) 0%, rgba(255, 255, 255, 0.82) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.9);
+  background: #ffffff;
+  border: 1px solid var(--border-light);
   border-radius: 36rpx;
-  box-shadow: 0 2rpx 6rpx rgba(31, 37, 51, 0.03), 0 16rpx 48rpx rgba(99, 102, 241, 0.12);
+  box-shadow: var(--shadow-card);
 }
 
 .insight-grid {
@@ -32,9 +32,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: conic-gradient(from 0deg, #6366f1, #8b5cf6, #a78bfa, #6366f1);
+  background: #e5e9f5;
   border-radius: 50%;
-  box-shadow: 0 8rpx 24rpx rgba(99, 102, 241, 0.2);
+  box-shadow: 0 8rpx 24rpx rgba(31, 37, 51, 0.08);
 }
 
 .score-inner {
@@ -71,7 +71,7 @@
 }
 
 .insight-kicker {
-  color: rgba(79, 70, 229, 1);
+  color: #3b5bdb;
   font-size: 18rpx;
   font-weight: 700;
   letter-spacing: 2.4rpx;
@@ -157,15 +157,15 @@
   bottom: 0;
   left: 0;
   height: 5rpx;
-  background: linear-gradient(90deg, #6366f1, #8b5cf6);
+  background: #3b5bdb;
   opacity: 0.5;
 }
 
 .data-section {
   margin-top: 34rpx;
   padding: 26rpx 0 30rpx;
-  border-top: 1rpx solid rgba(79, 70, 229, 0.13);
-  border-bottom: 1rpx solid rgba(79, 70, 229, 0.13);
+  border-top: 1rpx solid rgba(31, 37, 51, 0.13);
+  border-bottom: 1rpx solid rgba(31, 37, 51, 0.13);
 }
 
 .data-head {
@@ -209,7 +209,7 @@
 }
 
 .legend .purple {
-  background: #6366f1;
+  background: #3b5bdb;
 }
 
 .legend .cyan {
@@ -223,7 +223,7 @@
   justify-content: space-between;
   margin-top: 32rpx;
   padding: 0 8rpx;
-  border-bottom: 1rpx solid rgba(79, 70, 229, 0.14);
+  border-bottom: 1rpx solid rgba(31, 37, 51, 0.14);
 }
 
 .trend-day {
@@ -248,11 +248,11 @@
 }
 
 .bar.match {
-  background: linear-gradient(180deg, #8b5cf6, #6366f1);
+  background: #3b5bdb;
 }
 
 .bar.connection {
-  background: linear-gradient(180deg, #7dd3fc, #38bdf8);
+  background: #74c0fc;
 }
 
 .trend-day > text {
@@ -305,7 +305,7 @@
 .funnel-bar view,
 .channel-track view {
   height: 100%;
-  background: linear-gradient(90deg, #6366f1, #8b5cf6);
+  background: #3b5bdb;
   border-radius: inherit;
 }
 
@@ -318,7 +318,7 @@
 }
 
 .channel-track view {
-  background: linear-gradient(90deg, #38bdf8, #6366f1);
+  background: #74c0fc;
 }
 
 .channel-empty {

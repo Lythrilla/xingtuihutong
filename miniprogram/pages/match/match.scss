@@ -55,7 +55,7 @@
 .demand-step.active > view {
   color: #fff;
   background: var(--brand-gradient);
-  box-shadow: 0 6rpx 16rpx rgba(99, 102, 241, 0.24);
+  box-shadow: 0 6rpx 16rpx rgba(31, 37, 51, 0.08);
 }
 
 .demand-step.done > view {
@@ -72,12 +72,12 @@
   height: 3rpx;
   flex: 1;
   margin: 23rpx 10rpx 0;
-  background: rgba(99, 102, 241, 0.12);
+  background: rgba(59, 91, 219, 0.12);
   border-radius: 2rpx;
 }
 
 .demand-line.active {
-  background: linear-gradient(90deg, #6366f1, #8b5cf6);
+  background: #3b5bdb;
 }
 
 .form-section {
@@ -113,7 +113,7 @@
   padding: 6rpx 12rpx;
   color: var(--brand-primary);
   font-size: 19rpx;
-  background: rgba(99, 102, 241, 0.08);
+  background: rgba(59, 91, 219, 0.08);
   border-radius: 12rpx;
 }
 
@@ -259,7 +259,7 @@
   padding: 0 18rpx;
   color: var(--brand-primary);
   font-size: 22rpx;
-  background: rgba(99, 102, 241, 0.08);
+  background: rgba(59, 91, 219, 0.08);
   border-radius: 29rpx;
 }
 
@@ -297,9 +297,9 @@
 .cycle.selected {
   color: var(--brand-primary);
   font-weight: 650;
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.06));
+  background: rgba(59, 91, 219, 0.1);
   border-color: var(--brand-primary);
-  box-shadow: 0 6rpx 16rpx rgba(99, 102, 241, 0.1);
+  box-shadow: 0 6rpx 16rpx rgba(31, 37, 51, 0.04);
 }
 
 .target-grid {
@@ -348,7 +348,7 @@
 .target-card.selected .target-icon {
   color: #fff;
   background: var(--brand-gradient);
-  box-shadow: 0 6rpx 14rpx rgba(99, 102, 241, 0.24);
+  box-shadow: 0 6rpx 14rpx rgba(31, 37, 51, 0.08);
 }
 
 .target-check {
@@ -474,7 +474,7 @@
   margin-top: 8rpx;
   padding: 28rpx;
   color: var(--text-main);
-  background: linear-gradient(135deg, rgba(238, 242, 255, 0.94) 0%, rgba(255, 255, 255, 0.82) 100%);
+  background: #ffffff;
   border: 1rpx solid var(--border-light);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-card);

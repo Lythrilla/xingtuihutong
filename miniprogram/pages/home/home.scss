@@ -37,7 +37,7 @@
   color: var(--brand-secondary);
   font-size: 22rpx;
   font-weight: 700;
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(139, 92, 246, 0.1));
+  background: rgba(59, 91, 219, 0.12);
   border-radius: 50%;
 }
 
@@ -96,13 +96,13 @@
 }
 
 .recommend-avatar.violet {
-  color: rgba(139, 92, 246, 1);
-  background: rgba(139, 92, 246, 0.1);
+  color: rgba(59, 91, 219, 1);
+  background: rgba(59, 91, 219, 0.1);
 }
 
 .recommend-avatar.blue {
-  color: rgba(99, 102, 241, 1);
-  background: rgba(99, 102, 241, 0.1);
+  color: rgba(59, 91, 219, 1);
+  background: rgba(59, 91, 219, 0.1);
 }
 
 .recommend-main {
