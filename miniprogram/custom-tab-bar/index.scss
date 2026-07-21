@@ -13,6 +13,7 @@
   /* 移除高斯模糊，改回纯净的实色背景避免黑边瑕疵 */
   background: rgba(255, 255, 255, 0.96);
   border-top: 1rpx solid var(--border-light);
+  box-shadow: 0 -8rpx 24rpx rgba(31, 37, 51, 0.05);
 }
 
 .tab-item {

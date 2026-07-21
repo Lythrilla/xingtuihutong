@@ -67,8 +67,9 @@ page {
   padding: 34rpx 40rpx calc(36rpx + env(safe-area-inset-bottom));
   background: #ffffff;
   border-top: 1rpx solid var(--border-light);
-  border-top-left-radius: 24rpx;
-  border-top-right-radius: 24rpx;
+  border-top-left-radius: 32rpx;
+  border-top-right-radius: 32rpx;
+  box-shadow: 0 -12rpx 48rpx rgba(31, 37, 51, 0.08);
 }
 
 .panel-title {
@@ -115,6 +116,7 @@ page {
 .role-card.selected {
   border-color: var(--brand-primary);
   background: #ffffff;
+  box-shadow: 0 8rpx 24rpx rgba(99, 102, 241, 0.14);
   z-index: 2;
 }
 
@@ -180,7 +182,7 @@ page {
 
 .agree-box.on {
   border-color: var(--brand-primary);
-  background: var(--brand-primary);
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
 }
 
 .agree-tick {

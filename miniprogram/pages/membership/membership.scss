@@ -94,6 +94,7 @@ button {
 
 .plan-card.selected {
   border-color: var(--brand-primary);
+  box-shadow: 0 2rpx 6rpx rgba(31, 37, 51, 0.03), 0 12rpx 32rpx rgba(99, 102, 241, 0.16);
 }
 
 .plan-radio {
@@ -134,7 +135,7 @@ button {
   padding: 3rpx 10rpx;
   color: #fff;
   font-size: 17rpx;
-  background: var(--brand-primary);
+  background: var(--brand-gradient);
   border-radius: 10rpx;
 }
 
@@ -157,8 +158,8 @@ button {
   gap: 18rpx;
   margin-top: 26rpx;
   padding: 26rpx;
-  background: #eef2ff;
-  border: 1rpx solid rgba(231, 177, 88, 0.2);
+  background: linear-gradient(135deg, #fdf7ec 0%, #f5f0ff 100%);
+  border: 1rpx solid rgba(231, 177, 88, 0.24);
 }
 
 .newcomer-badge {
@@ -167,8 +168,9 @@ button {
   color: #fff;
   font-size: 17rpx;
   font-weight: 700;
-  background: #e1a94f;
+  background: linear-gradient(135deg, #e8b45e 0%, #d99b32 100%);
   border-radius: 10rpx;
+  box-shadow: 0 4rpx 12rpx rgba(225, 169, 79, 0.3);
 }
 
 .newcomer-title {
