@@ -11,9 +11,8 @@
   padding: 10rpx 24rpx env(safe-area-inset-bottom);
 
   /* 移除高斯模糊，改回纯净的实色背景避免黑边瑕疵 */
-  background: rgba(255, 255, 255, 0.96);
+  background: #ffffff;
   border-top: 1rpx solid var(--border-light);
-  box-shadow: 0 -8rpx 24rpx rgba(31, 37, 51, 0.05);
 }
 
 .tab-item {
@@ -22,14 +21,14 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4rpx;
-  color: var(--text-light);
+  gap: 6rpx;
+  color: #9ca3af;
   transition: color 0.2s ease;
 }
 
 .tab-icon {
-  width: 36rpx;
-  height: 36rpx;
+  width: 40rpx;
+  height: 40rpx;
   background-color: currentColor;
   -webkit-mask-position: center;
   -webkit-mask-repeat: no-repeat;
@@ -41,7 +40,7 @@
 }
 
 .tab-item.active .tab-icon {
-  transform: scale(1.08);
+  transform: none;
 }
 
 .icon-home {
@@ -65,14 +64,14 @@
 }
 
 .tab-label {
-  font-size: 20rpx;
+  font-size: 21rpx;
   line-height: 1;
   font-weight: 500;
   letter-spacing: 0.3rpx;
 }
 
 .tab-item.active {
-  color: var(--brand-primary);
+  color: var(--text-main);
 }
 
 .tab-item.active .tab-label {

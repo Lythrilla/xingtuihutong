@@ -57,31 +57,32 @@
 
 /* === 精选推广列表 === */
 .recommend-list {
-  display: flex;
-  flex-direction: column;
-  gap: 20rpx;
+  background: var(--card-bg);
+  border: 1rpx solid var(--border-light);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
 }
 
 .recommend-item {
   display: flex;
   align-items: center;
-  padding: 24rpx;
-  background: var(--card-bg);
-  border: 1rpx solid var(--border-light);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-card);
-  transition: transform var(--duration-fast) var(--ease-out);
+  padding: 26rpx 24rpx;
+  border-bottom: 1rpx solid var(--border-light);
+}
+
+.recommend-item:last-child {
+  border-bottom: 0;
 }
 
 .recommend-item:active {
-  transform: scale(0.98);
+  background: rgba(31, 37, 51, 0.02);
 }
 
 .recommend-avatar {
   flex: none;
-  width: 112rpx;
-  height: 112rpx;
-  border-radius: 20rpx;
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 18rpx;
   overflow: hidden;
   font-size: 38rpx;
   font-weight: 700;
@@ -137,17 +138,17 @@
 
 .cooperate {
   flex: none;
-  width: 116rpx;
-  height: 56rpx;
+  height: 52rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--brand-gradient);
-  color: #fff;
-  font-size: 24rpx;
+  padding: 0 20rpx;
+  color: var(--text-main);
+  font-size: 23rpx;
   font-weight: 600;
-  border-radius: var(--radius-sm);
-  box-shadow: var(--shadow-button);
+  background: #fff;
+  border: 1rpx solid rgba(31, 37, 51, 0.14);
+  border-radius: 26rpx;
 }
 
 .demand-entry {
