@@ -1,4 +1,4 @@
-import { apiRequest, goTo } from '../../utils/api'
+import { apiRequest, goTo, syncTabBar } from '../../utils/api'
 
 export {}
 
@@ -45,12 +45,20 @@ Component({
   },
   pageLifetimes: {
     async show() {
+      syncTabBar(this, 'messages')
       if (this.data.hasLoaded && !this.data.refreshing) {
         await this.loadMessages(false)
       }
     },
   },
   methods: {
+    async onPullDownRefresh() {
+      try {
+        await this.loadMessages(!this.data.hasLoaded)
+      } finally {
+        wx.stopPullDownRefresh()
+      }
+    },
     async loadMessages(initial = true) {
       this.setData(initial ? { loading: true, error: '' } : { refreshing: true })
       try {
@@ -102,9 +110,7 @@ Component({
       return this.loadMessages(true)
     },
     openPlaza() {
-      wx.switchTab({ url: '/pages/plaza/plaza' }).catch(() => {
-        goTo('/pages/plaza/plaza')
-      })
+      goTo('/pages/plaza/plaza')
     },
   },
 })

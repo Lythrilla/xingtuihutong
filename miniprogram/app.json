@@ -17,6 +17,19 @@
     "pages/agreement/agreement",
     "pages/privacy/privacy"
   ],
+  "tabBar": {
+    "custom": true,
+    "color": "#9CA3AF",
+    "selectedColor": "#4F46E5",
+    "backgroundColor": "#FFFFFF",
+    "list": [
+      { "pagePath": "pages/home/home", "text": "首页" },
+      { "pagePath": "pages/plaza/plaza", "text": "广场" },
+      { "pagePath": "pages/ai/ai", "text": "AI" },
+      { "pagePath": "pages/messages/messages", "text": "消息" },
+      { "pagePath": "pages/profile/profile", "text": "我的" }
+    ]
+  },
   "window": {
     "navigationBarTextStyle": "black",
     "navigationStyle": "custom",

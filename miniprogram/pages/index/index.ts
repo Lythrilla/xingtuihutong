@@ -1,4 +1,4 @@
-import { ensureSession } from '../../utils/api'
+import { ensureSession, getWindowMetrics } from '../../utils/api'
 
 export {}
 
@@ -15,8 +15,8 @@ Component({
   lifetimes: {
     attached() {
       const menu = wx.getMenuButtonBoundingClientRect()
-      const systemInfo = wx.getSystemInfoSync()
-      const statusBarHeight = systemInfo.statusBarHeight || 20
+      const windowInfo = getWindowMetrics()
+      const statusBarHeight = windowInfo.statusBarHeight || 20
       const gap = Math.max(menu.top - statusBarHeight, 4)
       const menuHeight = menu.height || 32
       this.setData({
@@ -61,11 +61,11 @@ Component({
         app.globalData.apiReady = true
         wx.setStorageSync('starconnect-role', user.role)
         wx.setStorageSync('starconnect-onboarding-status', user.onboardingStatus)
-        wx.redirectTo({
-          url: user.onboardingStatus === 'approved' || user.onboardingStatus === 'pending'
-            ? '/pages/home/home'
-            : '/pages/onboarding/onboarding',
-        })
+        if (user.onboardingStatus === 'approved' || user.onboardingStatus === 'pending') {
+          wx.switchTab({ url: '/pages/home/home' })
+        } else {
+          wx.redirectTo({ url: '/pages/onboarding/onboarding' })
+        }
       } catch (error) {
         wx.showToast({ title: error instanceof Error ? error.message : '服务连接失败', icon: 'none' })
       } finally {

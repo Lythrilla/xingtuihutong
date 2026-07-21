@@ -112,7 +112,7 @@ Component({
       this.triggerEvent('back', { delta: data.delta }, {})
     },
     home() {
-      wx.reLaunch({ url: '/pages/home/home' })
+      wx.switchTab({ url: '/pages/home/home' })
       this.triggerEvent('home', {}, {})
     }
   },

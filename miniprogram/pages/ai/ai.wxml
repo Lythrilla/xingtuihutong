@@ -155,4 +155,3 @@
     <view wx:else class="composer-loader"></view>
   </button>
 </view>
-<tab-bar active="match"></tab-bar>

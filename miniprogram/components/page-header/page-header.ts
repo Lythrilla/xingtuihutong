@@ -1,4 +1,4 @@
-export {}
+import { getWindowMetrics } from '../../utils/api'
 
 Component({
   properties: {
@@ -23,12 +23,12 @@ Component({
   lifetimes: {
     attached() {
       const menu = wx.getMenuButtonBoundingClientRect()
-      const systemInfo = wx.getSystemInfoSync()
-      const statusBarHeight = systemInfo.statusBarHeight || 20
+      const windowInfo = getWindowMetrics()
+      const statusBarHeight = windowInfo.statusBarHeight || 20
       const gap = Math.max(menu.top - statusBarHeight, 4)
       const menuHeight = menu.height || 32
       const rightInset =
-        menu.left > systemInfo.windowWidth / 2 ? systemInfo.windowWidth - menu.left + 10 : 12
+        menu.left > windowInfo.windowWidth / 2 ? windowInfo.windowWidth - menu.left + 10 : 12
       this.setData({
         statusBarHeight,
         navigationHeight: Math.max(menuHeight + gap * 2, 52),
@@ -43,7 +43,7 @@ Component({
         wx.navigateBack()
         return
       }
-      wx.redirectTo({ url: '/pages/home/home' })
+      wx.switchTab({ url: '/pages/home/home' })
     },
   },
 })

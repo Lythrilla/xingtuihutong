@@ -1,4 +1,4 @@
-import { apiRequest, goTo } from '../../utils/api'
+import { apiRequest, goTo, syncTabBar } from '../../utils/api'
 
 export {}
 
@@ -121,6 +121,16 @@ Component({
     },
     detached() {
       this.clearTypewriter()
+    },
+  },
+  pageLifetimes: {
+    show() {
+      syncTabBar(this, 'match')
+      const prefill = wx.getStorageSync('starconnect-ai-prefill') as string
+      if (prefill) {
+        wx.removeStorageSync('starconnect-ai-prefill')
+        this.setData({ input: prefill })
+      }
     },
   },
   methods: {

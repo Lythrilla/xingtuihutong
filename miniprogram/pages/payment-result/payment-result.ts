@@ -65,7 +65,7 @@ Page<PaymentResultPageData, WechatMiniprogram.IAnyObject>({
     wx.redirectTo({ url: '/pages/membership/membership' })
   },
   goHome() {
-    wx.redirectTo({ url: '/pages/home/home' })
+    wx.switchTab({ url: '/pages/home/home' })
   },
 })
 

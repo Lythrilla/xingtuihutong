@@ -229,7 +229,7 @@ Component({
       this.setData({ editing: true })
     },
     goHome() {
-      wx.redirectTo({ url: '/pages/home/home' })
+      wx.switchTab({ url: '/pages/home/home' })
     },
     goBackToIndex() {
       wx.redirectTo({ url: '/pages/index/index' })

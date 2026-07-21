@@ -18,10 +18,21 @@ const TAB_PAGES = new Set([
 export function goTo(url: string) {
   const path = url.split('?')[0]
   if (TAB_PAGES.has(path)) {
-    wx.redirectTo({ url })
+    wx.switchTab({ url: path })
   } else {
     wx.navigateTo({ url })
   }
+}
+
+export function syncTabBar(component: WechatMiniprogram.Component.TrivialInstance, active: string) {
+  if (typeof component.getTabBar !== 'function') return
+  const tabBar = component.getTabBar()
+  if (tabBar && typeof tabBar.setActive === 'function') tabBar.setActive(active)
+}
+
+export function getWindowMetrics(): { statusBarHeight: number; windowWidth: number } {
+  if (typeof wx.getWindowInfo === 'function') return wx.getWindowInfo()
+  return wx.getSystemInfoSync()
 }
 
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE'

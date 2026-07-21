@@ -1,0 +1,23 @@
+<view class="tab-shell">
+  <view
+    wx:for="{{items}}"
+    wx:key="key"
+    class="tab-item {{active === item.key ? 'active' : ''}} {{item.key === 'match' ? 'match' : ''}}"
+    data-item="{{item}}"
+    bindtap="navigate"
+    hover-class="tab-pressed"
+    hover-stay-time="80"
+  >
+    <view wx:if="{{item.key === 'match'}}" class="fab-wrap">
+      <view class="fab-halo"></view>
+      <view class="fab-ring"></view>
+      <view class="fab-core">
+        <image class="fab-orb" src="/assets/images/ai-illustration.png" mode="aspectFit"></image>
+        <view class="fab-shine"></view>
+      </view>
+      <text class="fab-label">{{item.label}}</text>
+    </view>
+    <view wx:else class="tab-icon icon-{{item.iconClass}}"></view>
+    <text wx:if="{{item.key !== 'match'}}" class="tab-label">{{item.label}}</text>
+  </view>
+</view>

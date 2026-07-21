@@ -1,4 +1,4 @@
-import { apiRequest, SessionUser, uploadAvatarFile, toAssetUrl, goTo } from '../../utils/api'
+import { apiRequest, SessionUser, uploadAvatarFile, toAssetUrl, goTo, syncTabBar } from '../../utils/api'
 
 export {}
 
@@ -29,6 +29,7 @@ interface ProfileResponse {
 Component({
   data: {
     loading: true,
+    hasLoaded: false,
     error: '',
     actionLoading: false,
     sheetMode: '',
@@ -62,12 +63,25 @@ Component({
       await this.loadProfile()
     },
   },
+  pageLifetimes: {
+    show() {
+      syncTabBar(this, 'profile')
+      if (this.data.hasLoaded) void this.loadProfile(true)
+    },
+  },
   methods: {
     retry() {
       return this.loadProfile()
     },
-    async loadProfile() {
-      this.setData({ loading: true, error: '' })
+    async onPullDownRefresh() {
+      try {
+        await this.loadProfile(this.data.hasLoaded)
+      } finally {
+        wx.stopPullDownRefresh()
+      }
+    },
+    async loadProfile(silent = false) {
+      if (!silent) this.setData({ loading: true, error: '' })
       try {
         const profile = await apiRequest<ProfileResponse>('/api/profile')
         app.globalData.role = profile.user.role
@@ -128,12 +142,17 @@ Component({
           userAvatarIsImage: isImageAvatar(toAssetUrl(profile.user.avatar)),
           userAvatarUrl: toAssetUrl(profile.user.avatar),
           loading: false,
+          hasLoaded: true,
+          error: '',
         })
+        syncTabBar(this, 'profile')
       } catch (error) {
-        this.setData({
-          loading: false,
-          error: error instanceof Error ? error.message : '资料加载失败',
-        })
+        const message = error instanceof Error ? error.message : '资料加载失败'
+        if (silent) {
+          wx.showToast({ title: message, icon: 'none' })
+        } else {
+          this.setData({ loading: false, error: message })
+        }
       }
     },
     editProfile() {
