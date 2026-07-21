@@ -58,7 +58,7 @@
             </view>
             <view class="recommend-subtitle">{{item.subtitle}}</view>
           </view>
-          <view class="cooperate" data-id="{{item.id}}" bindtap="openPartner">{{isCreator ? '查看推广' : '查看项目'}}</view>
+          <view class="cooperate" data-id="{{item.id}}" bindtap="openPartner">›</view>
         </view>
       </view>
       <view wx:else class="inline-empty">
