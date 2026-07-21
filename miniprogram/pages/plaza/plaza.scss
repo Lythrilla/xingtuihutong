@@ -26,7 +26,7 @@
   left: 18%;
   height: 5rpx;
   opacity: 0;
-  background: linear-gradient(90deg, #6366f1, #8b5cf6);
+  background: #3b5bdb;
   border-radius: 3rpx;
   transform: scaleX(0.3);
   transition: all 0.25s ease;
@@ -68,7 +68,7 @@
   height: 48rpx;
   color: var(--text-sub);
   font-size: 32rpx;
-  background: rgba(99, 102, 241, 0.08);
+  background: rgba(59, 91, 219, 0.08);
   border-radius: 24rpx;
 }
 
@@ -228,7 +228,7 @@
   padding: 4rpx 12rpx;
   color: var(--brand-secondary);
   font-size: 20rpx;
-  background: rgba(99, 102, 241, 0.08);
+  background: rgba(59, 91, 219, 0.08);
   border-radius: 10rpx;
 }
 
@@ -318,7 +318,7 @@
   gap: 18rpx;
   margin: 28rpx 0 14rpx;
   padding: 18rpx 22rpx;
-  background: linear-gradient(135deg, rgba(238, 242, 255, 0.94) 0%, rgba(255, 255, 255, 0.78) 100%);
+  background: #ffffff;
   border: 1rpx solid var(--border-light);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-card);

@@ -1,6 +1,6 @@
 page {
   height: 100%;
-  background: linear-gradient(180deg, rgba(99, 102, 241, 0.09) 0%, rgba(139, 92, 246, 0.06) 100%), var(--bg-color);
+  background: var(--bg-color);
 }
 
 .page {
@@ -16,9 +16,9 @@ page {
   color: rgba(91, 96, 118, 1);
   font-size: 24rpx;
   text-align: center;
-  background: rgba(99, 102, 241, 0.08);
-  border-top: 1rpx solid rgba(79, 70, 229, 0.08);
-  border-bottom: 1rpx solid rgba(79, 70, 229, 0.08);
+  background: rgba(59, 91, 219, 0.08);
+  border-top: 1rpx solid rgba(31, 37, 51, 0.08);
+  border-bottom: 1rpx solid rgba(31, 37, 51, 0.08);
 }
 
 /* === 消息列表 === */
@@ -92,7 +92,7 @@ page {
   color: rgba(255, 255, 255, 1);
   background: var(--brand-gradient);
   border-radius: 24rpx 24rpx 8rpx 24rpx;
-  box-shadow: 0 6rpx 18rpx rgba(99, 102, 241, 0.22);
+  box-shadow: 0 6rpx 18rpx rgba(31, 37, 51, 0.08);
 }
 
 .time {
@@ -112,7 +112,7 @@ page {
   gap: 16rpx;
   padding: 20rpx 28rpx calc(20rpx + env(safe-area-inset-bottom));
   background: rgba(255, 255, 255, 0.92);
-  border-top: 1rpx solid rgba(79, 70, 229, 0.08);
+  border-top: 1rpx solid rgba(31, 37, 51, 0.08);
 }
 
 .composer input {
@@ -122,7 +122,7 @@ page {
   padding: 0 28rpx;
   color: var(--text-main);
   font-size: 28rpx;
-  background: rgba(99, 102, 241, 0.08);
+  background: rgba(59, 91, 219, 0.08);
   border-radius: 48rpx;
 }
 
@@ -136,12 +136,12 @@ page {
   line-height: 80rpx;
   background: var(--brand-gradient);
   border-radius: 48rpx;
-  box-shadow: 0 6rpx 16rpx rgba(99, 102, 241, 0.24);
+  box-shadow: 0 6rpx 16rpx rgba(31, 37, 51, 0.08);
 }
 
 .composer button[disabled] {
   color: rgba(91, 96, 118, 1);
-  background: rgba(99, 102, 241, 0.08);
+  background: rgba(59, 91, 219, 0.08);
   box-shadow: none;
 }
 

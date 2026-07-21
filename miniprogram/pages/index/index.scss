@@ -116,7 +116,7 @@ page {
 .role-card.selected {
   border-color: var(--brand-primary);
   background: #ffffff;
-  box-shadow: 0 8rpx 24rpx rgba(99, 102, 241, 0.14);
+  box-shadow: 0 8rpx 24rpx rgba(31, 37, 51, 0.06);
   z-index: 2;
 }
 
@@ -175,14 +175,14 @@ page {
   flex: none;
   margin-right: 16rpx;
   border-radius: 50%;
-  border: 2rpx solid rgba(99, 102, 241, 0.25);
+  border: 2rpx solid rgba(59, 91, 219, 0.25);
   background: #ffffff;
   transition: all 0.2s ease;
 }
 
 .agree-box.on {
   border-color: var(--brand-primary);
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  background: #171b26;
 }
 
 .agree-tick {

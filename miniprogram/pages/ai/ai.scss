@@ -64,7 +64,7 @@
   background: rgba(255, 255, 255, 0.55);
   border: 1rpx solid rgba(255, 255, 255, 0.7);
   border-radius: 50%;
-  box-shadow: 0 4rpx 16rpx rgba(99, 102, 241, 0.08);
+  box-shadow: 0 4rpx 16rpx rgba(31, 37, 51, 0.03);
   backdrop-filter: blur(10rpx);
   -webkit-backdrop-filter: blur(10rpx);
 }
@@ -101,7 +101,7 @@
   background: rgba(255, 255, 255, 0.72);
   border: 1rpx solid rgba(255, 255, 255, 0.85);
   border-radius: 8rpx 28rpx 28rpx;
-  box-shadow: 0 6rpx 20rpx rgba(99, 102, 241, 0.06);
+  box-shadow: 0 6rpx 20rpx rgba(31, 37, 51, 0.03);
 }
 
 .message.user .message-content {
@@ -109,7 +109,7 @@
   background: var(--brand-gradient);
   border: 0;
   border-radius: 28rpx 8rpx 28rpx 28rpx;
-  box-shadow: 0 8rpx 22rpx rgba(99, 102, 241, 0.22);
+  box-shadow: 0 8rpx 22rpx rgba(31, 37, 51, 0.08);
 }
 
 .thinking {
@@ -121,7 +121,7 @@
   background: rgba(255, 255, 255, 0.5);
   border: 1rpx solid rgba(255, 255, 255, 0.65);
   border-radius: 24rpx;
-  box-shadow: 0 6rpx 22rpx rgba(99, 102, 241, 0.08);
+  box-shadow: 0 6rpx 22rpx rgba(31, 37, 51, 0.03);
   backdrop-filter: blur(16rpx);
   -webkit-backdrop-filter: blur(16rpx);
 }
@@ -134,7 +134,7 @@
   background: rgba(255, 255, 255, 0.55);
   border: 1rpx solid rgba(255, 255, 255, 0.7);
   border-radius: 50%;
-  box-shadow: 0 4rpx 14rpx rgba(99, 102, 241, 0.08);
+  box-shadow: 0 4rpx 14rpx rgba(31, 37, 51, 0.03);
   backdrop-filter: blur(10rpx);
   -webkit-backdrop-filter: blur(10rpx);
 }
@@ -208,7 +208,7 @@
   flex-shrink: 0;
   padding: 8rpx 16rpx;
   background: rgba(245, 247, 255, 0.7);
-  border: 1rpx solid rgba(99, 102, 241, 0.18);
+  border: 1rpx solid rgba(59, 91, 219, 0.18);
   border-radius: 40rpx;
 }
 
@@ -239,7 +239,7 @@
 /* 状态：进行中 */
 .trace-node.running .node-dot {
   background: var(--brand-primary);
-  box-shadow: 0 0 0 4rpx rgba(99, 102, 241, 0.25);
+  box-shadow: 0 0 0 4rpx rgba(31, 37, 51, 0.08);
   animation: pulse-dot 1.2s ease-in-out infinite;
 }
 
@@ -286,7 +286,7 @@
   background: rgba(255, 255, 255, 0.45);
   border: 1rpx solid rgba(255, 255, 255, 0.65);
   border-radius: 24rpx;
-  box-shadow: 0 8rpx 28rpx rgba(99, 102, 241, 0.06);
+  box-shadow: 0 8rpx 28rpx rgba(31, 37, 51, 0.03);
   backdrop-filter: blur(18rpx);
   -webkit-backdrop-filter: blur(18rpx);
 }
@@ -361,13 +361,13 @@
 
 .funnel-track {
   height: 4rpx;
-  background: rgba(99, 102, 241, 0.1);
+  background: rgba(59, 91, 219, 0.1);
   border-radius: 4rpx;
 }
 
 .funnel-track view {
   height: 100%;
-  background: rgba(99, 102, 241, 0.6);
+  background: rgba(59, 91, 219, 0.6);
   border-radius: inherit;
 }
 
@@ -380,7 +380,7 @@
   display: flex;
   align-items: center;
   gap: 16rpx;
-  border-bottom: 1rpx solid rgba(99, 102, 241, 0.12);
+  border-bottom: 1rpx solid rgba(59, 91, 219, 0.12);
 }
 
 .partner-line:last-child {
@@ -399,7 +399,7 @@
   font-weight: 700;
   background: var(--brand-gradient);
   border-radius: 50%;
-  box-shadow: 0 4rpx 14rpx rgba(99, 102, 241, 0.18);
+  box-shadow: 0 4rpx 14rpx rgba(31, 37, 51, 0.07);
 }
 
 .partner-copy {
@@ -425,7 +425,7 @@
   color: var(--brand-primary-deep);
   font-size: 20rpx;
   font-weight: 500;
-  background: rgba(99, 102, 241, 0.1);
+  background: rgba(59, 91, 219, 0.1);
   padding: 2rpx 10rpx;
   border-radius: 8rpx;
 }
@@ -457,7 +457,7 @@
   width: 200rpx;
   padding: 16rpx;
   background: transparent;
-  border: 1px solid rgba(99, 102, 241, 0.15);
+  border: 1px solid rgba(59, 91, 219, 0.15);
   border-radius: 12rpx;
 }
 
@@ -494,7 +494,7 @@
   color: var(--brand-primary-deep);
   font-size: 22rpx;
   font-weight: 500;
-  background: rgba(99, 102, 241, 0.1);
+  background: rgba(59, 91, 219, 0.1);
   border-radius: 28rpx;
   display: inline-flex;
   align-items: center;
@@ -560,12 +560,10 @@
   align-items: center;
   gap: 16rpx;
   padding: 9rpx 11rpx 9rpx 24rpx;
-  background: rgba(255, 255, 255, 0.68);
-  border: 1rpx solid rgba(255, 255, 255, 0.92);
+  background: #ffffff;
+  border: 1rpx solid var(--border-light);
   border-radius: 50rpx;
-  backdrop-filter: blur(32rpx);
-  -webkit-backdrop-filter: blur(32rpx);
-  box-shadow: 0 2rpx 6rpx rgba(31, 37, 51, 0.04), 0 14rpx 40rpx rgba(99, 102, 241, 0.12);
+  box-shadow: 0 8rpx 24rpx rgba(31, 37, 51, 0.06);
 }
 
 .agent-composer input {
@@ -582,7 +580,7 @@
   color: #fff;
   background: var(--brand-gradient);
   border-radius: 50%;
-  box-shadow: 0 6rpx 16rpx rgba(99, 102, 241, 0.28);
+  box-shadow: 0 6rpx 16rpx rgba(31, 37, 51, 0.08);
 }
 
 .agent-composer button .ui-icon {

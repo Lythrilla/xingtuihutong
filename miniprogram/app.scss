@@ -4,19 +4,19 @@ page {
   --text-main: #1f2533;
   --text-sub: #5b6076;
   --text-light: #9ca3af;
-  --brand-primary: #6366f1;
-  --brand-secondary: #6366f1;
-  --card-bg: rgba(255, 255, 255, 0.96);
-  --border-light: rgba(99, 102, 241, 0.1);
+  --brand-primary: #3b5bdb;
+  --brand-secondary: #3b5bdb;
+  --card-bg: #ffffff;
+  --border-light: rgba(31, 37, 51, 0.07);
   --danger: #ef4444;
   --success: #10b981;
 
   /* 扩展色板 */
-  --brand-primary-deep: #4f46e5;
-  --brand-primary-soft: rgba(99, 102, 241, 0.08);
-  --brand-primary-mid: rgba(99, 102, 241, 0.16);
-  --brand-violet: #8b5cf6;
-  --brand-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  --brand-primary-deep: #2f4bc7;
+  --brand-primary-soft: rgba(59, 91, 219, 0.06);
+  --brand-primary-mid: rgba(59, 91, 219, 0.12);
+  --brand-violet: #3b5bdb;
+  --brand-gradient: #1f2533;
   --warning: #f59e0b;
   --gold: #d4af37;
   --ink-900: #171b26;
@@ -27,10 +27,10 @@ page {
   --radius-lg: 24rpx;
   --radius-xl: 32rpx;
 
-  /* 阴影阶梯（多层柔和投影） */
-  --shadow-card: 0 2rpx 6rpx rgba(31, 37, 51, 0.03), 0 12rpx 32rpx rgba(99, 102, 241, 0.08);
-  --shadow-float: 0 4rpx 12rpx rgba(31, 37, 51, 0.05), 0 20rpx 56rpx rgba(31, 37, 51, 0.12);
-  --shadow-button: 0 4rpx 12rpx rgba(99, 102, 241, 0.2), 0 12rpx 28rpx rgba(139, 92, 246, 0.22);
+  /* 阴影阶梯（极简克制） */
+  --shadow-card: 0 1rpx 3rpx rgba(31, 37, 51, 0.04);
+  --shadow-float: 0 8rpx 32rpx rgba(31, 37, 51, 0.1);
+  --shadow-button: 0 2rpx 8rpx rgba(31, 37, 51, 0.12);
 
   /* 动效曲线与时长 */
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
@@ -48,10 +48,7 @@ page {
   width: 100%;
   overflow-x: hidden;
   color: var(--text-main);
-  background:
-    radial-gradient(120% 26% at 0% 0%, rgba(99, 102, 241, 0.07) 0%, transparent 60%),
-    radial-gradient(100% 22% at 100% 6%, rgba(139, 92, 246, 0.06) 0%, transparent 55%),
-    var(--bg-color);
+  background: var(--bg-color);
   font-size: 28rpx;
   line-height: 1.5;
   font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", Arial, sans-serif;
@@ -81,17 +78,16 @@ textarea {
   font-size: 28rpx;
   font-weight: 600;
   letter-spacing: 1rpx;
-  background: var(--brand-gradient);
+  background: var(--ink-900);
   border-radius: var(--radius-md);
-  box-shadow: var(--shadow-button), inset 0 1rpx 0 rgba(255, 255, 255, 0.25);
+  box-shadow: var(--shadow-button);
   box-sizing: border-box;
-  transition: transform var(--duration-fast) var(--ease-out), opacity var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out);
+  transition: transform var(--duration-fast) var(--ease-out), opacity var(--duration-fast) var(--ease-out);
 }
 
 .btn-primary:active {
-  opacity: 0.9;
-  transform: scale(0.98);
-  box-shadow: 0 4rpx 12rpx rgba(99, 102, 241, 0.18);
+  opacity: 0.85;
+  transform: scale(0.99);
 }
 
 .btn-primary[disabled] {
@@ -109,17 +105,17 @@ textarea {
   height: 88rpx;
   margin: 0 !important;
   padding: 0 !important;
-  color: var(--brand-primary);
+  color: var(--text-main);
   font-size: 26rpx;
   font-weight: 600;
-  background: rgba(99, 102, 241, 0.08);
-  border: 1rpx solid rgba(99, 102, 241, 0.14);
+  background: #ffffff;
+  border: 1rpx solid rgba(31, 37, 51, 0.12);
   border-radius: var(--radius-md);
   box-sizing: border-box;
 }
 
 .btn-secondary:active {
-  background: rgba(99, 102, 241, 0.12);
+  background: rgba(31, 37, 51, 0.04);
 }
 
 button {
@@ -185,8 +181,6 @@ button[disabled] {
   font-weight: 700;
   line-height: 1;
   letter-spacing: 0.5rpx;
-  padding-left: 20rpx;
-  background: linear-gradient(180deg, #6366f1, #8b5cf6) left center / 8rpx 28rpx no-repeat;
 }
 
 .section-action {
@@ -211,7 +205,7 @@ button[disabled] {
   color: rgba(255, 255, 255, 1);
   font-size: 20rpx;
   line-height: 1.2;
-  background: var(--brand-gradient);
+  background: var(--ink-900);
   border-radius: 8rpx;
 }
 
@@ -321,10 +315,10 @@ button[disabled] {
   min-height: 260rpx;
   padding: 40rpx;
   box-sizing: border-box;
-  background: linear-gradient(135deg, rgba(238, 242, 255, 0.96) 0%, rgba(255, 255, 255, 0.82) 100%);
-  border: 1rpx solid rgba(255, 255, 255, 0.75);
+  background: #ffffff;
+  border: 1rpx solid var(--border-light);
   border-radius: var(--radius-lg);
-  box-shadow: 0 2rpx 6rpx rgba(31, 37, 51, 0.03), 0 16rpx 48rpx rgba(99, 102, 241, 0.12);
+  box-shadow: var(--shadow-card);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -441,7 +435,7 @@ button[disabled] {
   font-size: 24rpx;
   font-weight: 600;
   letter-spacing: 1rpx;
-  background: var(--brand-gradient);
+  background: var(--ink-900);
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-button);
 }
@@ -488,17 +482,12 @@ button[disabled] {
 
 /* === 玻璃拟态卡片 === */
 .glass-card {
-  background: rgba(255, 255, 255, 0.72);
-  border: 1rpx solid rgba(255, 255, 255, 0.75);
+  background: #ffffff;
+  border: 1rpx solid var(--border-light);
   box-shadow: var(--shadow-card);
-  backdrop-filter: blur(24rpx);
-  -webkit-backdrop-filter: blur(24rpx);
 }
 
 /* === 渐变文字 === */
 .gradient-text {
-  background: var(--brand-gradient);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: var(--text-main);
 }
